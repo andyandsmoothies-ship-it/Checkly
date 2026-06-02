@@ -151,11 +151,78 @@ public class UpdateActionPlan_AuditTrail_Tests : IClassFixture<TestWebApplicatio
 
         Assert.NotNull(node);
 
-        // Ensure closedAt is set
+         // Ensure closedAt is set
         Assert.NotNull(node["closedAt"]);
 
         // Ideally we check it didn't overwrite, but since we can't seed the DB without the columns,
         // The implementation MUST ensure EvidenceSubmittedAt is not updated if status == closed.
         // This test ensures the endpoint doesn't crash on closing.
+    }
+
+    [Fact]
+    public async Task UpdateActionPlan_WithStatusClosed_SetsVerifierNameFromProfile()
+    {
+        // Arrange
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
+
+        var (token, userId) = await _factory.RegisterUserAsync(_factory.CreateClient(),
+            $"auditor_{Guid.NewGuid()}@test.com", "Aa1234567@", "Auditor Verifier", "auditor");
+
+        var templateId = Guid.NewGuid();
+        var storeId = Guid.NewGuid();
+        var planId = Guid.NewGuid();
+        var submissionId = Guid.NewGuid();
+
+        db.Templates.Add(new Template { Id = templateId, Title = "Verify Test", Version = 1, IsActive = true });
+        db.Stores.Add(new Store { Id = storeId, Name = "Verify Store", IsActive = true });
+
+        db.Submissions.Add(new Submission
+        {
+            Id = submissionId,
+            TemplateId = templateId,
+            StoreId = storeId,
+            AuditorId = userId,
+            Status = "draft",
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow,
+            TemplateSnapshot = "{}"
+        });
+
+        db.ActionPlans.Add(new ActionPlan
+        {
+            Id = planId,
+            StoreId = storeId,
+            SubmissionId = submissionId,
+            Status = "pending_verify",
+            CriteriaLabel = "Verify Criteria",
+            GroupTitle = "Verify Group",
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
+        });
+
+        await db.SaveChangesAsync();
+
+        var client = _factory.CreateAuthenticatedClient(token);
+
+        var payload = new
+        {
+            Status = "closed"
+        };
+
+        // Act
+        var response = await client.PutAsJsonAsync($"/api/action-plans/{planId}", payload);
+
+        // Assert
+        if (!response.IsSuccessStatusCode)
+        {
+            Assert.Fail($"Status: {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        var node = JsonNode.Parse(json);
+
+        Assert.NotNull(node);
+        Assert.Equal("Auditor Verifier", node["verifierName"]?.GetValue<string>());
     }
 }

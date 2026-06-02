@@ -37,6 +37,8 @@ class SubmitEvidenceSheet extends StatefulWidget {
 
 class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
   late final TextEditingController _correctionCtrl;
+  late final TextEditingController _rootCauseCtrl;
+  late final TextEditingController _correctionPlanCtrl;
   final _formKey = GlobalKey<FormState>();
 
   var _isDirty = false;
@@ -47,16 +49,23 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
   void initState() {
     super.initState();
     _correctionCtrl = TextEditingController(text: widget.plan.evidenceNote);
+    _rootCauseCtrl = TextEditingController(text: widget.plan.rootCause);
+    _correctionPlanCtrl = TextEditingController(text: widget.plan.correctionPlan);
   }
 
   @override
   void dispose() {
     _correctionCtrl.dispose();
+    _rootCauseCtrl.dispose();
+    _correctionPlanCtrl.dispose();
     super.dispose();
   }
 
   bool get _computedDirty =>
-      _correctionCtrl.text.isNotEmpty || _photoPath != null;
+      _correctionCtrl.text.isNotEmpty ||
+      _rootCauseCtrl.text != (widget.plan.rootCause ?? '') ||
+      _correctionPlanCtrl.text != (widget.plan.correctionPlan ?? '') ||
+      _photoPath != null;
 
   void _markDirty() {
     if (!_isDirty) setState(() => _isDirty = true);
@@ -68,7 +77,8 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
     try {
       await widget.manager.submitEvidence(
         widget.plan,
-        correctionPlan: widget.plan.correctionPlan ?? '',
+        correctionPlan: _correctionPlanCtrl.text.trim(),
+        rootCause: _rootCauseCtrl.text.trim(),
         evidenceNote: _correctionCtrl.text.trim(),
         currentUserName: widget.currentUserName,
         photoPath: _photoPath,
@@ -89,6 +99,8 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
           _isDirty = false;
           _photoPath = null;
           _correctionCtrl.clear();
+          _rootCauseCtrl.clear();
+          _correctionPlanCtrl.clear();
         });
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) Navigator.maybePop(context);
@@ -243,6 +255,40 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
                           ],
                         ),
                 ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _rootCauseCtrl,
+                decoration: InputDecoration(
+                  labelText: 'Proposed Root Cause',
+                  border: const OutlineInputBorder(borderSide: BorderSide.none),
+                  filled: true,
+                  fillColor: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainerHighest,
+                ),
+                maxLines: 2,
+                onChanged: (_) => _markDirty(),
+                validator: (v) => v == null || v.trim().isEmpty
+                    ? 'Please describe the proposed root cause.'
+                    : null,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _correctionPlanCtrl,
+                decoration: InputDecoration(
+                  labelText: 'Proposed Correction Plan',
+                  border: const OutlineInputBorder(borderSide: BorderSide.none),
+                  filled: true,
+                  fillColor: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainerHighest,
+                ),
+                maxLines: 2,
+                onChanged: (_) => _markDirty(),
+                validator: (v) => v == null || v.trim().isEmpty
+                    ? 'Please describe the proposed correction plan.'
+                    : null,
               ),
               const SizedBox(height: 16),
               TextFormField(

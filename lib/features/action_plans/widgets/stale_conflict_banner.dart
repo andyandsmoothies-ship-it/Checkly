@@ -5,12 +5,14 @@ import 'package:flutter/services.dart';
 /// Allows the Store Manager to recover their typed text (Copy) and clear the outbox row (Dismiss).
 class StaleConflictBanner extends StatelessWidget {
   final String correctionPlan;
+  final String? rootCause;
   final String evidenceNote;
   final VoidCallback onDismiss;
 
   const StaleConflictBanner({
     super.key,
     required this.correctionPlan,
+    this.rootCause,
     required this.evidenceNote,
     required this.onDismiss,
   });
@@ -18,6 +20,11 @@ class StaleConflictBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    final rootCauseText = rootCause == null || rootCause!.isEmpty
+        ? '(none)'
+        : rootCause;
+    final fullText = 'Root Cause:\n$rootCauseText\n\nCorrection Plan:\n$correctionPlan\n\nEvidence Note:\n${evidenceNote.isEmpty ? '(none)' : evidenceNote}';
 
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -49,7 +56,7 @@ class StaleConflictBanner extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SelectableText(
-            'Correction Plan:\n$correctionPlan\n\nEvidence Note:\n${evidenceNote.isEmpty ? '(none)' : evidenceNote}',
+            fullText,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onErrorContainer,
             ),
@@ -62,8 +69,7 @@ class StaleConflictBanner extends StatelessWidget {
                 onPressed: () {
                   Clipboard.setData(
                     ClipboardData(
-                      text:
-                          'Correction Plan:\n$correctionPlan\n\nEvidence Note:\n${evidenceNote.isEmpty ? '(none)' : evidenceNote}',
+                      text: fullText,
                     ),
                   );
                   ScaffoldMessenger.of(context).showSnackBar(

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -79,6 +80,7 @@ class FakeActionPlanApi implements ActionPlanApi {
   Future<String> uploadPhoto(String submissionId, String filePath) async =>
       'http://example.com/photo.jpg';
   final List<String> calls = [];
+  final List<Map<String, dynamic>> updatePayloads = [];
   bool throwStaleException = false;
 
   @override
@@ -87,6 +89,7 @@ class FakeActionPlanApi implements ActionPlanApi {
     Map<String, dynamic> fields,
   ) async {
     calls.add(id);
+    updatePayloads.add(fields);
     if (throwStaleException && id == 'stale-ap-id') {
       throw ActionPlanAlreadyClosedException();
     }
@@ -298,6 +301,31 @@ void main() {
           db.pendingActionPlanUpdates,
         )..where((tbl) => tbl.id.equals('entry-2'))).get();
         expect(validRows, isEmpty, reason: 'Valid entry-2 should be removed');
+      },
+    );
+
+    test(
+      'SyncEngine_DrainsOutbox_AndSerializesRootCause',
+      () async {
+        // Arrange
+        await actionPlanOutboxDao.enqueue(
+          PendingActionPlanUpdatesCompanion.insert(
+            id: 'entry-root-cause',
+            actionPlanId: 'ap-root-cause',
+            correctionPlan: 'Fixing standard issue',
+            rootCause: const Value('Spilled water on logic board'),
+            evidenceNote: 'Fixed water damage',
+            createdAt: DateTime.now(),
+          ),
+        );
+
+        // Act
+        await engine.requestSync();
+
+        // Assert
+        expect(actionPlanApi.calls, ['ap-root-cause']);
+        expect(actionPlanApi.updatePayloads, isNotEmpty);
+        expect(actionPlanApi.updatePayloads.first['rootCause'], 'Spilled water on logic board');
       },
     );
   });

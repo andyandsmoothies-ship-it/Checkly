@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../auth/manager/auth_manager.dart';
 import '../../../_shared/constants/app_roles.dart';
 import '../../../_shared/constants/user_persona.dart';
+import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/theme/app_theme_notifier.dart';
+import '../../../_shared/widgets/primitives/primitives.dart';
 import '../widgets/sign_out_tile.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_capabilities_section.dart';
@@ -56,7 +60,10 @@ class ProfilePage extends StatelessWidget {
               // ── Zone 2: MY WORKSPACE (hidden for Auditors) ──
               ProfileWorkspaceSection(persona: persona, caps: caps),
 
-              // ── Zone 5: MY ACCOUNT ──
+              // ── Zone 3: SETTINGS ──
+              _buildSettingsZone(context),
+
+              // ── Zone 4: MY ACCOUNT ──
               _buildMyAccountZone(context),
 
               const SizedBox(height: 24),
@@ -81,6 +88,71 @@ class ProfilePage extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  Widget _buildSettingsZone(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final spiritNotifier = _di<ThemeSpiritNotifier>();
+
+    return AnimatedBuilder(
+      animation: spiritNotifier,
+      builder: (context, _) {
+        final spirit = spiritNotifier.value;
+        final isDuolingo = spirit == ThemeSpirit.duolingo;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 20, bottom: 6, left: 4),
+              child: Text(
+                'SETTINGS',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: cs.primary,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.5,
+                ),
+              ),
+            ),
+            StrokeCard(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Tactile 3D Design',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          isDuolingo
+                              ? 'Active: Playful Duolingo-style 3D aesthetics'
+                              : 'Active: Flat minimalist clean aesthetics',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  BubblySwitch(
+                    value: isDuolingo,
+                    onChanged: (val) {
+                      HapticFeedback.lightImpact();
+                      spiritNotifier.toggleSpirit();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

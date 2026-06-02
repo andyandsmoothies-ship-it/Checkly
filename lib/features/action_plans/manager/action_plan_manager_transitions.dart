@@ -12,6 +12,7 @@ Future<ActionPlanDto> _submitEvidenceLogic(
   ActionPlanManager manager,
   ActionPlanDto plan, {
   required String correctionPlan,
+  required String? rootCause,
   required String currentUserName,
   String? evidenceNote,
   String? photoPath,
@@ -20,6 +21,7 @@ Future<ActionPlanDto> _submitEvidenceLogic(
   final updatedEntity = entity.submitEvidence(
     role: manager._userRole.role,
     correctionPlan: correctionPlan,
+    rootCause: rootCause,
     currentUserName: currentUserName,
     evidenceNote: evidenceNote,
     photoPath: photoPath,
@@ -33,6 +35,7 @@ Future<ActionPlanDto> _submitEvidenceLogic(
         id: Value(plan.id),
         actionPlanId: Value(plan.id),
         correctionPlan: Value(correctionPlan),
+        rootCause: Value(rootCause),
         evidenceNote: Value(evidenceNote ?? ''),
         photoPath: Value(photoPath),
         createdAt: Value(DateTime.now().toUtc()),
@@ -40,8 +43,8 @@ Future<ActionPlanDto> _submitEvidenceLogic(
     );
 
     // Patch in-memory list so the UI reflects the change without a DB reload
-    final updated = manager.actionPlans.value
-        .map((p) => p.id == plan.id ? optimistic : p)
+    final List<ActionPlanDto> updated = manager.actionPlans.value
+        .map<ActionPlanDto>((p) => p.id == plan.id ? optimistic : p)
         .toList();
     manager.actionPlans.value = updated;
 
@@ -52,6 +55,7 @@ Future<ActionPlanDto> _submitEvidenceLogic(
   final Map<String, dynamic> updatePayload = {
     'status': 'pending_verify',
     'correctionPlan': correctionPlan,
+    'rootCause': rootCause,
   };
   if (evidenceNote != null) {
     updatePayload['evidenceNote'] = evidenceNote;
@@ -68,8 +72,8 @@ Future<ActionPlanDto> _submitEvidenceLogic(
   final result = await manager._api.updateActionPlan(plan.id, updatePayload);
 
   // Patch in-memory list with the server response
-  final updated = manager.actionPlans.value
-      .map((p) => p.id == plan.id ? result : p)
+  final List<ActionPlanDto> updated = manager.actionPlans.value
+      .map<ActionPlanDto>((p) => p.id == plan.id ? result : p)
       .toList();
   manager.actionPlans.value = updated;
 
@@ -83,13 +87,22 @@ Future<ActionPlanDto> _closePlanLogic(
   ActionPlanManager manager,
   ActionPlanDto plan, {
   required String verifierName,
+  String? rootCause,
+  String? correctionPlan,
 }) async {
   final entity = ActionPlan(plan);
-  entity.closePlan(role: manager._userRole.role, verifierName: verifierName);
+  entity.closePlan(
+    role: manager._userRole.role,
+    verifierName: verifierName,
+    rootCause: rootCause,
+    correctionPlan: correctionPlan,
+  );
 
   return manager._api.updateActionPlan(plan.id, {
     'status': 'closed',
     'verifierName': verifierName,
+    if (rootCause != null) 'rootCause': rootCause,
+    if (correctionPlan != null) 'correctionPlan': correctionPlan,
   });
 }
 

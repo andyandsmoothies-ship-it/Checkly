@@ -187,6 +187,7 @@ void main() {
     final result = await manager.submitEvidence(
       plan,
       correctionPlan: 'Fix the issue',
+      rootCause: 'Issue root cause',
       evidenceNote: 'Photo attached',
       currentUserName: 'Test User',
     );
@@ -253,6 +254,7 @@ void main() {
         () => manager.submitEvidence(
           plan,
           correctionPlan: 'Fix',
+          rootCause: 'Issue root cause',
           evidenceNote: 'Note',
           currentUserName: 'Test User',
         ),

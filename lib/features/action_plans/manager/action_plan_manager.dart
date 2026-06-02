@@ -59,6 +59,7 @@ class ActionPlanManager extends ChangeNotifier {
     return StaleConflict(
       id: result.id,
       correctionPlan: result.correctionPlan,
+      rootCause: result.rootCause,
       evidenceNote: result.evidenceNote,
     );
   }
@@ -173,6 +174,7 @@ class ActionPlanManager extends ChangeNotifier {
   Future<ActionPlanDto> submitEvidence(
     ActionPlanDto plan, {
     required String correctionPlan,
+    required String? rootCause,
     required String currentUserName,
     String? evidenceNote,
     String? photoPath,
@@ -180,6 +182,7 @@ class ActionPlanManager extends ChangeNotifier {
     this,
     plan,
     correctionPlan: correctionPlan,
+    rootCause: rootCause,
     currentUserName: currentUserName,
     evidenceNote: evidenceNote,
     photoPath: photoPath,
@@ -191,7 +194,15 @@ class ActionPlanManager extends ChangeNotifier {
   Future<ActionPlanDto> closePlan(
     ActionPlanDto plan, {
     required String verifierName,
-  }) async => _closePlanLogic(this, plan, verifierName: verifierName);
+    String? rootCause,
+    String? correctionPlan,
+  }) async => _closePlanLogic(
+    this,
+    plan,
+    verifierName: verifierName,
+    rootCause: rootCause,
+    correctionPlan: correctionPlan,
+  );
 
   /// Auditor/Admin rejects evidence → status returns to `open`.
   ///

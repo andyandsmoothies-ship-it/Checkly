@@ -35,6 +35,7 @@ class ActionPlanDetailList extends StatelessWidget {
         if (staleConflict != null) ...[
           StaleConflictBanner(
             correctionPlan: staleConflict!.correctionPlan,
+            rootCause: staleConflict!.rootCause,
             evidenceNote: staleConflict!.evidenceNote,
             onDismiss: onDismissConflict,
           ),

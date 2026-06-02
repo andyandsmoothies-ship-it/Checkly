@@ -71,6 +71,7 @@ void main() {
           () => manager.submitEvidence(
             plan,
             correctionPlan: 'Will clean',
+            rootCause: null,
             currentUserName: 'Auditor A',
           ),
           throwsA(isA<RoleGuardException>()),
@@ -83,6 +84,7 @@ void main() {
           () => manager.submitEvidence(
             closedPlan,
             correctionPlan: 'Will clean',
+            rootCause: null,
             currentUserName: 'Manager A',
           ),
           throwsA(isA<InvalidTransitionException>()),
@@ -107,6 +109,7 @@ void main() {
         final result = await manager.submitEvidence(
           plan,
           correctionPlan: 'Fix it',
+          rootCause: null,
           currentUserName: 'Manager A',
         );
 
@@ -131,6 +134,7 @@ void main() {
         final result = await manager.submitEvidence(
           plan,
           correctionPlan: 'Fix it offline',
+          rootCause: null,
           currentUserName: 'Manager A',
         );
 
@@ -243,6 +247,7 @@ void main() {
         () => manager.submitEvidence(
           closedPlan,
           correctionPlan: 'Late evidence',
+          rootCause: null,
           currentUserName: 'Manager A',
         ),
         throwsA(isA<InvalidTransitionException>()),
@@ -259,5 +264,88 @@ void main() {
         throwsA(isA<InvalidTransitionException>()),
       );
     });
+
+    test(
+      'submitEvidence online includes rootCause in the API call payload',
+      () async {
+        when(() => mockRoleProvider.role).thenReturn('store_manager');
+        when(() => mockConnectivity.isOnline).thenReturn(true);
+
+        final plan = createPlan(status: 'open');
+        manager.actionPlans.value = [plan];
+
+        final updatedPlan = createPlan(status: 'pending_verify');
+        when(
+          () => mockApi.updateActionPlan('plan-123', any()),
+        ).thenAnswer((_) async => updatedPlan);
+
+        await manager.submitEvidence(
+          plan,
+          correctionPlan: 'Fix it',
+          rootCause: 'Leaky pipe',
+          currentUserName: 'Manager A',
+        );
+
+        verify(
+          () => mockApi.updateActionPlan('plan-123', {
+            'status': 'pending_verify',
+            'correctionPlan': 'Fix it',
+            'rootCause': 'Leaky pipe',
+          }),
+        ).called(1);
+      },
+    );
+
+    test(
+      'submitEvidence offline enqueues PendingActionPlanUpdatesCompanion with rootCause',
+      () async {
+        when(() => mockRoleProvider.role).thenReturn('store_manager');
+        when(() => mockConnectivity.isOnline).thenReturn(false);
+
+        final plan = createPlan(status: 'open');
+        manager.actionPlans.value = [plan];
+
+        when(() => mockOutboxDao.enqueue(any())).thenAnswer((_) async {});
+
+        await manager.submitEvidence(
+          plan,
+          correctionPlan: 'Fix it offline',
+          rootCause: 'Broken floor tile',
+          currentUserName: 'Manager A',
+        );
+
+        final captured = verify(() => mockOutboxDao.enqueue(captureAny())).captured.first as PendingActionPlanUpdatesCompanion;
+        expect(captured.rootCause.value, 'Broken floor tile');
+      },
+    );
+
+    test(
+      'closePlan online includes revised rootCause and correctionPlan in API call payload',
+      () async {
+        when(() => mockRoleProvider.role).thenReturn('auditor');
+        final plan = createPlan(status: 'pending_verify');
+
+        final updatedPlan = createPlan(status: 'closed');
+        when(
+          () => mockApi.updateActionPlan('plan-123', any()),
+        ).thenAnswer((_) async => updatedPlan);
+
+        await manager.closePlan(
+          plan,
+          verifierName: 'Auditor A',
+          rootCause: 'Revised root cause',
+          correctionPlan: 'Revised correction plan',
+        );
+
+        verify(
+          () => mockApi.updateActionPlan('plan-123', {
+            'status': 'closed',
+            'verifierName': 'Auditor A',
+            'rootCause': 'Revised root cause',
+            'correctionPlan': 'Revised correction plan',
+          }),
+        ).called(1);
+      },
+    );
   });
 }

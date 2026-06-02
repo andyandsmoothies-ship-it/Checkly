@@ -7,11 +7,13 @@
 class StaleConflict {
   final String id;
   final String correctionPlan;
+  final String? rootCause;
   final String evidenceNote;
 
   const StaleConflict({
     required this.id,
     required this.correctionPlan,
+    this.rootCause,
     required this.evidenceNote,
   });
 }

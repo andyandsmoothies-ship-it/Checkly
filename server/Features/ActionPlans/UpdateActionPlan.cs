@@ -97,7 +97,19 @@ public static class UpdateActionPlan
         if (request.Deadline.HasValue) plan.Deadline = request.Deadline;
 
         if (request.Status == "closed")
+        {
             plan.ClosedAt = DateTimeOffset.UtcNow;
+
+            var callerId = Guid.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var cid) ? cid : (Guid?)null;
+            var callerProfile = callerId.HasValue
+                ? await db.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.Id == callerId.Value, ct)
+                : null;
+            plan.VerifiedBy = callerId;
+            plan.VerifiedAt = DateTimeOffset.UtcNow;
+            plan.VerifierName = callerProfile?.FullName
+                ?? user.FindFirstValue(ClaimTypes.Email)
+                ?? "Unknown";
+        }
 
         if (request.Status == "pending_verify")
         {

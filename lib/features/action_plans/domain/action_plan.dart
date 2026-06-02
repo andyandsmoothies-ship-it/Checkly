@@ -37,6 +37,7 @@ class ActionPlan {
   ActionPlan submitEvidence({
     required String role,
     required String correctionPlan,
+    required String? rootCause,
     required String currentUserName,
     String? evidenceNote,
     String? photoPath,
@@ -54,7 +55,7 @@ class ActionPlan {
       storeId: dto.storeId,
       storeManagerName: dto.storeManagerName,
       sourceTitle: dto.sourceTitle,
-      rootCause: dto.rootCause,
+      rootCause: rootCause,
       correctionPlan: correctionPlan,
       evidencePhotoUrl: photoPath ?? dto.evidencePhotoUrl,
       evidenceNote: evidenceNote,
@@ -73,7 +74,12 @@ class ActionPlan {
     return ActionPlan(optimisticDto);
   }
 
-  ActionPlan closePlan({required String role, required String verifierName}) {
+  ActionPlan closePlan({
+    required String role,
+    required String verifierName,
+    String? rootCause,
+    String? correctionPlan,
+  }) {
     _assertNotTerminal();
     _assertRole(role, [
       UserPersona.auditor,
@@ -91,8 +97,8 @@ class ActionPlan {
       storeId: dto.storeId,
       storeManagerName: dto.storeManagerName,
       sourceTitle: dto.sourceTitle,
-      rootCause: dto.rootCause,
-      correctionPlan: dto.correctionPlan,
+      rootCause: rootCause ?? dto.rootCause,
+      correctionPlan: correctionPlan ?? dto.correctionPlan,
       evidencePhotoUrl: dto.evidencePhotoUrl,
       evidenceNote: dto.evidenceNote,
       closedAt: DateTime.now().toUtc(),

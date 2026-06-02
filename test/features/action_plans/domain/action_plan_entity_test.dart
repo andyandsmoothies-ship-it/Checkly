@@ -65,6 +65,7 @@ void main() {
           () => plan.submitEvidence(
             role: 'auditor',
             correctionPlan: 'Fix the floor',
+            rootCause: null,
             currentUserName: 'John',
             evidenceNote: 'Fixed',
             photoPath: null,
@@ -83,6 +84,7 @@ void main() {
           () => plan.submitEvidence(
             role: 'store_manager',
             correctionPlan: 'Fix the floor',
+            rootCause: null,
             currentUserName: 'John',
             evidenceNote: 'Fixed',
             photoPath: null,
@@ -101,6 +103,7 @@ void main() {
           () => plan.submitEvidence(
             role: 'store_manager',
             correctionPlan: 'Fix the floor',
+            rootCause: null,
             currentUserName: 'John',
             evidenceNote: 'Fixed',
             photoPath: null,
@@ -164,6 +167,7 @@ void main() {
         final newPlan = plan.submitEvidence(
           role: 'store_manager',
           correctionPlan: 'Cleaned the floor thoroughly',
+          rootCause: null,
           currentUserName: 'StoreManager1',
           evidenceNote: 'Floor is clean',
           photoPath: 'path/to/photo.jpg',
@@ -191,6 +195,7 @@ void main() {
         final newPlan = plan.submitEvidence(
           role: 'admin',
           correctionPlan: 'Cleaned the floor thoroughly',
+          rootCause: null,
           currentUserName: 'Admin1',
           evidenceNote: 'Floor is clean',
           photoPath: 'path/to/photo.jpg',
@@ -232,6 +237,39 @@ void main() {
         expect(newPlan.dto.status, 'open');
         expect(newPlan.dto.evidenceNote, isNull);
         expect(newPlan.dto.evidencePhotoUrl, isNull);
+      },
+    );
+
+    test(
+      'submitEvidence() successfully receives and stores rootCause',
+      () {
+        final plan = ActionPlan(baseDto);
+        final newPlan = plan.submitEvidence(
+          role: 'store_manager',
+          correctionPlan: 'Cleaned the floor thoroughly',
+          rootCause: 'Spilled coffee',
+          currentUserName: 'StoreManager1',
+          evidenceNote: 'Floor is clean',
+          photoPath: 'path/to/photo.jpg',
+        );
+
+        expect(newPlan.dto.rootCause, 'Spilled coffee');
+      },
+    );
+
+    test(
+      'closePlan() successfully receives and stores revised rootCause and correctionPlan',
+      () {
+        final plan = ActionPlan(copyWithStatus(baseDto, 'pending_verify'));
+        final newPlan = plan.closePlan(
+          role: 'area_manager',
+          verifierName: 'Alice',
+          rootCause: 'Severe leak',
+          correctionPlan: 'Replaced whole pipe',
+        );
+
+        expect(newPlan.dto.rootCause, 'Severe leak');
+        expect(newPlan.dto.correctionPlan, 'Replaced whole pipe');
       },
     );
   });

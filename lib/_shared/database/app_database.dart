@@ -46,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 34;
+  int get schemaVersion => 35;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -280,6 +280,12 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(
           pendingSubmissions,
           pendingSubmissions.distanceMetersOff,
+        );
+      }
+      if (from < 35) {
+        await m.addColumn(
+          pendingActionPlanUpdates,
+          pendingActionPlanUpdates.rootCause,
         );
       }
     },

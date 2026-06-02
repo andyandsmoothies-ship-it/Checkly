@@ -41,31 +41,25 @@ class ActionPlanDetailActions {
   }) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Verify & Close'),
-        content: const Text(
-          'Mark this action plan as resolved? This cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.maybePop(ctx),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              Navigator.maybePop(ctx);
-              await _callManager(
-                context: context,
-                manager: manager,
-                setBusy: setBusy,
-                fn: () =>
-                    manager.closePlan(plan, verifierName: currentUserName),
-                successMsg: 'Action plan closed',
-              );
-            },
-            child: const Text('Verify & Close'),
-          ),
-        ],
+      builder: (ctx) => _VerifyDialog(
+        plan: plan,
+        manager: manager,
+        currentUserName: currentUserName,
+        setBusy: setBusy,
+        onConfirm: ({required rootCause, required correctionPlan}) async {
+          await _callManager(
+            context: context,
+            manager: manager,
+            setBusy: setBusy,
+            fn: () => manager.closePlan(
+              plan,
+              verifierName: currentUserName,
+              rootCause: rootCause,
+              correctionPlan: correctionPlan,
+            ),
+            successMsg: 'Action plan closed',
+          );
+        },
       ),
     );
   }
@@ -151,5 +145,113 @@ class ActionPlanDetailActions {
     } finally {
       setBusy(false);
     }
+  }
+}
+
+class _VerifyDialog extends StatefulWidget {
+  final ActionPlanDto plan;
+  final ActionPlanManager manager;
+  final String currentUserName;
+  final Function(bool) setBusy;
+  final Future<void> Function({
+    required String rootCause,
+    required String correctionPlan,
+  }) onConfirm;
+
+  const _VerifyDialog({
+    required this.plan,
+    required this.manager,
+    required this.currentUserName,
+    required this.setBusy,
+    required this.onConfirm,
+  });
+
+  @override
+  State<_VerifyDialog> createState() => _VerifyDialogState();
+}
+
+class _VerifyDialogState extends State<_VerifyDialog> {
+  late final TextEditingController _rootCauseCtrl;
+  late final TextEditingController _correctionPlanCtrl;
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _rootCauseCtrl = TextEditingController(text: widget.plan.rootCause);
+    _correctionPlanCtrl = TextEditingController(text: widget.plan.correctionPlan);
+  }
+
+  @override
+  void dispose() {
+    _rootCauseCtrl.dispose();
+    _correctionPlanCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Verify & Close'),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Review and refine the verified root cause and correction plan before closing.',
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _rootCauseCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Verified Root Cause',
+                  border: OutlineInputBorder(),
+                  filled: true,
+                ),
+                maxLines: 2,
+                validator: (v) => v == null || v.trim().isEmpty
+                    ? 'Please describe the verified root cause.'
+                    : null,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _correctionPlanCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Verified Correction Plan',
+                  border: OutlineInputBorder(),
+                  filled: true,
+                ),
+                maxLines: 2,
+                validator: (v) => v == null || v.trim().isEmpty
+                    ? 'Please describe the verified correction plan.'
+                    : null,
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.maybePop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () async {
+            if (!_formKey.currentState!.validate()) return;
+            final rootCause = _rootCauseCtrl.text.trim();
+            final correctionPlan = _correctionPlanCtrl.text.trim();
+            Navigator.maybePop(context);
+            await widget.onConfirm(
+              rootCause: rootCause,
+              correctionPlan: correctionPlan,
+            );
+          },
+          child: const Text('Verify & Close'),
+        ),
+      ],
+    );
   }
 }

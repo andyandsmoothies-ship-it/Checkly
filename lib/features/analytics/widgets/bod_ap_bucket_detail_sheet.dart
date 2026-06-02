@@ -37,116 +37,128 @@ class _BodApBucketDetailSheetState extends State<BodApBucketDetailSheet> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return AnimatedBuilder(
-      animation: widget.manager,
-      builder: (context, _) {
-        final isLoading = widget.manager.isApDetailLoading;
-        final items = widget.manager.apDetails;
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.85,
+      ),
+      child: AnimatedBuilder(
+        animation: widget.manager,
+        builder: (context, _) {
+          final isLoading = widget.manager.isApDetailLoading;
+          final items = widget.manager.apDetails;
 
-        return Container(
-          decoration: const BoxDecoration(
-            color: AppColors.polar,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
-          ),
-          padding: EdgeInsets.fromLTRB(
-            16,
-            24,
-            16,
-            MediaQuery.of(context).viewInsets.bottom + 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      '${widget.bucket.displayName} Overdue Action Plans',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.eel,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close_rounded, color: AppColors.wolf),
-                    onPressed: () => Navigator.maybePop(context),
-                  ),
-                ],
+          return Container(
+            decoration: const BoxDecoration(
+              color: AppColors.polar,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(24),
+                topRight: Radius.circular(24),
               ),
-              const SizedBox(height: 16),
-              if (isLoading) ...[
-                const _SkeletonItem(),
-                const SizedBox(height: 8),
-                const _SkeletonItem(),
-                const SizedBox(height: 8),
-                const _SkeletonItem(),
-              ] else if (items.isEmpty) ...[
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 32),
-                  child: Center(
-                    child: Text(
-                      'No overdue action plans in this category.',
-                      style: TextStyle(
-                        color: AppColors.wolf,
-                        fontWeight: FontWeight.w700,
+            ),
+            padding: EdgeInsets.fromLTRB(
+              16,
+              24,
+              16,
+              MediaQuery.of(context).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${widget.bucket.displayName} Overdue Action Plans',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.eel,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded, color: AppColors.wolf),
+                      onPressed: () => Navigator.maybePop(context),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                if (isLoading) ...[
+                  const _SkeletonItem(),
+                  const SizedBox(height: 8),
+                  const _SkeletonItem(),
+                  const SizedBox(height: 8),
+                  const _SkeletonItem(),
+                ] else if (items.isEmpty) ...[
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: Center(
+                      child: Text(
+                        'No overdue action plans in this category.',
+                        style: TextStyle(
+                          color: AppColors.wolf,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ] else ...[
-                Flexible(
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: items.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 8),
-                    itemBuilder: (context, index) {
-                      final ApDetailEntry item = items[index];
-                      final int overdue = item.ageInDays;
+                ] else ...[
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: items.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 8),
+                            itemBuilder: (context, index) {
+                              final ApDetailEntry item = items[index];
+                              final int overdue = item.ageInDays;
 
-                      return UniversalListCard(
-                        title: item.criteriaLabel,
-                        subtitle: 'Store: ${item.storeName}',
-                        leading: Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: AppColors.walkingFish,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.assignment_late,
-                            color: AppColors.cardinal,
-                          ),
-                        ),
-                        badges: [
-                          PillChip(
-                            label: 'Manager: ${item.managerName}',
-                            type: PillChipType.blue,
-                          ),
-                          PillChip(
-                            label: '$overdue Days Overdue',
-                            type: PillChipType.red,
+                              return UniversalListCard(
+                                title: item.criteriaLabel,
+                                subtitle: 'Store: ${item.storeName}',
+                                leading: Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.walkingFish,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Icon(
+                                    Icons.assignment_late,
+                                    color: AppColors.cardinal,
+                                  ),
+                                ),
+                                badges: [
+                                  PillChip(
+                                    label: 'Manager: ${item.managerName}',
+                                    type: PillChipType.blue,
+                                  ),
+                                  PillChip(
+                                    label: '$overdue Days Overdue',
+                                    type: PillChipType.red,
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                         ],
-                      );
-                    },
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ],
-            ],
-          ),
-        );
-      },
+            ),
+          );
+        },
+      ),
     );
   }
 }

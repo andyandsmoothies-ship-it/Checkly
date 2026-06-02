@@ -96,6 +96,7 @@ void main() {
           final result = await manager.submitEvidence(
             openPlan,
             correctionPlan: 'Fix applied',
+            rootCause: 'Issue root cause',
             evidenceNote: 'See photo',
             currentUserName: 'Test User',
           );
@@ -106,6 +107,7 @@ void main() {
             () => api.updateActionPlan('p1', {
               'status': 'pending_verify',
               'correctionPlan': 'Fix applied',
+              'rootCause': 'Issue root cause',
               'evidenceNote': 'See photo',
             }),
           ).called(1);
@@ -122,6 +124,7 @@ void main() {
         final result = await manager.submitEvidence(
           openPlan,
           correctionPlan: 'Fix applied',
+          rootCause: 'Issue root cause',
           evidenceNote: 'See photo',
           currentUserName: 'Test User',
         );
@@ -143,6 +146,7 @@ void main() {
             () => manager.submitEvidence(
               openPlan,
               correctionPlan: 'x',
+              rootCause: 'x',
               evidenceNote: 'x',
               currentUserName: 'Test User',
             ),
@@ -162,6 +166,7 @@ void main() {
             () => manager.submitEvidence(
               pendingPlan,
               correctionPlan: 'x',
+              rootCause: 'x',
               evidenceNote: 'x',
               currentUserName: 'Test User',
             ),

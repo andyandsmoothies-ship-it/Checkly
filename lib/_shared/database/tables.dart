@@ -318,6 +318,7 @@ class PendingActionPlanUpdates extends Table {
   TextColumn get id => text()(); // client-generated UUID
   TextColumn get actionPlanId => text()(); // links CachedActionPlans.id
   TextColumn get correctionPlan => text()();
+  TextColumn get rootCause => text().nullable()();
   TextColumn get evidenceNote => text()();
   TextColumn get photoPath => text().nullable()();
   TextColumn get syncStatus => text().withDefault(const Constant('pending'))();

@@ -154,6 +154,7 @@ void main() {
       final updated = plan.submitEvidence(
         role: 'store_manager',
         correctionPlan: 'Fix the seal',
+        rootCause: 'Poor cleaning',
         currentUserName: 'manager@store.com',
       );
 
@@ -228,6 +229,7 @@ void main() {
         final updated = plan.submitEvidence(
           role: 'store_manager',
           correctionPlan: 'Fix',
+          rootCause: 'Poor cleaning',
           currentUserName: 'sm@store.com',
         );
 

@@ -41,6 +41,7 @@ class ActionPlanSyncModule extends BaseSyncModule {
           await _api.updateActionPlan(item.actionPlanId, {
             'status': 'pending_verify',
             'correctionPlan': item.correctionPlan,
+            'rootCause': item.rootCause,
             'evidenceNote': item.evidenceNote,
             'evidencePhotoUrl': photoUrl,
           });

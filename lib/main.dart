@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 
 import '_shared/router/app_router.dart';
 import '_shared/theme/app_theme.dart';
+import '_shared/theme/app_theme_notifier.dart';
 import 'features/auth/manager/auth_manager.dart';
 import 'features/audit/services/draft_service.dart';
 import 'features/notifications/manager/notification_sync_manager.dart';
@@ -90,18 +91,24 @@ class _ChecklyAppState extends State<ChecklyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Checkly',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      routerConfig: appRouter,
-      locale: const Locale('vi', 'VN'),
-      supportedLocales: const [Locale('vi', 'VN'), Locale('en', 'US')],
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+    final spiritNotifier = GetIt.instance<ThemeSpiritNotifier>();
+    return ValueListenableBuilder<ThemeSpirit>(
+      valueListenable: spiritNotifier,
+      builder: (context, spirit, _) {
+        return MaterialApp.router(
+          title: 'Checkly',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          routerConfig: appRouter,
+          locale: const Locale('vi', 'VN'),
+          supportedLocales: const [Locale('vi', 'VN'), Locale('en', 'US')],
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+        );
+      },
     );
   }
 }

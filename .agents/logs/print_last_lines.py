@@ -3,7 +3,7 @@ import sys
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
 
-with open('.agents/logs/full_flutter_test_output.log', 'r', encoding='utf-8', errors='ignore') as f:
+with open('.agents/logs/test_results.log', 'r', encoding='utf-8', errors='ignore') as f:
     lines = f.readlines()
 
 print(f"Total lines: {len(lines)}")

@@ -16,13 +16,13 @@ void main() {
 
   group('Drift Database - Version 34 Schema Migration for Smart Audit Safeguards', () {
     test(
-      'TC-SAFEGUARDS-01: Schema version must be 34',
+      'TC-SAFEGUARDS-01: Schema version must be at least 34',
       () async {
         // Arrange & Act
         final version = db.schemaVersion;
 
         // Assert
-        expect(version, 34);
+        expect(version, greaterThanOrEqualTo(34));
       },
     );
 

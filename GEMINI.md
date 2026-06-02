@@ -157,7 +157,7 @@
 - **Gotcha: Geofence Count Semantics**
   - **Fix:** Geofence warning alerts trigger in the frontend only when `geofenceBypassCount > 0`. The card renders next to `Total Auditors` in Row 4 of `BodKpiGrid`.
 - **Gotcha: Token-Driven UI Primitives (ThemeSpirit & ChecklyThemeTokens)**
-  - **Fix:** When creating or editing highly custom widgets like `StrokeCard` or `BubblyButton`, never hardcode visual aesthetics (radius, depth, border widths). Always query `Theme.of(context).extension<ChecklyThemeTokens>()` to load values dynamically. To avoid null-pointer crashes in headless unit and widget tests where the theme extension is not explicitly loaded, you must always provide safe hardcoded fallback values using null-coalescing (e.g. `tokens?.cardRadius ?? 16.0`).
+  - **Fix:** When creating or editing highly custom widgets like `StrokeCard` or `BubblyButton`, never hardcode visual aesthetics (radius, depth, border widths). Always query `Theme.of(context).extension<ChecklyThemeTokens>()` to load values dynamically. To avoid null-pointer crashes in headless unit and widget tests where the theme extension is not explicitly loaded, you must always provide safe hardcoded fallback values using null-coalescing (e.g. `tokens?.cardRadius ?? 16.0`). Dynamic theme spirit swapping must follow the state notifier pattern. Full design system rules and guidelines are documented in `C:\Users\HP\.gemini\antigravity\brain\dcbfac81-a3e9-4fad-af42-bc281b403b75\architecture_design-system-governance_20260602_063500.md`.
 
 
 

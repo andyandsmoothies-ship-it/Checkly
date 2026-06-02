@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:checkly/features/notifications/manager/notification_sync_manager.dart';
 import 'package:checkly/features/auth/manager/auth_manager.dart';
+import 'package:checkly/_shared/theme/app_theme_notifier.dart';
 import 'package:checkly/main.dart';
 
 class MockNotificationSyncManager extends Mock
@@ -22,6 +23,7 @@ void main() {
 
     GetIt.instance.registerSingleton<NotificationSyncManager>(mockSyncManager);
     GetIt.instance.registerSingleton<AuthManager>(mockAuthManager);
+    GetIt.instance.registerSingleton<ThemeSpiritNotifier>(ThemeSpiritNotifier());
   });
 
   tearDown(() {

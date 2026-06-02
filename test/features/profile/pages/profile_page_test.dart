@@ -44,6 +44,9 @@ import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/auth_check.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
+import 'package:checkly/_shared/theme/app_theme.dart';
+import 'package:checkly/_shared/theme/app_theme_notifier.dart';
+import 'package:checkly/_shared/widgets/primitives/primitives.dart';
 import 'package:drift/native.dart';
 
 class _FakeConnectivity implements ConnectivityService {
@@ -108,6 +111,7 @@ _MockAuthManager _registerDi({UserSession? user}) {
 
   final di = GetIt.instance;
   di.registerSingleton<AuthManager>(mockAuth);
+  di.registerLazySingleton<ThemeSpiritNotifier>(() => ThemeSpiritNotifier());
 
   final mockDbService = _MockDatabaseService();
   final testDb = AppDatabase.forTesting(NativeDatabase.memory());
@@ -333,6 +337,37 @@ void main() {
           reason:
               'At least 2 Card widgets (Management + General sections) must exist.',
         );
+      },
+    );
+  });
+
+  // ─── Contract 6: Settings Theme Spirit Swapping ───────────────────────────
+
+  group('ProfilePage — Settings Theme Spirit Swapping', () {
+    testWidgets(
+      'ProfilePage_ThemeSpiritToggle_SwapsThemeSpirit',
+      (tester) async {
+        // Adjust viewport size to prevent off-screen hit-test failure
+        tester.view.physicalSize = const Size(800, 1200);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        _registerDi(user: _adminUser);
+        await pumpProfilePage(tester);
+
+        final switchFinder = find.byType(BubblySwitch);
+        expect(switchFinder, findsOneWidget);
+
+        final spiritNotifier = GetIt.instance<ThemeSpiritNotifier>();
+        expect(spiritNotifier.value, ThemeSpirit.duolingo);
+
+        await tester.tap(switchFinder);
+        await tester.pumpAndSettle();
+
+        expect(spiritNotifier.value, ThemeSpirit.minimalist);
       },
     );
   });

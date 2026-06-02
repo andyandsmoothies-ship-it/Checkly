@@ -10334,6 +10334,17 @@ class $PendingActionPlanUpdatesTable extends PendingActionPlanUpdates
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _rootCauseMeta = const VerificationMeta(
+    'rootCause',
+  );
+  @override
+  late final GeneratedColumn<String> rootCause = GeneratedColumn<String>(
+    'root_cause',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _evidenceNoteMeta = const VerificationMeta(
     'evidenceNote',
   );
@@ -10418,6 +10429,7 @@ class $PendingActionPlanUpdatesTable extends PendingActionPlanUpdates
     id,
     actionPlanId,
     correctionPlan,
+    rootCause,
     evidenceNote,
     photoPath,
     syncStatus,
@@ -10464,6 +10476,12 @@ class $PendingActionPlanUpdatesTable extends PendingActionPlanUpdates
       );
     } else if (isInserting) {
       context.missing(_correctionPlanMeta);
+    }
+    if (data.containsKey('root_cause')) {
+      context.handle(
+        _rootCauseMeta,
+        rootCause.isAcceptableOrUnknown(data['root_cause']!, _rootCauseMeta),
+      );
     }
     if (data.containsKey('evidence_note')) {
       context.handle(
@@ -10541,6 +10559,10 @@ class $PendingActionPlanUpdatesTable extends PendingActionPlanUpdates
         DriftSqlType.string,
         data['${effectivePrefix}correction_plan'],
       )!,
+      rootCause: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}root_cause'],
+      ),
       evidenceNote: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}evidence_note'],
@@ -10583,6 +10605,7 @@ class PendingActionPlanUpdate extends DataClass
   final String id;
   final String actionPlanId;
   final String correctionPlan;
+  final String? rootCause;
   final String evidenceNote;
   final String? photoPath;
   final String syncStatus;
@@ -10594,6 +10617,7 @@ class PendingActionPlanUpdate extends DataClass
     required this.id,
     required this.actionPlanId,
     required this.correctionPlan,
+    this.rootCause,
     required this.evidenceNote,
     this.photoPath,
     required this.syncStatus,
@@ -10608,6 +10632,9 @@ class PendingActionPlanUpdate extends DataClass
     map['id'] = Variable<String>(id);
     map['action_plan_id'] = Variable<String>(actionPlanId);
     map['correction_plan'] = Variable<String>(correctionPlan);
+    if (!nullToAbsent || rootCause != null) {
+      map['root_cause'] = Variable<String>(rootCause);
+    }
     map['evidence_note'] = Variable<String>(evidenceNote);
     if (!nullToAbsent || photoPath != null) {
       map['photo_path'] = Variable<String>(photoPath);
@@ -10629,6 +10656,9 @@ class PendingActionPlanUpdate extends DataClass
       id: Value(id),
       actionPlanId: Value(actionPlanId),
       correctionPlan: Value(correctionPlan),
+      rootCause: rootCause == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rootCause),
       evidenceNote: Value(evidenceNote),
       photoPath: photoPath == null && nullToAbsent
           ? const Value.absent()
@@ -10654,6 +10684,7 @@ class PendingActionPlanUpdate extends DataClass
       id: serializer.fromJson<String>(json['id']),
       actionPlanId: serializer.fromJson<String>(json['actionPlanId']),
       correctionPlan: serializer.fromJson<String>(json['correctionPlan']),
+      rootCause: serializer.fromJson<String?>(json['rootCause']),
       evidenceNote: serializer.fromJson<String>(json['evidenceNote']),
       photoPath: serializer.fromJson<String?>(json['photoPath']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
@@ -10670,6 +10701,7 @@ class PendingActionPlanUpdate extends DataClass
       'id': serializer.toJson<String>(id),
       'actionPlanId': serializer.toJson<String>(actionPlanId),
       'correctionPlan': serializer.toJson<String>(correctionPlan),
+      'rootCause': serializer.toJson<String?>(rootCause),
       'evidenceNote': serializer.toJson<String>(evidenceNote),
       'photoPath': serializer.toJson<String?>(photoPath),
       'syncStatus': serializer.toJson<String>(syncStatus),
@@ -10684,6 +10716,7 @@ class PendingActionPlanUpdate extends DataClass
     String? id,
     String? actionPlanId,
     String? correctionPlan,
+    Value<String?> rootCause = const Value.absent(),
     String? evidenceNote,
     Value<String?> photoPath = const Value.absent(),
     String? syncStatus,
@@ -10695,6 +10728,7 @@ class PendingActionPlanUpdate extends DataClass
     id: id ?? this.id,
     actionPlanId: actionPlanId ?? this.actionPlanId,
     correctionPlan: correctionPlan ?? this.correctionPlan,
+    rootCause: rootCause.present ? rootCause.value : this.rootCause,
     evidenceNote: evidenceNote ?? this.evidenceNote,
     photoPath: photoPath.present ? photoPath.value : this.photoPath,
     syncStatus: syncStatus ?? this.syncStatus,
@@ -10714,6 +10748,7 @@ class PendingActionPlanUpdate extends DataClass
       correctionPlan: data.correctionPlan.present
           ? data.correctionPlan.value
           : this.correctionPlan,
+      rootCause: data.rootCause.present ? data.rootCause.value : this.rootCause,
       evidenceNote: data.evidenceNote.present
           ? data.evidenceNote.value
           : this.evidenceNote,
@@ -10738,6 +10773,7 @@ class PendingActionPlanUpdate extends DataClass
           ..write('id: $id, ')
           ..write('actionPlanId: $actionPlanId, ')
           ..write('correctionPlan: $correctionPlan, ')
+          ..write('rootCause: $rootCause, ')
           ..write('evidenceNote: $evidenceNote, ')
           ..write('photoPath: $photoPath, ')
           ..write('syncStatus: $syncStatus, ')
@@ -10754,6 +10790,7 @@ class PendingActionPlanUpdate extends DataClass
     id,
     actionPlanId,
     correctionPlan,
+    rootCause,
     evidenceNote,
     photoPath,
     syncStatus,
@@ -10769,6 +10806,7 @@ class PendingActionPlanUpdate extends DataClass
           other.id == this.id &&
           other.actionPlanId == this.actionPlanId &&
           other.correctionPlan == this.correctionPlan &&
+          other.rootCause == this.rootCause &&
           other.evidenceNote == this.evidenceNote &&
           other.photoPath == this.photoPath &&
           other.syncStatus == this.syncStatus &&
@@ -10783,6 +10821,7 @@ class PendingActionPlanUpdatesCompanion
   final Value<String> id;
   final Value<String> actionPlanId;
   final Value<String> correctionPlan;
+  final Value<String?> rootCause;
   final Value<String> evidenceNote;
   final Value<String?> photoPath;
   final Value<String> syncStatus;
@@ -10795,6 +10834,7 @@ class PendingActionPlanUpdatesCompanion
     this.id = const Value.absent(),
     this.actionPlanId = const Value.absent(),
     this.correctionPlan = const Value.absent(),
+    this.rootCause = const Value.absent(),
     this.evidenceNote = const Value.absent(),
     this.photoPath = const Value.absent(),
     this.syncStatus = const Value.absent(),
@@ -10808,6 +10848,7 @@ class PendingActionPlanUpdatesCompanion
     required String id,
     required String actionPlanId,
     required String correctionPlan,
+    this.rootCause = const Value.absent(),
     required String evidenceNote,
     this.photoPath = const Value.absent(),
     this.syncStatus = const Value.absent(),
@@ -10825,6 +10866,7 @@ class PendingActionPlanUpdatesCompanion
     Expression<String>? id,
     Expression<String>? actionPlanId,
     Expression<String>? correctionPlan,
+    Expression<String>? rootCause,
     Expression<String>? evidenceNote,
     Expression<String>? photoPath,
     Expression<String>? syncStatus,
@@ -10838,6 +10880,7 @@ class PendingActionPlanUpdatesCompanion
       if (id != null) 'id': id,
       if (actionPlanId != null) 'action_plan_id': actionPlanId,
       if (correctionPlan != null) 'correction_plan': correctionPlan,
+      if (rootCause != null) 'root_cause': rootCause,
       if (evidenceNote != null) 'evidence_note': evidenceNote,
       if (photoPath != null) 'photo_path': photoPath,
       if (syncStatus != null) 'sync_status': syncStatus,
@@ -10853,6 +10896,7 @@ class PendingActionPlanUpdatesCompanion
     Value<String>? id,
     Value<String>? actionPlanId,
     Value<String>? correctionPlan,
+    Value<String?>? rootCause,
     Value<String>? evidenceNote,
     Value<String?>? photoPath,
     Value<String>? syncStatus,
@@ -10866,6 +10910,7 @@ class PendingActionPlanUpdatesCompanion
       id: id ?? this.id,
       actionPlanId: actionPlanId ?? this.actionPlanId,
       correctionPlan: correctionPlan ?? this.correctionPlan,
+      rootCause: rootCause ?? this.rootCause,
       evidenceNote: evidenceNote ?? this.evidenceNote,
       photoPath: photoPath ?? this.photoPath,
       syncStatus: syncStatus ?? this.syncStatus,
@@ -10888,6 +10933,9 @@ class PendingActionPlanUpdatesCompanion
     }
     if (correctionPlan.present) {
       map['correction_plan'] = Variable<String>(correctionPlan.value);
+    }
+    if (rootCause.present) {
+      map['root_cause'] = Variable<String>(rootCause.value);
     }
     if (evidenceNote.present) {
       map['evidence_note'] = Variable<String>(evidenceNote.value);
@@ -10922,6 +10970,7 @@ class PendingActionPlanUpdatesCompanion
           ..write('id: $id, ')
           ..write('actionPlanId: $actionPlanId, ')
           ..write('correctionPlan: $correctionPlan, ')
+          ..write('rootCause: $rootCause, ')
           ..write('evidenceNote: $evidenceNote, ')
           ..write('photoPath: $photoPath, ')
           ..write('syncStatus: $syncStatus, ')
@@ -17909,6 +17958,7 @@ typedef $$PendingActionPlanUpdatesTableCreateCompanionBuilder =
       required String id,
       required String actionPlanId,
       required String correctionPlan,
+      Value<String?> rootCause,
       required String evidenceNote,
       Value<String?> photoPath,
       Value<String> syncStatus,
@@ -17923,6 +17973,7 @@ typedef $$PendingActionPlanUpdatesTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> actionPlanId,
       Value<String> correctionPlan,
+      Value<String?> rootCause,
       Value<String> evidenceNote,
       Value<String?> photoPath,
       Value<String> syncStatus,
@@ -17954,6 +18005,11 @@ class $$PendingActionPlanUpdatesTableFilterComposer
 
   ColumnFilters<String> get correctionPlan => $composableBuilder(
     column: $table.correctionPlan,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rootCause => $composableBuilder(
+    column: $table.rootCause,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -18017,6 +18073,11 @@ class $$PendingActionPlanUpdatesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get rootCause => $composableBuilder(
+    column: $table.rootCause,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get evidenceNote => $composableBuilder(
     column: $table.evidenceNote,
     builder: (column) => ColumnOrderings(column),
@@ -18074,6 +18135,9 @@ class $$PendingActionPlanUpdatesTableAnnotationComposer
     column: $table.correctionPlan,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get rootCause =>
+      $composableBuilder(column: $table.rootCause, builder: (column) => column);
 
   GeneratedColumn<String> get evidenceNote => $composableBuilder(
     column: $table.evidenceNote,
@@ -18154,6 +18218,7 @@ class $$PendingActionPlanUpdatesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> actionPlanId = const Value.absent(),
                 Value<String> correctionPlan = const Value.absent(),
+                Value<String?> rootCause = const Value.absent(),
                 Value<String> evidenceNote = const Value.absent(),
                 Value<String?> photoPath = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
@@ -18166,6 +18231,7 @@ class $$PendingActionPlanUpdatesTableTableManager
                 id: id,
                 actionPlanId: actionPlanId,
                 correctionPlan: correctionPlan,
+                rootCause: rootCause,
                 evidenceNote: evidenceNote,
                 photoPath: photoPath,
                 syncStatus: syncStatus,
@@ -18180,6 +18246,7 @@ class $$PendingActionPlanUpdatesTableTableManager
                 required String id,
                 required String actionPlanId,
                 required String correctionPlan,
+                Value<String?> rootCause = const Value.absent(),
                 required String evidenceNote,
                 Value<String?> photoPath = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
@@ -18192,6 +18259,7 @@ class $$PendingActionPlanUpdatesTableTableManager
                 id: id,
                 actionPlanId: actionPlanId,
                 correctionPlan: correctionPlan,
+                rootCause: rootCause,
                 evidenceNote: evidenceNote,
                 photoPath: photoPath,
                 syncStatus: syncStatus,

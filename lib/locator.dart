@@ -63,6 +63,7 @@ import 'features/stores/manager/store_dashboard_manager.dart';
 import 'features/profile/manager/profile_manager.dart';
 import 'features/user_groups/services/user_group_api_service.dart';
 import 'features/user_groups/manager/user_group_manager.dart';
+import '_shared/theme/app_theme_notifier.dart';
 
 final di = GetIt.instance;
 
@@ -310,4 +311,7 @@ void configureDependencies() {
   di.registerLazySingleton<UserGroupManager>(
     () => UserGroupManager(di<UserGroupApiService>()),
   );
+
+  // ---------- Theme Spirit ----------
+  di.registerLazySingleton<ThemeSpiritNotifier>(() => ThemeSpiritNotifier());
 }
