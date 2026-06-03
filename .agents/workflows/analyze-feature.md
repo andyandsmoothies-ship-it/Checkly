@@ -72,7 +72,12 @@ description: Concise, high-density analysis workflow for standard features and b
 
 - **Safety & Stability Checks**: MANDATORY. (1) **DI Safety**: Ensure all newly required services are planned for registration in `locator.dart`. (2) **Layout Safety**: Ensure UI components with infinite width (like `ElevatedButton`) used inside horizontal layouts (like `Row`) are explicitly bounded (e.g., using `Expanded` or `minimumSize`).
 
-- **Mandatory Scan**: Print checklist in response: (1) Is Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Are System and Lifecycle Contexts defined? (5) Are DI and Layout Safety verified? (6) Did you answer all 4 First Principles Gate questions?
+- **Baseline Verification**: MANDATORY: Run verification scripts (e.g., sync contracts, PBAC UI checkers) before making changes to establish a clean state and identify pre-existing warnings.
+  // turbo
+  `cmd /c python .agents/scripts/verify_sync_contracts.py; python .agents/scripts/verify_pbac_ui.py --advisory`
+
+- **Mandatory Scan**: Print checklist in response: (1) Is Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Are System and Lifecycle Contexts defined? (5) Are DI and Layout Safety verified? (6) Did you answer all 4 First Principles Gate questions? (7) Baseline Verification executed?
+
 
 ## Step 4: Create Plan
 

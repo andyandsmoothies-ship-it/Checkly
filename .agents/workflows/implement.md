@@ -110,11 +110,15 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
   // turbo
   `cmd /c python .agents/scripts/verify_pbac_ui.py --advisory`
 
+- **Contract & Sync Validation Check**: MANDATORY: Run the contract sync checker to detect API/DB drifts:
+  // turbo
+  `cmd /c python .agents/scripts/verify_sync_contracts.py`
+
 - **Anti-Collapse Gate**: IF any modified file >400 lines: STRICTLY PROHIBITED from handoff. You MUST halt and extract components.
 
 - **Handoff Trap**: IF Context Limit Approaching: Create `handoff.md` -> YIELD.
 
-- **Mandatory Scan**: Print checklist in response: (1) 6 angles reviewed? (2) State tests exist AND NO orphaned stubs remain? (3) PBAC UI check executed? (4) Arch boundaries respected? (5) File lines <400?
+- **Mandatory Scan**: Print checklist in response: (1) 6 angles reviewed? (2) State tests exist AND NO orphaned stubs remain? (3) PBAC UI check executed? (4) Contract sync check executed? (5) Arch boundaries respected? (6) File lines <400?
 
 ## Step 4: Handoff
 

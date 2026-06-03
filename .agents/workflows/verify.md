@@ -61,6 +61,10 @@ description: Universal verification gate proving upstream artifacts (code, plans
      // turbo
      `cmd /c python .agents/scripts/verify_pbac_ui.py --advisory`
 
+  5. Run the contract sync checker to detect API/DB drifts:
+     // turbo
+     `cmd /c python .agents/scripts/verify_sync_contracts.py`
+
 - **Test Quality**: Map walkthrough files to related test files (via suffix mapping or grepping symbol references in tests). Evaluate tests to ensure: (1) no empty/ghost assertions, (2) no mocking of core business/domain logic, (3) assertions test observable behavior rather than private state, (4) failed states report explicit error messages rather than raw silent booleans, and (5) all modified UI pages/widgets/contracts include and pass automated Golden/Snapshot tests.
 
 - **Execution**: Stop Dev Servers -> Run ALL tests globally (e.g., `flutter test --update-goldens` for Flutter, `npx playwright test --update-snapshots` for Web, or standard text/JSON snapshot commands first, then run full test suite). PROHIBITED: Isolated test runs (`flutter test path/...`). MUST prove no legacy assertions or visual references broke.
