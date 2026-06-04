@@ -62,6 +62,13 @@ Workflow: /analyze-epic | Track: C
 
 - **System & Lifecycle Context**: Define constraints (offline-first, sync, RBAC) and edge states (Empty/Error) to optimize options.
 
+- **Cross-Feature Audit**: Identify potential impacts and regressions on existing features, shared states, or APIs.
+
+- **Backfill Strategy**: Evaluate database schema changes and plan the high-level historical data backfill or migration path.
+
+- **Graceful Degradation**: Plan high-level resilience strategies for network failures, API timeouts, or missing fields.
+
+
 - **Build vs Buy**: Scan code to reuse existing components instead of building new ones.
 
 - **Core vs Leaf**: Clearly distinguish Core components (needs strong design) from Leaf components (simple, repetitive).
@@ -78,7 +85,7 @@ Workflow: /analyze-epic | Track: C
 
 - **Set Limits**: Define strict Performance, Security, and Logging limits upfront.
 
-- **@@SCAN**: Print checklist in response: (1) Goal verified? (2) Connections found? (3) 2 options compared? (4) Limits defined?
+- **@@SCAN**: Print checklist in response: (1) Goal verified? (2) Connections found? (3) 2 options compared? (4) Limits defined? (5) Cross-feature, backfill, and graceful degradation strategies analyzed?
 
 ## Step 3: Review Risks
 
@@ -152,9 +159,9 @@ Workflow: /analyze-epic | Track: C
 
 > 8. `## System Context`: (Offline/Online, RBAC, API Contracts)
 
-> 9. `## Lifecycle Context`: (Edge cases, Error states, Rollback Plan)
+> 9. `## Lifecycle Context`: (Edge cases, Error states, Rollback Plan, Graceful Degradation Strategy)
 
-> 10. `## Data Context`: (Database Migrations, Schema)
+> 10. `## Data Context`: (Database Migrations, Schema, Historical Backfill Plan)
 
 > 11. `## Architecture Flow`: (Clear text summary of how data moves)
 

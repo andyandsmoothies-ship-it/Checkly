@@ -24,13 +24,13 @@ description: Concise, high-density analysis workflow for standard features and b
 
   ```
 
-- **Epic Rules**: If task is part of an Epic, match DB schemas and file paths without changing main rules.
+- **Epic Rules**: If this task is part of an Epic, read the Epic Plan first. You must align your feature plan with the Epic's high-level database schema designs, backfill strategies, and graceful degradation rules.
 
 ## Step 2: Search & Understand
 
-- **Interrogation Gate**: MANDATORY. Cross-reference request against codebase. If sloppy or contradictory, STOP and ask user.
+- **Interrogation Gate**: MANDATORY. Cross-reference request and Epic Plan against the codebase. If they contain technical errors, contradict existing code, or have architectural flaws, STOP, document the conflict, propose a correction, and ask the user before proceeding.
 
-- **Constraint Extraction**: MANDATORY. Read input lineage for rules/decisions. Save constraints in latent scratchpad.
+- **Constraint Extraction**: MANDATORY. Read the input lineage (such as the Epic Plan) to extract high-level decisions regarding database backfills, graceful degradation, and cross-feature connections. Save these constraints in your latent scratchpad.
 
 - **Search First**: Use `grep_search` to find exact lines, then `view_file` to read specific chunks. Do not read full files.
 
@@ -70,13 +70,19 @@ description: Concise, high-density analysis workflow for standard features and b
 
 - **Lifecycle Context**: Define the 4-State Matrix: how presentation layer handles Success, Loading, Error, and Empty states.
 
+- **Cross-Feature Audit**: Audit how changes impact other existing features, shared states, or APIs.
+
+- **Backfill Strategy**: Define how old/existing data handles new fields or schema changes (e.g., default values, migrations).
+
+- **Graceful Degradation**: Plan how the UI/logic degrades when APIs time out, network is offline, or data is missing.
+
 - **Safety & Stability Checks**: MANDATORY. (1) **DI Safety**: Ensure all newly required services are planned for registration in `locator.dart`. (2) **Layout Safety**: Ensure UI components with infinite width (like `ElevatedButton`) used inside horizontal layouts (like `Row`) are explicitly bounded (e.g., using `Expanded` or `minimumSize`).
 
 - **Baseline Verification**: MANDATORY: Run verification scripts (e.g., sync contracts, PBAC UI checkers) before making changes to establish a clean state and identify pre-existing warnings.
   // turbo
   `cmd /c python .agents/scripts/verify_sync_contracts.py; python .agents/scripts/verify_pbac_ui.py --advisory`
 
-- **Mandatory Scan**: Print checklist in response: (1) Is Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Are System and Lifecycle Contexts defined? (5) Are DI and Layout Safety verified? (6) Did you answer all 4 First Principles Gate questions? (7) Baseline Verification executed?
+- **Mandatory Scan**: Print checklist in response: (1) Is Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Are System and Lifecycle Contexts defined? (5) Are DI and Layout Safety verified? (6) Did you answer all 4 First Principles Gate questions? (7) Baseline Verification executed? (8) Cross-feature, backfill, and graceful degradation strategies planned?
 
 
 ## Step 4: Create Plan
