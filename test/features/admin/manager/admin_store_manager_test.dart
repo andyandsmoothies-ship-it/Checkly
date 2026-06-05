@@ -29,7 +29,6 @@ void main() {
 
     test('initial state has null filters', () {
       expect(manager.selectedProvince, isNull);
-      expect(manager.selectedDistrict, isNull);
       expect(manager.selectedManagerName, isNull);
     });
 
@@ -38,7 +37,6 @@ void main() {
         includeInactive: true,
         search: any(named: 'search'),
         province: any(named: 'province'),
-        district: any(named: 'district'),
         managerName: any(named: 'managerName'),
       )).thenAnswer((_) async => [mockStore]);
 
@@ -49,50 +47,23 @@ void main() {
         includeInactive: true,
         search: null,
         province: null,
-        district: null,
         managerName: null,
       )).called(1);
     });
 
-    test('setProvince updates province, clears district, and triggers load', () async {
+    test('setProvince updates province and triggers load', () async {
       when(() => api.getStores(
         includeInactive: true,
         province: 'Hồ Chí Minh',
-        district: null,
         managerName: null,
       )).thenAnswer((_) async => []);
-
-      // Set initial district
-      manager.selectedDistrict = 'Quan 1';
 
       await manager.setProvince('Hồ Chí Minh');
 
       expect(manager.selectedProvince, equals('Hồ Chí Minh'));
-      expect(manager.selectedDistrict, isNull); // Flop 4 mitigation
       verify(() => api.getStores(
         includeInactive: true,
         province: 'Hồ Chí Minh',
-        district: null,
-        managerName: null,
-      )).called(1);
-    });
-
-    test('setDistrict updates district and triggers load', () async {
-      manager.selectedProvince = 'Hồ Chí Minh';
-      when(() => api.getStores(
-        includeInactive: true,
-        province: 'Hồ Chí Minh',
-        district: 'Quan 1',
-        managerName: null,
-      )).thenAnswer((_) async => []);
-
-      await manager.setDistrict('Quan 1');
-
-      expect(manager.selectedDistrict, equals('Quan 1'));
-      verify(() => api.getStores(
-        includeInactive: true,
-        province: 'Hồ Chí Minh',
-        district: 'Quan 1',
         managerName: null,
       )).called(1);
     });
@@ -101,7 +72,6 @@ void main() {
       when(() => api.getStores(
         includeInactive: true,
         province: null,
-        district: null,
         managerName: 'Andy',
       )).thenAnswer((_) async => []);
 
@@ -111,32 +81,27 @@ void main() {
       verify(() => api.getStores(
         includeInactive: true,
         province: null,
-        district: null,
         managerName: 'Andy',
       )).called(1);
     });
 
     test('clearFilters resets all filters and triggers load', () async {
       manager.selectedProvince = 'Hồ Chí Minh';
-      manager.selectedDistrict = 'Quan 1';
       manager.selectedManagerName = 'Andy';
 
       when(() => api.getStores(
         includeInactive: true,
         province: null,
-        district: null,
         managerName: null,
       )).thenAnswer((_) async => []);
 
       await manager.clearFilters();
 
       expect(manager.selectedProvince, isNull);
-      expect(manager.selectedDistrict, isNull);
       expect(manager.selectedManagerName, isNull);
       verify(() => api.getStores(
         includeInactive: true,
         province: null,
-        district: null,
         managerName: null,
       )).called(1);
     });

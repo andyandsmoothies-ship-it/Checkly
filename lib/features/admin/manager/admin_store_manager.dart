@@ -24,7 +24,6 @@ class AdminStoreManager extends ChangeNotifier {
   List<StoreDto> stores = [];
 
   String? selectedProvince;
-  String? selectedDistrict;
   String? selectedManagerName;
 
   // ---------- Load ----------
@@ -38,7 +37,6 @@ class AdminStoreManager extends ChangeNotifier {
         includeInactive: true,
         search: search,
         province: selectedProvince,
-        district: selectedDistrict,
         managerName: selectedManagerName,
       );
     } catch (e) {
@@ -51,12 +49,6 @@ class AdminStoreManager extends ChangeNotifier {
 
   Future<void> setProvince(String? province) async {
     selectedProvince = province;
-    selectedDistrict = null;
-    await load();
-  }
-
-  Future<void> setDistrict(String? district) async {
-    selectedDistrict = district;
     await load();
   }
 
@@ -67,7 +59,6 @@ class AdminStoreManager extends ChangeNotifier {
 
   Future<void> clearFilters() async {
     selectedProvince = null;
-    selectedDistrict = null;
     selectedManagerName = null;
     await load();
   }

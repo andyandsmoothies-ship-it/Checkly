@@ -137,7 +137,7 @@ class StoreFormBody extends StatelessWidget {
                     label: 'Province',
                     child: DropdownButtonFormField<String>(
                       key: ValueKey('province_dropdown_${selectedProvince ?? 'none'}'),
-                      value: provinces.contains(selectedProvince)
+                      initialValue: provinces.contains(selectedProvince)
                           ? selectedProvince
                           : null,
                       borderRadius: BorderRadius.circular(12),
@@ -302,7 +302,7 @@ class StoreFormBody extends StatelessWidget {
                   if (isGeocoding)
                     Positioned.fill(
                       child: Container(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         child: const Center(
                           child: CircularProgressIndicator(),
                         ),

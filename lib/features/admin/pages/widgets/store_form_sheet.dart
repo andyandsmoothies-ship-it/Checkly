@@ -211,7 +211,6 @@ class _StoreFormSheetState extends State<StoreFormSheet>
   }
 
   Future<void> _handleMapTap(TapPosition tapPos, LatLng latlng) async {
-    print('DEBUG: _handleMapTap called with latlng=$latlng, isSaving=$isSaving, _isGeocoding=$_isGeocoding');
     if (isSaving || _isGeocoding) return;
     setState(() {
       _isGeocoding = true;
@@ -224,7 +223,6 @@ class _StoreFormSheetState extends State<StoreFormSheet>
     try {
       final geocodingService = GetIt.instance<GeocodingService>();
       final address = await geocodingService.reverseGeocode(latlng);
-      print('DEBUG: geocodingService.reverseGeocode returned $address');
       if (address != null) {
         setState(() {
           if (address.street != null && address.street!.isNotEmpty) {
@@ -237,13 +235,9 @@ class _StoreFormSheetState extends State<StoreFormSheet>
             districtCtrl.text = address.district!;
           }
           if (address.province != null && address.province!.isNotEmpty) {
-            print('DEBUG: provinces list = $provinces');
-            print('DEBUG: address.province = ${address.province}');
             final normalizedProvince = _normalizeProvince(address.province!);
-            print('DEBUG: normalizedProvince = $normalizedProvince');
             if (normalizedProvince != null) {
               selectedProvince = normalizedProvince;
-              print('DEBUG: selectedProvince set to $selectedProvince');
             }
           }
           if (address.displayName != null && address.displayName!.isNotEmpty) {
@@ -253,8 +247,7 @@ class _StoreFormSheetState extends State<StoreFormSheet>
       } else {
         _showWarningSnackBar();
       }
-    } catch (e, s) {
-      print('DEBUG: reverseGeocode caught exception: $e\n$s');
+    } catch (e) {
       _showWarningSnackBar();
     } finally {
       if (mounted) {

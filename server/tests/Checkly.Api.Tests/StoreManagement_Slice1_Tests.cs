@@ -29,19 +29,19 @@ public class StoreManagement_Slice1_Tests : IClassFixture<TestWebApplicationFact
         return _factory.CreateAuthenticatedClient(token);
     }
 
-    private async Task<HttpClient> UnauthedClientAsync()
+    private Task<HttpClient> UnauthedClientAsync()
     {
-        return _factory.CreateClient();
+        return Task.FromResult(_factory.CreateClient());
     }
 
     // Helper to create a store
-    private async Task<string> CreateStoreAsync(HttpClient admin, string province, string? district)
+    private static async Task<string> CreateStoreAsync(HttpClient admin, string province, string? district)
     {
         var createResp = await admin.PostAsJsonAsync("/api/stores", new 
         { 
             name = $"Test Store {_runId} {Guid.NewGuid().ToString("N")[..4]}", 
-            province = province,
-            district = district
+            province,
+            district
         });
         if (!createResp.IsSuccessStatusCode) 
             Assert.Fail($"Setup failed: could not create store. Status: {createResp.StatusCode}. Body: {await createResp.Content.ReadAsStringAsync()}");

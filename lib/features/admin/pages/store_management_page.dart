@@ -18,7 +18,6 @@ import 'widgets/store_card.dart';
 import 'widgets/store_form_sheet.dart';
 import 'widgets/store_status_filter_sheet.dart';
 import 'widgets/store_province_filter_sheet.dart';
-import 'widgets/store_district_filter_sheet.dart';
 import 'widgets/store_manager_filter_sheet.dart';
 
 final _di = GetIt.instance;
@@ -224,42 +223,6 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      GestureDetector(
-                        key: const Key('district_filter_pill'),
-                        onTap: _manager.selectedProvince == null
-                            ? () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Please select a province first'),
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                              }
-                            : () {
-                                final hasUnassigned = _manager.stores.any((s) =>
-                                    s.addressProvince == _manager.selectedProvince &&
-                                    (s.addressDistrict == null || s.addressDistrict!.isEmpty));
-                                showStoreDistrictFilterSheet(
-                                  context: context,
-                                  province: _manager.selectedProvince!,
-                                  currentDistrict: _manager.selectedDistrict,
-                                  hasUnassigned: hasUnassigned,
-                                  onSelected: (val) => _manager.setDistrict(val),
-                                );
-                              },
-                        child: AbsorbPointer(
-                          absorbing: true,
-                          child: DropdownFilterPill(
-                            label: 'District',
-                            value: _manager.selectedDistrict == 'Unassigned'
-                                ? 'Unassigned / Other'
-                                : (_manager.selectedDistrict ?? 'All'),
-                            active: _manager.selectedDistrict != null,
-                            onTap: () {},
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
                       DropdownFilterPill(
                         key: const Key('manager_filter_pill'),
                         label: 'Manager',
@@ -325,7 +288,6 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
       final isFilteredOrSearched = _searchController.text.trim().isNotEmpty ||
           _selectedStatus != 'all' ||
           _manager.selectedProvince != null ||
-          _manager.selectedDistrict != null ||
           _manager.selectedManagerName != null;
       if (isFilteredOrSearched) {
         return const ChecklyEmptyState(
