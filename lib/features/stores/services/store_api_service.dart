@@ -17,12 +17,20 @@ class StoreApiService {
     String? assignableAs,
     String? exceptUser,
     bool includeInactive = false,
+    String? province,
+    String? district,
+    String? managerName,
   }) async {
     final params = <String, dynamic>{};
     if (search != null && search.isNotEmpty) params['search'] = search;
     if (assignableAs != null) params['assignable_as'] = assignableAs;
     if (exceptUser != null) params['except_user'] = exceptUser;
     if (includeInactive) params['includeInactive'] = 'true';
+    if (province != null && province.isNotEmpty) params['province'] = province;
+    if (district != null && district.isNotEmpty) params['district'] = district;
+    if (managerName != null && managerName.isNotEmpty) {
+      params['managerName'] = managerName;
+    }
 
     final response = await _dio.get(
       '/stores',
@@ -102,6 +110,18 @@ class StoreApiService {
   Future<List<String>> fetchProvinces() async {
     final response = await _dio.get(
       '/reference/locations',
+      options: Options(responseType: ResponseType.json),
+    );
+    final data = response.data;
+    if (data is List) return data.cast<String>();
+    return [];
+  }
+
+  /// GET /reference/districts — returns list of distinct districts for a province.
+  Future<List<String>> fetchDistricts(String province) async {
+    final response = await _dio.get(
+      '/reference/districts',
+      queryParameters: {'province': province},
       options: Options(responseType: ResponseType.json),
     );
     final data = response.data;

@@ -23,19 +23,52 @@ class AdminStoreManager extends ChangeNotifier {
   String? error;
   List<StoreDto> stores = [];
 
+  String? selectedProvince;
+  String? selectedDistrict;
+  String? selectedManagerName;
+
   // ---------- Load ----------
-  Future<void> load() async {
+  Future<void> load({String? search}) async {
     isLoading = true;
     error = null;
     notifyListeners();
 
     try {
-      stores = await _storeApi.getStores(includeInactive: true);
+      stores = await _storeApi.getStores(
+        includeInactive: true,
+        search: search,
+        province: selectedProvince,
+        district: selectedDistrict,
+        managerName: selectedManagerName,
+      );
     } catch (e) {
       error = e.toString();
     } finally {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> setProvince(String? province) async {
+    selectedProvince = province;
+    selectedDistrict = null;
+    await load();
+  }
+
+  Future<void> setDistrict(String? district) async {
+    selectedDistrict = district;
+    await load();
+  }
+
+  Future<void> setManagerName(String? managerName) async {
+    selectedManagerName = managerName;
+    await load();
+  }
+
+  Future<void> clearFilters() async {
+    selectedProvince = null;
+    selectedDistrict = null;
+    selectedManagerName = null;
+    await load();
   }
 }

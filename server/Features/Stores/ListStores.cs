@@ -24,6 +24,9 @@ public static class ListStores
         var assignableAs = httpContext.Request.Query["assignable_as"].FirstOrDefault();
         var exceptUser = httpContext.Request.Query["except_user"].FirstOrDefault();
         var includeInactive = httpContext.Request.Query["includeInactive"].FirstOrDefault();
+        var province = httpContext.Request.Query["province"].FirstOrDefault();
+        var district = httpContext.Request.Query["district"].FirstOrDefault();
+        var managerName = httpContext.Request.Query["managerName"].FirstOrDefault();
 
 
         var query = db.Stores.AsQueryable();
@@ -34,6 +37,49 @@ public static class ListStores
 
         if (!string.IsNullOrEmpty(search))
             query = query.Where(s => s.Name.Contains(search));
+
+        if (!string.IsNullOrWhiteSpace(province))
+        {
+            var cleanProvince = province.Trim();
+            query = query.Where(s => s.Address2 != null && s.Address2.Province == cleanProvince);
+        }
+
+        if (!string.IsNullOrWhiteSpace(district))
+        {
+            var cleanDistrict = district.Trim();
+            if (string.Equals(cleanDistrict, "Unassigned", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.Where(s => s.Address2 == null || s.Address2.District == null || s.Address2.District == "");
+            }
+            else
+            {
+                query = query.Where(s => s.Address2 != null && s.Address2.District == cleanDistrict);
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(managerName))
+        {
+            var cleanManagerName = managerName.Trim().ToUpper();
+
+            var smSubqueryDirect = db.Profiles
+                .Join(db.AppUserRoles, p => p.Id, r => r.UserId, (p, r) => new { p.StoreId, p.FullName, r.Role })
+                .Where(x => x.Role == AppRoles.StoreManager && x.StoreId != null && x.FullName != null && x.FullName.ToUpper().Contains(cleanManagerName))
+                .Select(x => x.StoreId);
+
+            var smSubqueryJunction = db.ProfileStoreAssignments
+                .Join(db.Profiles, a => a.ProfileId, p => p.Id, (a, p) => new { a.StoreId, a.ProfileId, p.FullName })
+                .Join(db.AppUserRoles, x => x.ProfileId, r => r.UserId, (x, r) => new { x.StoreId, x.FullName, r.Role })
+                .Where(x => x.Role == AppRoles.StoreManager && x.FullName != null && x.FullName.ToUpper().Contains(cleanManagerName))
+                .Select(x => x.StoreId);
+
+            var amSubquery = db.ProfileStoreAssignments
+                .Join(db.Profiles, a => a.ProfileId, p => p.Id, (a, p) => new { a.StoreId, a.ProfileId, p.FullName })
+                .Join(db.AppUserRoles, x => x.ProfileId, r => r.UserId, (x, r) => new { x.StoreId, x.FullName, r.Role })
+                .Where(x => x.Role == AppRoles.AreaManager && x.FullName != null && x.FullName.ToUpper().Contains(cleanManagerName))
+                .Select(x => x.StoreId);
+
+            query = query.Where(s => smSubqueryDirect.Contains(s.Id) || smSubqueryJunction.Contains(s.Id) || amSubquery.Contains(s.Id));
+        }
 
 
 
@@ -107,10 +153,17 @@ public static class ListStores
         // ────────────────────────────────────────────────────────────────────────
 
         // Subquery: SM name per store
-        var smLookup = db.Profiles
+        var smLookupDirect = db.Profiles
             .Join(db.AppUserRoles, p => p.Id, r => r.UserId,
                   (p, r) => new { p.StoreId, p.FullName, r.Role })
             .Where(x => x.Role == AppRoles.StoreManager && x.StoreId != null);
+
+        var smLookupJunction = db.ProfileStoreAssignments
+            .Join(db.Profiles, a => a.ProfileId, p => p.Id,
+                  (a, p) => new { a.StoreId, a.ProfileId, p.FullName })
+            .Join(db.AppUserRoles, x => x.ProfileId, r => r.UserId,
+                  (x, r) => new { x.StoreId, x.FullName, r.Role })
+            .Where(x => x.Role == AppRoles.StoreManager);
 
         // Subquery: AM name per store
         var amLookup = db.ProfileStoreAssignments
@@ -136,7 +189,8 @@ public static class ListStores
             .Take(pageSize)
             .Select(s => new StoreDto(
                 s.Id, s.Name, s.Address,
-                smLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
+                smLookupDirect.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault() ??
+                smLookupJunction.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
                 amLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
                 s.GpsLat, s.GpsLng, s.IsActive, s.CreatedAt,
                 // SL-1: Structured address fields

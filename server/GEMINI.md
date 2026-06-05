@@ -1,4 +1,6 @@
 # Backend Baseline Rules (.NET Minimal API)
+> **Scope**: Database migrations/naming, Minimal API endpoint patterns, backend testing, and service gotchas.
+> **Out of Scope**: Global governance rules, Flutter UI rules, or deployment orchestration.
 
 ## Database & EF Core
 
@@ -27,6 +29,10 @@ public static class DoSomething
 
 ### Pagination Standard
 All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`). Query params: `page` (default 1), `pageSize` (default 50, max 200).
+
+### Security & Architecture Verification
+- **Explicit Scoping Rule**: Do not use global query filters. Check access explicitly in each handler using `ResourceAccessGuard.CanAccessAsync` to prevent breaking admin/sync APIs.
+- **Architecture Tests**: Every query/command endpoint handler accessing submissions, stores, or photos must be scanned via automated reflection tests to ensure `CanAccessAsync` is called, preventing silent security regressions.
 
 ### Shared Services Pattern
 - **ActionPlanService**: Call safely to automatically create action plans from answers.

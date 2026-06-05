@@ -61,6 +61,56 @@ mixin StoreFormSaveLogic<T extends StatefulWidget> on State<T> {
       return;
     }
 
+    double? gpsLat;
+    final latText = latCtrl.text.trim();
+    if (latText.isNotEmpty) {
+      final parsed = double.tryParse(latText);
+      if (parsed == null) {
+        _di<ErrorDisplayService>().show(
+          const AppError(
+            code: 'validation_error',
+            message: 'Latitude must be a valid number',
+          ),
+        );
+        return;
+      }
+      if (parsed < -90 || parsed > 90) {
+        _di<ErrorDisplayService>().show(
+          const AppError(
+            code: 'validation_error',
+            message: 'Latitude must be between -90 and 90 degrees',
+          ),
+        );
+        return;
+      }
+      gpsLat = parsed;
+    }
+
+    double? gpsLng;
+    final lngText = lngCtrl.text.trim();
+    if (lngText.isNotEmpty) {
+      final parsed = double.tryParse(lngText);
+      if (parsed == null) {
+        _di<ErrorDisplayService>().show(
+          const AppError(
+            code: 'validation_error',
+            message: 'Longitude must be a valid number',
+          ),
+        );
+        return;
+      }
+      if (parsed < -180 || parsed > 180) {
+        _di<ErrorDisplayService>().show(
+          const AppError(
+            code: 'validation_error',
+            message: 'Longitude must be between -180 and 180 degrees',
+          ),
+        );
+        return;
+      }
+      gpsLng = parsed;
+    }
+
     setState(() => isSaving = true);
 
     final province = selectedProvince;
@@ -80,8 +130,8 @@ mixin StoreFormSaveLogic<T extends StatefulWidget> on State<T> {
           address: addressCtrl.text.trim().isNotEmpty
               ? addressCtrl.text.trim()
               : null,
-          gpsLat: double.tryParse(latCtrl.text.trim()),
-          gpsLng: double.tryParse(lngCtrl.text.trim()),
+          gpsLat: gpsLat,
+          gpsLng: gpsLng,
           province: province,
           district: district,
           ward: ward,
@@ -93,8 +143,8 @@ mixin StoreFormSaveLogic<T extends StatefulWidget> on State<T> {
           address: addressCtrl.text.trim().isNotEmpty
               ? addressCtrl.text.trim()
               : null,
-          gpsLat: double.tryParse(latCtrl.text.trim()),
-          gpsLng: double.tryParse(lngCtrl.text.trim()),
+          gpsLat: gpsLat,
+          gpsLng: gpsLng,
           province: province,
           district: district,
           ward: ward,

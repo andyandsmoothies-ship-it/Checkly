@@ -67,7 +67,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 - **Test Quality**: Map walkthrough files to related test files (via suffix mapping or grepping symbol references in tests). Evaluate tests to ensure: (1) no empty/ghost assertions, (2) no mocking of core business/domain logic, (3) assertions test observable behavior rather than private state, (4) failed states report explicit error messages rather than raw silent booleans, and (5) all modified UI pages/widgets/contracts include and pass automated Golden/Snapshot tests.
 
-- **Execution**: Stop Dev Servers -> Run ALL tests globally (e.g., `flutter test --update-goldens` for Flutter, `npx playwright test --update-snapshots` for Web, or standard text/JSON snapshot commands first, then run full test suite). PROHIBITED: Isolated test runs (`flutter test path/...`). MUST prove no legacy assertions or visual references broke.
+- **Execution**: Stop Dev Servers -> Run tests. If you modified a core service, entity, or database DAO, you MUST run ALL tests globally. Otherwise, you are explicitly permitted to run isolated/scoped test executions (e.g., `flutter test path/to/isolated_test.dart` or `dotnet test --filter ...`) to save time and prevent waste, provided that all modified paths are fully covered by the tests.
 
 - **Pass/Fail Logic**: IF (Tests Green, Golden Visuals/Snapshots Match, AND Zero Warnings) -> Proceed Step 4. IF (Any Fail/Warning) -> **MANDATORY TRANSITION**: `/diagnose`. Do NOT ask permission.
 

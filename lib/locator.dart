@@ -13,6 +13,7 @@ import '_shared/services/connectivity_service.dart';
 import '_shared/services/connectivity_service_impl.dart';
 import '_shared/services/gps_service.dart';
 import '_shared/services/geofence_service.dart';
+import '_shared/services/geocoding_service.dart';
 import '_shared/services/sync_engine.dart';
 import '_shared/services/service_adapters.dart';
 import 'features/audit/services/core_audit_sync_module.dart';
@@ -98,6 +99,12 @@ void configureDependencies() {
   di.registerLazySingleton<GpsService>(() => GpsService());
   di.registerLazySingleton<GeofenceService>(
     () => GeofenceService(di<GpsService>()),
+  );
+  di.registerLazySingleton<GeocodingService>(
+    () => RealGeocodingService(
+      dio: di<Dio>(),
+      connectivityService: di<ConnectivityService>(),
+    ),
   );
 
   // ---------- Auth (Slice 2 + PBAC Slice 4) ----------

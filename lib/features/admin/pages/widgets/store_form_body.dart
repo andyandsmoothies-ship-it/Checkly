@@ -10,6 +10,7 @@ import '../../../stores/widgets/store_location_map_widget.dart';
 class StoreFormBody extends StatelessWidget {
   final bool isEdit;
   final bool isSaving;
+  final bool isGeocoding;
   final bool provincesLoading;
 
   // Controllers
@@ -33,12 +34,14 @@ class StoreFormBody extends StatelessWidget {
   final VoidCallback onMarkDirty;
   final ValueChanged<String?> onProvinceChanged;
   final void Function(TapPosition tapPos, LatLng latlng) onMapTap;
+  final VoidCallback onLocateOnMap;
   final VoidCallback onSave;
 
   const StoreFormBody({
     super.key,
     required this.isEdit,
     required this.isSaving,
+    required this.isGeocoding,
     required this.provincesLoading,
     required this.nameCtrl,
     required this.addressCtrl,
@@ -54,6 +57,7 @@ class StoreFormBody extends StatelessWidget {
     required this.onMarkDirty,
     required this.onProvinceChanged,
     required this.onMapTap,
+    required this.onLocateOnMap,
     required this.onSave,
   });
 
@@ -132,7 +136,8 @@ class StoreFormBody extends StatelessWidget {
                 : _PremiumField(
                     label: 'Province',
                     child: DropdownButtonFormField<String>(
-                      initialValue: provinces.contains(selectedProvince)
+                      key: ValueKey('province_dropdown_${selectedProvince ?? 'none'}'),
+                      value: provinces.contains(selectedProvince)
                           ? selectedProvince
                           : null,
                       borderRadius: BorderRadius.circular(12),
@@ -251,6 +256,33 @@ class StoreFormBody extends StatelessWidget {
             const SizedBox(height: 20),
 
             // Interactive map (extracted widget)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Location Map',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: Colors.grey.shade700,
+                        letterSpacing: 0.3,
+                      ),
+                ),
+                TextButton.icon(
+                  key: const Key('locate_on_map_button'),
+                  onPressed: (isSaving || isGeocoding) ? null : onLocateOnMap,
+                  icon: isGeocoding
+                      ? const SizedBox(
+                          key: Key('locate_on_map_loading'),
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.location_searching, size: 16),
+                  label: const Text('Locate on Map'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
             Card(
               elevation: 0,
               shape: RoundedRectangleBorder(
@@ -259,11 +291,24 @@ class StoreFormBody extends StatelessWidget {
               ),
               clipBehavior: Clip.antiAlias,
               margin: EdgeInsets.zero,
-              child: StoreLocationMapWidget(
-                markerPos: markerPos,
-                mapController: mapController,
-                isSaving: isSaving,
-                onTap: onMapTap,
+              child: Stack(
+                children: [
+                  StoreLocationMapWidget(
+                    markerPos: markerPos,
+                    mapController: mapController,
+                    isSaving: isSaving || isGeocoding,
+                    onTap: onMapTap,
+                  ),
+                  if (isGeocoding)
+                    Positioned.fill(
+                      child: Container(
+                        color: Colors.black.withOpacity(0.1),
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
             const SizedBox(height: 16),

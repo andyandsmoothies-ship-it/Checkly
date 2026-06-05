@@ -1,53 +1,19 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
   Determining projects to restore...
   All projects are up-to-date for restore.
-  Checkly.Api -> c:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
-  Checkly.Api.Tests -> c:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
-Test run for c:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
 VSTest version 18.0.1 (x64)
 
 Starting test execution, please wait...
 A total of 1 test files matched the specified pattern.
-  Failed Checkly.Api.Tests.Features.Analytics.ProvinceLeaderboardEndpointTests.GetAnalytics_ByStoreId_ReturnsInsights_FromProvinceBenchmark [219 ms]
+[xUnit.net 00:00:05.59]     Checkly.Api.Tests.StoreManagement_Slice1_Tests.ManagerName_Filter_Matches_Assigned_Manager [FAIL]
+  Failed Checkly.Api.Tests.StoreManagement_Slice1_Tests.ManagerName_Filter_Matches_Assigned_Manager [94 ms]
   Error Message:
-   Microsoft.EntityFrameworkCore.DbUpdateException : An error occurred while saving the entity changes. See the inner exception for details.
----- Npgsql.PostgresException : 23505: duplicate key value violates unique constraint "PK_province_benchmark_snapshots"
-
-DETAIL: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+   Setup failed: 
   Stack Trace:
-     at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
-   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
-   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
-   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
-   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChangesAsync(IList`1 entries, CancellationToken cancellationToken)
-   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
-   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
-   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
---- End of stack trace from previous location ---
-   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
-   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
-   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
-   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
-   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
-   at Checkly.Api.Tests.Features.Analytics.ProvinceLeaderboardEndpointTests.GetAnalytics_ByStoreId_ReturnsInsights_FromProvinceBenchmark() in c:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Analytics\ProvinceLeaderboardEndpointTests.cs:line 130
---- End of stack trace from previous location ---
------ Inner Stack Trace -----
-   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
-   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
-   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
-   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
-   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
-   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
-   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
-   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
-   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
-   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
-  Failed Checkly.Api.Tests.Features.Analytics.ProvinceLeaderboardEndpointTests.GetAreaLeaderboard_WithProvinceParam_FiltersStoresCorrectly [119 ms]
-  Error Message:
-   Assert.Equal() Failure: Values differ
-Expected: 2
-Actual:   100
-  Stack Trace:
-     at Checkly.Api.Tests.Features.Analytics.ProvinceLeaderboardEndpointTests.GetAreaLeaderboard_WithProvinceParam_FiltersStoresCorrectly() in c:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Analytics\ProvinceLeaderboardEndpointTests.cs:line 87
+     at Checkly.Api.Tests.StoreManagement_Slice1_Tests.ManagerName_Filter_Matches_Assigned_Manager() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\StoreManagement_Slice1_Tests.cs:line 152
 --- End of stack trace from previous location ---
 
-Failed!  - Failed:     2, Passed:     1, Skipped:     0, Total:     3, Duration: 4 s - Checkly.Api.Tests.dll (net10.0)
+Failed!  - Failed:     1, Passed:     6, Skipped:     0, Total:     7, Duration: 5 s - Checkly.Api.Tests.dll (net10.0)

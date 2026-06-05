@@ -9,12 +9,14 @@ class StoreCard extends StatelessWidget {
   final StoreDto store;
   final VoidCallback? onEdit;
   final VoidCallback? onToggleActive;
+  final bool isToggling;
 
   const StoreCard({
     super.key,
     required this.store,
     this.onEdit,
     this.onToggleActive,
+    this.isToggling = false,
   });
 
   @override
@@ -126,27 +128,36 @@ class StoreCard extends StatelessWidget {
           ),
         ],
       ),
-      trailing: (onEdit != null || onToggleActive != null)
-          ? PopupMenuButton<String>(
-              icon: Icon(
-                Icons.more_vert,
-                color: theme.colorScheme.onSurfaceVariant,
+      trailing: isToggling
+          ? const SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.featherGreen,
               ),
-              onSelected: (value) {
-                if (value == 'edit') onEdit?.call();
-                if (value == 'toggle') onToggleActive?.call();
-              },
-              itemBuilder: (ctx) => [
-                if (onEdit != null)
-                  const PopupMenuItem(value: 'edit', child: Text('Edit Store')),
-                if (onToggleActive != null)
-                  PopupMenuItem(
-                    value: 'toggle',
-                    child: Text(isActive ? 'Deactivate' : 'Activate'),
-                  ),
-              ],
             )
-          : null,
+          : (onEdit != null || onToggleActive != null)
+              ? PopupMenuButton<String>(
+                  icon: Icon(
+                    Icons.more_vert,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  onSelected: (value) {
+                    if (value == 'edit') onEdit?.call();
+                    if (value == 'toggle') onToggleActive?.call();
+                  },
+                  itemBuilder: (ctx) => [
+                    if (onEdit != null)
+                      const PopupMenuItem(value: 'edit', child: Text('Edit Store')),
+                    if (onToggleActive != null)
+                      PopupMenuItem(
+                        value: 'toggle',
+                        child: Text(isActive ? 'Deactivate' : 'Activate'),
+                      ),
+                  ],
+                )
+              : null,
     );
   }
 }

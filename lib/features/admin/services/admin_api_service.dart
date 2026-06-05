@@ -11,11 +11,13 @@ class AdminApiService {
   /// GET /admin/users — list all users with profile+role (paginated).
   Future<List<Map<String, dynamic>>> getUsers({
     String? search,
+    String? role,
     int page = 1,
     int pageSize = 50,
   }) async {
     final params = <String, dynamic>{'page': page, 'pageSize': pageSize};
     if (search != null && search.isNotEmpty) params['search'] = search;
+    if (role != null && role.isNotEmpty) params['role'] = role;
 
     final response = await _dio.get('/admin/users', queryParameters: params);
     final data = response.data as Map<String, dynamic>;

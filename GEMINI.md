@@ -1,4 +1,6 @@
 # Checkly Global Agent Rules
+> **Scope**: Project-wide architecture, governance, global platform gotchas, and testing rules.
+> **Out of Scope**: Language/framework-specific standards (use subfolder rules) and design specs.
 
 ## 1. Governance Rules
 
@@ -67,6 +69,10 @@
 ### Rule: Golden UI Tests for Design Verification
 - **Rule**: All UI additions or modifications must include Golden UI tests to prevent manual verification of components and layout.
 - **Enforcement**: Run `flutter test --update-goldens` during the implementation phase to check rendering before concluding.
+
+### Rule: No Premature Handoff
+- **Rule**: Do not claim completion, write handoff notes, or declare a feature/task finished until you have successfully executed the tests/compilation and verified they are 100% GREEN and passing.
+- **Enforcement**: Never assume a background command has succeeded. You must wait for the command to finish, call `command_status`, and view output files or stdout to confirm success before presenting results to the user.
 
 ## 2. Platform Architecture
 - **Frontend**: Flutter (Dart) — Offline-first with SQLite. Core UI rules are in `lib/GEMINI.md`.
@@ -171,5 +177,5 @@
 - **Folders:** Never run commands from the project root. Use `server/` or `lib/`.
 - **No Interactive CLI:** Do not run `dotnet run`, `dotnet watch`, or `flutter run`.
 - **Zero Bloat:** Do not install packages without permission.
-- **RTK Wrapper:** Always prepend `rtk` to terminal commands (e.g., `rtk dotnet build`).
+- **RTK Wrapper:** Always prepend `rtk` to terminal commands (e.g., `rtk dotnet build`). *Exception:* For running test suites (e.g., `dotnet test`) where detailed failure traces or assertion outputs are required to debug, always use the `rtk proxy` prefix (e.g., `rtk proxy dotnet test ...`) to bypass RTK output filtering/compression.
 - **Historical Tracking (Logs & Scratchpads):** NEVER leave test logs (`.log`), scratch queries (`.sql`), or text outputs in the project root, `server/`, or `lib/`. For historical tracking: Route all test outputs/logs to `.agents/logs/`. Route all scratch database scripts to `dbquery/`. Compiler dumps (`.xml`) must be deleted, not saved.

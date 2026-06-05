@@ -139,6 +139,51 @@ def get_active_artifacts(session_dir: str) -> list[str]:
     return active_files
 
 
+def get_active_source_files(session_dir: str) -> list[str]:
+    """Extracts modified/new source files (.dart, .cs) from the active task.md Inventory."""
+    task_path = get_latest_task_file(session_dir)
+    if not task_path:
+        return []
+    
+    with open(task_path, encoding="utf-8") as f:
+        content = f.read()
+
+    inventory_match = re.search(
+        r"##\s+artifact\s+inventory.*?(\|.*?\n)+",
+        content,
+        re.IGNORECASE | re.DOTALL,
+    )
+    if not inventory_match:
+        return []
+
+    # Find [NEW] or [MOD] entries
+    rows = re.findall(
+        r"\|\s*\[(?:NEW|MOD)\]\s*\|\s*([^\|]+)\|",
+        inventory_match.group(0),
+        re.IGNORECASE,
+    )
+    
+    workspace_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    active_sources = []
+
+    for raw_path in rows:
+        file_path = raw_path.strip()
+        # Resolve to absolute path relative to workspace root if not absolute
+        if not os.path.isabs(file_path):
+            abs_path = os.path.abspath(os.path.join(workspace_root, file_path))
+        else:
+            abs_path = os.path.abspath(file_path)
+            
+        if not (abs_path.endswith(".dart") or abs_path.endswith(".cs")) or abs_path.endswith(".g.dart"):
+            continue
+            
+        if os.path.isfile(abs_path):
+            active_sources.append(abs_path)
+            
+    return active_sources
+
+
+
 errors: list[str] = []
 warnings: list[str] = []
 
@@ -438,12 +483,20 @@ def check_workspace_visibility(session_dir: str) -> None:
 
 
 
-def check_modularity_index() -> None:
+def check_modularity_index(session_dir: str) -> None:
     print("\n[CHECK 6] Scanning files and functions for size limits (Modularity)...")
     import subprocess
     script_path = os.path.join(os.path.dirname(__file__), "modularity_index.py")
     if os.path.exists(script_path):
-        res = subprocess.run([sys.executable, script_path, "--advisory"], capture_output=True, text=True, encoding="utf-8")
+        active_sources = get_active_source_files(session_dir)
+        cmd = [sys.executable, script_path, "--advisory"]
+        if active_sources:
+            print(f"       Scanning {len(active_sources)} active source file(s) from Artifact Inventory...")
+            cmd.extend(active_sources)
+        else:
+            print("       No active source files found in Artifact Inventory. Scanning all files recursively...")
+            
+        res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
         print(res.stdout)
         if res.returncode != 0:
             fail("Modularity Index Checker failed to run.")
@@ -504,7 +557,7 @@ def main() -> None:
     check_artifact_sections(session_dir)
     check_forensic_evidence(session_dir)
     check_workspace_visibility(session_dir)
-    check_modularity_index()
+    check_modularity_index(session_dir)
     check_sync_contracts()
 
     print(f"\n{'='*60}")

@@ -1,4 +1,6 @@
 # Frontend Baseline Rules (Flutter)
+> **Scope**: Flutter state/routing architecture, UI rendering guidelines, widget testing constraints, and custom design tokens.
+> **Out of Scope**: Backend endpoints, SQL migrations, or global project governance.
 
 ## Architecture
 

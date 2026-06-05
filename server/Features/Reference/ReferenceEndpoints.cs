@@ -11,5 +11,6 @@ public static class ReferenceEndpoints
             .RequireAuthorization();
 
         group.MapGet("/locations", GetLocations.HandleAsync);
+        group.MapGet("/districts", GetDistricts.HandleAsync);
     }
 }

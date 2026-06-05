@@ -10,6 +10,11 @@ def get_args():
         action="store_true",
         help="Run in advisory mode (print warnings, do not fail build)."
     )
+    parser.add_argument(
+        "files",
+        nargs="*",
+        help="Specific files to scan. If empty, scans all files under features directories."
+    )
     return parser.parse_args()
 
 def scan_file_modularity(filepath):
@@ -68,34 +73,51 @@ def main():
     args = get_args()
     workspace_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     
-    scan_dirs = [
-        os.path.join(workspace_root, "lib", "features"),
-        os.path.join(workspace_root, "server", "Features")
-    ]
-
     file_violations = []
     function_violations_all = []
 
-    for s_dir in scan_dirs:
-        if not os.path.exists(s_dir):
-            continue
-            
-        for root, _, files in os.walk(s_dir):
-            if any(p in root.split(os.sep) for p in ["bin", "obj", "generated", ".dart_tool"]):
+    if args.files:
+        for filepath in args.files:
+            abs_path = os.path.abspath(filepath)
+            if not os.path.exists(abs_path):
                 continue
+            if not (abs_path.endswith(".dart") or abs_path.endswith(".cs")) or abs_path.endswith(".g.dart"):
+                continue
+            
+            rel_path = os.path.relpath(abs_path, workspace_root)
+            total_lines, func_errs = scan_file_modularity(abs_path)
 
-            for file in files:
-                if (file.endswith(".dart") or file.endswith(".cs")) and not file.endswith(".g.dart"):
-                    filepath = os.path.join(root, file)
-                    rel_path = os.path.relpath(filepath, workspace_root)
+            if total_lines > 350:
+                file_violations.append((rel_path, total_lines))
 
-                    total_lines, func_errs = scan_file_modularity(filepath)
+            for func_name, f_lines, start_l in func_errs:
+                function_violations_all.append((rel_path, func_name, f_lines, start_l))
+    else:
+        scan_dirs = [
+            os.path.join(workspace_root, "lib", "features"),
+            os.path.join(workspace_root, "server", "Features")
+        ]
 
-                    if total_lines > 350:
-                        file_violations.append((rel_path, total_lines))
+        for s_dir in scan_dirs:
+            if not os.path.exists(s_dir):
+                continue
+                
+            for root, _, files in os.walk(s_dir):
+                if any(p in root.split(os.sep) for p in ["bin", "obj", "generated", ".dart_tool"]):
+                    continue
 
-                    for func_name, f_lines, start_l in func_errs:
-                        function_violations_all.append((rel_path, func_name, f_lines, start_l))
+                for file in files:
+                    if (file.endswith(".dart") or file.endswith(".cs")) and not file.endswith(".g.dart"):
+                        filepath = os.path.join(root, file)
+                        rel_path = os.path.relpath(filepath, workspace_root)
+
+                        total_lines, func_errs = scan_file_modularity(filepath)
+
+                        if total_lines > 350:
+                            file_violations.append((rel_path, total_lines))
+
+                        for func_name, f_lines, start_l in func_errs:
+                            function_violations_all.append((rel_path, func_name, f_lines, start_l))
 
     has_issues = False
     
