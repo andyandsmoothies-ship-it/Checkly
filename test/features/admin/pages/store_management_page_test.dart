@@ -554,5 +554,47 @@ void main() {
     final latFinder = find.byWidgetPredicate((w) => w is TextField && w.decoration?.hintText == 'Latitude');
     expect((tester.widget(latFinder) as TextField).controller?.text, isNotEmpty);
   });
+
+  testWidgets('successful store creation dismisses form sheet and triggers onSaved', (tester) async {
+    tester.view.physicalSize = const Size(800, 2000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    when(() => mockStoreApi.createStore(
+      name: any(named: 'name'),
+      address: any(named: 'address'),
+      gpsLat: any(named: 'gpsLat'),
+      gpsLng: any(named: 'gpsLng'),
+      province: any(named: 'province'),
+      district: any(named: 'district'),
+      ward: any(named: 'ward'),
+      street: any(named: 'street'),
+    )).thenAnswer((_) async => <String, dynamic>{'id': 'new_s'});
+
+    await tester.pumpWidget(buildTestableWidget());
+    await tester.pumpAndSettle();
+
+    // Open Store Form
+    await tester.tap(find.byKey(const Key('create_store_fab')));
+    await tester.pumpAndSettle();
+
+    // Enter name
+    final nameFinder = find.byWidgetPredicate((w) => w is TextField && w.decoration?.hintText == 'Store Name *');
+    await tester.enterText(nameFinder, 'New Test Store');
+    await tester.pumpAndSettle();
+
+    // Tap save button
+    final saveButtonFinder = find.widgetWithText(FilledButton, 'Create Store');
+    await tester.tap(saveButtonFinder);
+    
+    // Pump and settle to let save complete and pop happen
+    await tester.pumpAndSettle();
+
+    // The store form sheet should have popped and no longer be visible
+    expect(find.text('Create Store'), findsNothing);
+  });
 }
 

@@ -23,8 +23,8 @@
 - **Gotcha 18: Notification Deep-Links**: Do not hardcode deep-link strings blindly. Use `grep_search` on `app_router.dart` to verify the route actually exists.
 
 ### Rendering
-- **Gotcha 19: PopScope Trap**: Calling `Navigator.pop()` right after `setState()` freezes the UI.
-  - **Fix:** Wait for the frame using `WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.pop(context));`.
+- **Gotcha 19: PopScope / Route Guard Pop Block**: Mutating form dirty/saving state right before popping the route can cause the page to hang or show unsaved changes dialogs if the route guard is not rebuilt.
+  - **Fix:** Wrap state mutations in `setState` and defer the pop call using `WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.maybePop(context));`.
 
 ## State & Payload Gotchas
 - **Gotcha 23: Direct Store Assignment UI**: The backend API allows sending an array of `assignedStoreIds` for Area Managers. 

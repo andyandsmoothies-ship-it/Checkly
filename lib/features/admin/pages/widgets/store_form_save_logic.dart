@@ -153,8 +153,15 @@ mixin StoreFormSaveLogic<T extends StatefulWidget> on State<T> {
       }
 
       if (mounted) {
-        isDirty = false;
-        Navigator.maybePop(context);
+        setState(() {
+          isDirty = false;
+          isSaving = false;
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            Navigator.maybePop(context);
+          }
+        });
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
