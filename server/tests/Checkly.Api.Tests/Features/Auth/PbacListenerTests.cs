@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Checkly.Api.Tests.Features.Auth;
 
 // @[/atdd] SDET Generated Test Suite for PBAC Slice 3
-[Collection("ApiCollection")]
+[Collection("Sequential")]
 public class PbacListenerTests(TestWebApplicationFactory fixture) : IClassFixture<TestWebApplicationFactory>, IAsyncLifetime
 {
     private IServiceProvider _sp = null!;

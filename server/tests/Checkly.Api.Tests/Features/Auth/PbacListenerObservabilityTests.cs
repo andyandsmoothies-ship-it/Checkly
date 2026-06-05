@@ -21,7 +21,7 @@ public class TestLogger<T> : ILogger<T>
     }
 }
 
-[Collection("ApiCollection")]
+[Collection("Sequential")]
 public class PbacListenerObservabilityTests(TestWebApplicationFactory fixture) : IClassFixture<TestWebApplicationFactory>, IAsyncLifetime
 {
     private IServiceProvider _sp = null!;

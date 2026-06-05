@@ -19,7 +19,7 @@ namespace Checkly.Api.Tests.Features.Notifications;
 /// T8: Anti-N+1 gate — single alreadySentUrls pre-fetch in one SQL, zero AnyAsync per AP
 /// </summary>
 [Trait("Category", "Reminder")]
-[Collection("ApiCollection")]
+[Collection("Sequential")]
 public class ReminderServiceDeadlineTests(TestWebApplicationFactory fixture)
     : IClassFixture<TestWebApplicationFactory>, IAsyncLifetime
 {

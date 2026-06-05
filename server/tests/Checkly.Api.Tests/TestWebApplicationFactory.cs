@@ -85,6 +85,11 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                 // We rely on tests creating unique entities (Guid.NewGuid) to avoid conflicts.
                 dbInit.Database.ExecuteSqlRaw("TRUNCATE TABLE \"action_plans\" CASCADE;");
                 dbInit.Database.ExecuteSqlRaw("TRUNCATE TABLE \"submissions\" CASCADE;");
+                dbInit.Database.ExecuteSqlRaw("TRUNCATE TABLE \"programs\" CASCADE;");
+                dbInit.Database.ExecuteSqlRaw("TRUNCATE TABLE \"templates\" CASCADE;");
+                dbInit.Database.ExecuteSqlRaw("TRUNCATE TABLE \"stores\" CASCADE;");
+                dbInit.Database.ExecuteSqlRaw("TRUNCATE TABLE \"global_risks\" CASCADE;");
+                dbInit.Database.ExecuteSqlRaw("TRUNCATE TABLE \"notifications\" CASCADE;");
 
                 // Seed a bootstrap admin so tests can create admin users via the API
                 var userManagerInit = scopeInit.ServiceProvider.GetRequiredService<UserManager<AppUser>>();

@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Checkly.Api.Features.Analytics
 {
     // --- DTO Definition records for Area BOD Report ---
-    public record AreaBodResponse
+    public class AreaBodResponse
     {
         public bool IsLiveData { get; init; }
         public AreaBodKpiDto Kpis { get; init; } = new();

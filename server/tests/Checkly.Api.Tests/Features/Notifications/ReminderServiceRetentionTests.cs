@@ -8,7 +8,7 @@ using Xunit;
 namespace Checkly.Api.Tests.Features.Notifications;
 
 [Trait("Category", "Reminder")]
-[Collection("ApiCollection")]
+[Collection("Sequential")]
 public class ReminderServiceRetentionTests(TestWebApplicationFactory fixture)
     : IClassFixture<TestWebApplicationFactory>, IAsyncLifetime
 {

@@ -21,7 +21,7 @@ namespace Checkly.Api.Tests.Features.Notifications;
 /// Gap2: TryExecuteInLockAsync_CancellationRequested_ThrowsOperationCanceledException
 /// </summary>
 [Trait("Category", "DistributedLock")]
-[Collection("ApiCollection")]
+[Collection("Sequential")]
 public class DistributedLockManagerTests : IClassFixture<TestWebApplicationFactory>, IAsyncLifetime
 {
     private readonly TestWebApplicationFactory _fixture;

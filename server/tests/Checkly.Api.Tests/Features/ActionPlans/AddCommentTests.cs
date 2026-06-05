@@ -40,6 +40,12 @@ public class AddCommentTests : IClassFixture<TestWebApplicationFactory>
         db.Templates.Add(new Template { Id = templateId, Title = "Test Template", Version = 1, IsActive = true });
         db.Stores.Add(new Store { Id = storeId, Name = "Test Store", IsActive = true });
 
+        var smProfile = await db.Profiles.FindAsync(storeManagerId);
+        if (smProfile != null)
+        {
+            smProfile.StoreId = storeId;
+        }
+
         db.Submissions.Add(new Submission
         {
             Id = submissionId,
@@ -123,6 +129,12 @@ public class AddCommentTests : IClassFixture<TestWebApplicationFactory>
         var planId = Guid.NewGuid();
 
         db.Stores.Add(new Store { Id = storeId, Name = "Test Store", IsActive = true });
+
+        var smProfile = await db.Profiles.FindAsync(storeManagerId);
+        if (smProfile != null)
+        {
+            smProfile.StoreId = storeId;
+        }
 
         db.ActionPlans.Add(new ActionPlan
         {

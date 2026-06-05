@@ -1,0 +1,98 @@
+
+======================================
+Failed Checkly.Api.Tests.Features.ActionPlans.AddCommentTests.AddComment_NoLinkedSubmission_SkipsNotification [510 ms]
+======================================
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Created
+Actual:   Forbidden
+  Stack Trace:
+     at Checkly.Api.Tests.Features.ActionPlans.AddCommentTests.AddComment_NoLinkedSubmission_SkipsNotification() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\ActionPlans\AddCommentTests.cs:line 151
+--- End of stack trace from previous location ---
+
+======================================
+Failed Checkly.Api.Tests.Features.ActionPlans.AddCommentTests.AddComment_ValidRequest_Returns201AndNotificationInserted [227 ms]
+======================================
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Created
+Actual:   Forbidden
+  Stack Trace:
+     at Checkly.Api.Tests.Features.ActionPlans.AddCommentTests.AddComment_ValidRequest_Returns201AndNotificationInserted() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\ActionPlans\AddCommentTests.cs:line 78
+--- End of stack trace from previous location ---
+
+======================================
+Failed Checkly.Api.Tests.Features.ActionPlans.ActionPlan_PbacUi_Tests.GetActionPlans_ReturnsEmptyActionsForUserWithoutCapabilities [277 ms]
+======================================
+  Error Message:
+   Assert.DoesNotContain() Failure: Item found in collection
+                     ↓ (pos 1)
+Collection: ["view", "submit_evidence"]
+Found:      "submit_evidence"
+  Stack Trace:
+     at Checkly.Api.Tests.Features.ActionPlans.ActionPlan_PbacUi_Tests.GetActionPlans_ReturnsEmptyActionsForUserWithoutCapabilities() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\ActionPlans\ActionPlanPbacUiTests.cs:line 264
+--- End of stack trace from previous location ---
+
+======================================
+Failed Checkly.Api.Tests.Features.Analytics.GeofenceBypassKpiTests.ComputeDailyReport_NightlySnapshot_ComputesGeofenceBypassesCorrectly [295 ms]
+======================================
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 1
+Actual:   3
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Analytics.GeofenceBypassKpiTests.ComputeDailyReport_NightlySnapshot_ComputesGeofenceBypassesCorrectly() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Analytics\GeofenceBypassKpiTests.cs:line 225
+--- End of stack trace from previous location ---
+
+======================================
+Failed Checkly.Api.Tests.Features.Analytics.BodReportCalculatorArchetypeTests.ComputeDailyReport_NullTemplateId_TreatedAsQCFallback [423 ms]
+======================================
+  Error Message:
+   Expected submission with null TemplateId to be treated as QC and included in top/bottom calculations.
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Analytics.BodReportCalculatorArchetypeTests.ComputeDailyReport_NullTemplateId_TreatedAsQCFallback() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Analytics\BodReportCalculatorArchetypeTests.cs:line 246
+--- End of stack trace from previous location ---
+
+======================================
+Failed Checkly.Api.Tests.Features.Analytics.BodReportCalculatorArchetypeTests.ComputeDailyReport_QCStore_IncludedInTopBottomCalculation [23 ms]
+======================================
+  Error Message:
+   Expected QC store to be included in nightly leaderboard calculations.
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Analytics.BodReportCalculatorArchetypeTests.ComputeDailyReport_QCStore_IncludedInTopBottomCalculation() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Analytics\BodReportCalculatorArchetypeTests.cs:line 98
+--- End of stack trace from previous location ---
+
+======================================
+Failed Checkly.Api.Tests.Features.Analytics.BodLiveQueries_Slice1_Tests.GetGlobalReport_SeededSubmissions_ReturnsLiveComputedValues [144 ms]
+======================================
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 1
+Actual:   0
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Analytics.BodLiveQueries_Slice1_Tests.GetGlobalReport_SeededSubmissions_ReturnsLiveComputedValues() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Analytics\BodLiveQueries_Slice1_Tests.cs:line 157
+--- End of stack trace from previous location ---
+
+======================================
+Failed Checkly.Api.Tests.Features.Analytics.BodAnalyticsSlice1Tests.DumpRealDatabaseContent [138 ms]
+======================================
+  Error Message:
+   SECTIONS (376):
+- Title: 'Opening Tasks', Score: 77.0, MaxScore: 100.0, SubmissionId: e2e2609f-be57-4d0a-baf4-09c3b4786ae6
+- Title: 'Closing Tasks', Score: 80.7, MaxScore: 100.0, SubmissionId: e2e2609f-be57-4d0a-baf4-09c3b4786ae6
+- Title: 'Daily Operations', Score: 79.0, MaxScore: 100.0, SubmissionId: e2e2609f-be57-4d0a-baf4-09c3b4786ae6
+- Title: 'Opening Tasks', Score: 81.4, MaxScore: 100.0, SubmissionId: 5742cf65-22f4-4060-9cab-f4bfa0c06933
+- Title: 'Closing Tasks', Score: 80.5, MaxScore: 100.0, SubmissionId: 5742cf65-22f4-4060-9cab-f4bfa0c06933
+- Title: 'Daily Operations', Score: 82.5, MaxScore: 100.0, SubmissionId: 5742cf65-22f4-4060-9cab-f4bfa0c06933
+- Title: 'Opening Tasks', Score: 78.7, MaxScore: 100.0, SubmissionId: c6fc1eb5-2d04-47ef-bf98-b7cfd4f63491
+- Title: 'Closing Tasks', Score: 79.6, MaxScore: 100.0, SubmissionId: c6fc1eb5-2d04-47ef-bf98-b7cfd4f63491
+- Title: 'Daily Operations', Score: 77.4, MaxScore: 100.0, SubmissionId: c6fc1eb5-2d04-47ef-bf98-b7cfd4f63491
+- Title: 'Opening Tasks', Score: 84.4, MaxScore: 100.0, SubmissionId: 0901ef35-b931-498f-b021-213ad1968fdf
+- Title: 'Closing Tasks', Score: 83.2, MaxScore: 100.0, SubmissionId: 0901ef35-b931-498f-b021-213ad1968fdf
+- Title: 'Daily Operations', Score: 85.4, MaxScore: 100.0, SubmissionId: 0901ef35-b931-498f-b021-213ad1968fdf
+- Title: 'Opening Tasks', Score: 95.5, MaxScore: 100.0, SubmissionId: b0ce7b13-b115-4cf1-9519-36395e812f4d
+- Title: 'Closing Tasks', Score: 92.6, MaxScore: 100.0, SubmissionId: b0ce7b13-b115-4cf1-9519-36395e812f4d
+- Title: 'Daily Operations', Score: 90.7, MaxScore: 100.0, SubmissionId: b0ce7b13-b115-4cf1-9519-36395e812f4d
+- Title: 'Opening Tasks', Score: 75.6, MaxScore: 100.0, SubmissionId: 580eb9ac-a2ac-4c51-bae2-cef93e2ba57a
+- Title: 'Closing Tasks', Score: 79.8, MaxScore: 100.0, SubmissionId: 580eb9ac-a2ac-4c51-bae2-cef93e2ba57a
+- Title: 'Daily Operations', Score: 75.9, MaxScore: 100.0, SubmissionId: 580eb9ac-a2ac-4c51-bae2-cef93e2ba57a

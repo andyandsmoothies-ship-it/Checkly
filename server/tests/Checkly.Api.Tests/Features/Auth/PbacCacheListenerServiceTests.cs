@@ -67,7 +67,7 @@ public class TrackingServiceScope : IServiceScope, IServiceProvider
     public void Dispose() => _innerScope.Dispose();
 }
 
-[Collection("ApiCollection")]
+[Collection("Sequential")]
 public class PbacCacheListenerServiceTests(TestWebApplicationFactory fixture) : IClassFixture<TestWebApplicationFactory>, IAsyncLifetime
 {
     private IServiceProvider _sp = null!;
