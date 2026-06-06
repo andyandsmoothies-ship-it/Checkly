@@ -111,7 +111,7 @@
 - **Gotcha: Local Testing Environment**
   - **Fix:** The project utilizes Logical Database Separation on the local PostgreSQL instance. The `checkly_test` database **already exists** natively alongside the main `checkly` database. Agents must never try to drop it manually or assume tests need a mocked server. Simply run `dotnet test`, and `TestWebApplicationFactory` will seamlessly route traffic to `checkly_test` and auto-migrate its schema.
 - **Gotcha: Interface Drift in Mocks (Compiler Mismatches)**
-  - **Fix:** Avoid manual fakes (e.g., `class FakeDao extends RealDao`) which require manual signature rewrites. Use `mocktail` (`class MockDao extends Mock implements RealDao {}`). Whenever you modify a core service, entity, or database DAO, you MUST run the global `flutter test` or `dotnet test` suite before committing to instantly catch drifted interfaces across the entire project.
+  - **Fix:** Avoid manual fakes (e.g., `class FakeDao extends RealDao`) which require manual signature rewrites. Use `mocktail` (`class MockDao extends Mock implements RealDao {}`). Only run the global `flutter test` or `dotnet test` suite if you modify the public interface (names or types of public methods/properties) of a shared service, entity, or database DAO. If you only modify internal implementations, run feature-specific tests instead.
 - **Gotcha: Hardcoded Role Filtering in UI Lists**
   - **Fix:** Do not hardcode role string checks (e.g., `u['role'] == 'auditor'`) in the frontend to filter dropdowns or UI lists, especially when migrating to PBAC. If the UI arbitrarily excludes roles like `area_manager`, dropdowns will appear empty and lead to silent null-reference validation errors. Always prefer backend-driven capability lists or PBAC-aware filtering.
 - **Gotcha: Hybrid Entity-Driven UI (HATEOAS) for Actions**
@@ -176,10 +176,10 @@
   - **Fix:** Do not implement inline widget mappings for `categoryBreakdown` or `recentAudits` lists inside bottom sheets like `BodStoreDetailSheet` or `AreaBodStoreDetailSheet`. Always use `CategoryPerformanceSection` and `RecentAuditsSection` to keep files modular, readable, and compliant with standard styling guidelines.
 - **Gotcha: Double-Padding and Nested Grid Layout Spacing**
   - **Fix:** Never wrap sub-headers or individual greeting widgets in custom `SafeArea` inside nested scroll views or columns when the parent root layout already wraps the page. Always lift `SafeArea` to the scaffold body root level once (`SafeArea(bottom: false, child: Column(...))`) so nested components see `padding.top = 0`. Additionally, always set `padding: EdgeInsets.zero` explicitly on nested `GridView.count` widgets to override default inherited non-zero vertical grid paddings, preventing ugly empty white spaces.
-
-
-
-
+- **Gotcha: UnsavedChangesGuard Navigation Race Condition**
+  - **Fix:** When programmatically popping a screen or sheet wrapped in an `UnsavedChangesGuard` after a successful operation (such as user creation, edit, or risk form submission), you must set the form's `isDirty` state to `false` first, then schedule the navigation callback (`Navigator.maybePop` or parent callback) using a post-frame callback logic checking `WidgetsBinding.instance.schedulerPhase`. If the scheduler is not `idle`, you must wrap the callback in a nested `addPostFrameCallback` or execute it directly if `idle`. This prevents the `PopScope` from reading the stale `isDirty = true` state before the widget rebuild completes.
+- **Gotcha: Clearing Area Manager Store Assignments (Explicit Empty Array)**
+  - **Fix:** To clear all store assignments for an Area Manager, the frontend must explicitly transmit the `assignedStoreIds` field as an empty list (`[]`) instead of mapping it to `null` or omitting it. If mapped to `null` or omitted, the backend's presence checks (`TryGetProperty`) will treat the field as omitted and preserve the existing assignments.
 
 ## 4. Environment Rules
 - **Folders:** Never run commands from the project root. Use `server/` or `lib/`.

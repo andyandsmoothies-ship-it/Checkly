@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../../_shared/theme/app_theme.dart';
@@ -153,7 +154,21 @@ class _RiskFormSheetState extends State<RiskFormSheet> {
                       description: desc,
                     );
                     if (context.mounted) {
-                      Navigator.maybePop(context);
+                      setState(() {
+                        isDirty = false;
+                      });
+                      void pop() {
+                        if (context.mounted) {
+                          Navigator.maybePop(context);
+                        }
+                      }
+                      if (WidgetsBinding.instance.schedulerPhase == SchedulerPhase.idle) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) => pop());
+                      } else {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) => pop());
+                        });
+                      }
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: const Text('Global risk updated'),
@@ -191,7 +206,21 @@ class _RiskFormSheetState extends State<RiskFormSheet> {
                       description: desc.isNotEmpty ? desc : null,
                     );
                     if (context.mounted) {
-                      Navigator.maybePop(context);
+                      setState(() {
+                        isDirty = false;
+                      });
+                      void pop() {
+                        if (context.mounted) {
+                          Navigator.maybePop(context);
+                        }
+                      }
+                      if (WidgetsBinding.instance.schedulerPhase == SchedulerPhase.idle) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) => pop());
+                      } else {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) => pop());
+                        });
+                      }
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: const Text('Global risk created'),
@@ -256,7 +285,21 @@ class _RiskFormSheetState extends State<RiskFormSheet> {
                         widget.risk!['id'] as String,
                       );
                       if (context.mounted) {
-                        Navigator.maybePop(context);
+                        setState(() {
+                          isDirty = false;
+                        });
+                        void pop() {
+                          if (context.mounted) {
+                            Navigator.maybePop(context);
+                          }
+                        }
+                        if (WidgetsBinding.instance.schedulerPhase == SchedulerPhase.idle) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) => pop());
+                        } else {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) => pop());
+                          });
+                        }
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Risk deactivated')),
                         );

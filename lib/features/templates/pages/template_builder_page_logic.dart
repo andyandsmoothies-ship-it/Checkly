@@ -112,7 +112,18 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
             content: Text(_isNew ? 'Template created!' : 'Template saved!'),
           ),
         );
-        context.pop();
+        void pop() {
+          if (mounted) {
+            context.pop();
+          }
+        }
+        if (WidgetsBinding.instance.schedulerPhase == SchedulerPhase.idle) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => pop());
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) => pop());
+          });
+        }
       }
     } on DioException catch (e) {
       if (mounted) {

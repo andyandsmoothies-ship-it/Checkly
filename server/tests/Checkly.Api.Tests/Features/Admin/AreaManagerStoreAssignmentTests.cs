@@ -307,4 +307,144 @@ public class AreaManagerStoreAssignmentTests : IClassFixture<TestWebApplicationF
         var hasAssignments = await db.ProfileStoreAssignments.AnyAsync(a => a.StoreId == store1);
         Assert.False(hasAssignments, "Expected bulk transaction to rollback entirely");
     }
+
+    [Fact]
+    [Trait("Category", "Admin")]
+    public async Task UpdateAM_ToAuditor_ClearsAllStoreAssignments()
+    {
+        // Arrange
+        var storeId = await CreateStoreAsync("AM Demote Store");
+        using var client = _factory.CreateClient();
+        var adminToken = await _factory.LoginBootstrapAdminAsync(client);
+        var authClient = _factory.CreateAuthenticatedClient(adminToken);
+
+        var (token, userId) = await _factory.RegisterUserAsync(client, $"am_demote_{Guid.NewGuid()}@test.com", "Pass1234!", "Demote AM", "area_manager", adminToken);
+
+        // Assign store to AM
+        var assignRequest = new { role = "area_manager", assignedStoreIds = new[] { storeId } };
+        var assignRes = await authClient.PutAsJsonAsync($"/api/admin/users/{userId}", assignRequest);
+        assignRes.EnsureSuccessStatusCode();
+
+        // Verify assignment exists
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var hasAssignment = await db.ProfileStoreAssignments.AnyAsync(a => a.ProfileId == userId && a.StoreId == storeId);
+            Assert.True(hasAssignment);
+        }
+
+        // Act - Demote to Auditor
+        var demoteRequest = new { role = "auditor" };
+        var demoteRes = await authClient.PutAsJsonAsync($"/api/admin/users/{userId}", demoteRequest);
+        demoteRes.EnsureSuccessStatusCode();
+
+        // Assert - Assignment is cleared
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var hasAssignment = await db.ProfileStoreAssignments.AnyAsync(a => a.ProfileId == userId);
+            Assert.False(hasAssignment, "Junction table entries should be deleted when user is no longer an area manager");
+        }
+    }
+
+    [Fact]
+    [Trait("Category", "Admin")]
+    public async Task UpdateSM_ToAuditor_ClearsStoreId()
+    {
+        // Arrange
+        var storeId = await CreateStoreAsync("SM Demote Store");
+        using var client = _factory.CreateClient();
+        var adminToken = await _factory.LoginBootstrapAdminAsync(client);
+        var authClient = _factory.CreateAuthenticatedClient(adminToken);
+
+        var (token, userId) = await _factory.RegisterUserAsync(client, $"sm_demote_{Guid.NewGuid()}@test.com", "Pass1234!", "Demote SM", "store_manager", adminToken);
+
+        // Assign store to SM
+        var assignRequest = new { role = "store_manager", storeId = storeId };
+        var assignRes = await authClient.PutAsJsonAsync($"/api/admin/users/{userId}", assignRequest);
+        assignRes.EnsureSuccessStatusCode();
+
+        // Verify assignment exists
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var profile = await db.Profiles.FindAsync(userId);
+            Assert.Equal(storeId, profile!.StoreId);
+        }
+
+        // Act - Demote to Auditor
+        var demoteRequest = new { role = "auditor" };
+        var demoteRes = await authClient.PutAsJsonAsync($"/api/admin/users/{userId}", demoteRequest);
+        demoteRes.EnsureSuccessStatusCode();
+
+        // Assert - StoreId is cleared
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var profile = await db.Profiles.FindAsync(userId);
+            Assert.Null(profile!.StoreId);
+        }
+    }
+
+    [Fact]
+    [Trait("Category", "Admin")]
+    public async Task UpdateSM_SetStoreIdNull_UnassignsStore()
+    {
+        // Arrange
+        var storeId = await CreateStoreAsync("SM Unassign Store");
+        using var client = _factory.CreateClient();
+        var adminToken = await _factory.LoginBootstrapAdminAsync(client);
+        var authClient = _factory.CreateAuthenticatedClient(adminToken);
+
+        var (token, userId) = await _factory.RegisterUserAsync(client, $"sm_unassign_{Guid.NewGuid()}@test.com", "Pass1234!", "Unassign SM", "store_manager", adminToken);
+
+        // Assign store to SM
+        var assignRequest = new { role = "store_manager", storeId = storeId };
+        var assignRes = await authClient.PutAsJsonAsync($"/api/admin/users/{userId}", assignRequest);
+        assignRes.EnsureSuccessStatusCode();
+
+        // Act - Set storeId to null
+        var unassignRequest = new { role = "store_manager", storeId = (Guid?)null };
+        var unassignRes = await authClient.PutAsJsonAsync($"/api/admin/users/{userId}", unassignRequest);
+        unassignRes.EnsureSuccessStatusCode();
+
+        // Assert - StoreId is cleared
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var profile = await db.Profiles.FindAsync(userId);
+            Assert.Null(profile!.StoreId);
+        }
+    }
+
+    [Fact]
+    [Trait("Category", "Admin")]
+    public async Task UpdateAM_SetAssignedStoreIdsNullOrEmpty_ClearsAssignments()
+    {
+        // Arrange
+        var storeId = await CreateStoreAsync("AM Clear Store");
+        using var client = _factory.CreateClient();
+        var adminToken = await _factory.LoginBootstrapAdminAsync(client);
+        var authClient = _factory.CreateAuthenticatedClient(adminToken);
+
+        var (token, userId) = await _factory.RegisterUserAsync(client, $"am_clear_{Guid.NewGuid()}@test.com", "Pass1234!", "Clear AM", "area_manager", adminToken);
+
+        // Assign store to AM
+        var assignRequest = new { role = "area_manager", assignedStoreIds = new[] { storeId } };
+        var assignRes = await authClient.PutAsJsonAsync($"/api/admin/users/{userId}", assignRequest);
+        assignRes.EnsureSuccessStatusCode();
+
+        // Act - Set assignedStoreIds to empty array
+        var clearRequest = new { role = "area_manager", assignedStoreIds = Array.Empty<Guid>() };
+        var clearRes = await authClient.PutAsJsonAsync($"/api/admin/users/{userId}", clearRequest);
+        clearRes.EnsureSuccessStatusCode();
+
+        // Assert - Assignments are cleared
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var hasAssignments = await db.ProfileStoreAssignments.AnyAsync(a => a.ProfileId == userId);
+            Assert.False(hasAssignments);
+        }
+    }
 }

@@ -268,11 +268,16 @@ class _StoreFormSheetState extends State<StoreFormSheet>
     if (streetCtrl.text.trim().isNotEmpty) addressParts.add(streetCtrl.text.trim());
     if (wardCtrl.text.trim().isNotEmpty) addressParts.add(wardCtrl.text.trim());
     if (districtCtrl.text.trim().isNotEmpty) addressParts.add(districtCtrl.text.trim());
-    if (selectedProvince != null && selectedProvince!.isNotEmpty) addressParts.add(selectedProvince!);
 
-    final query = addressParts.isNotEmpty
-        ? addressParts.join(', ')
-        : addressCtrl.text.trim();
+    final String query;
+    if (addressCtrl.text.trim().isNotEmpty && addressParts.isEmpty) {
+      query = addressCtrl.text.trim();
+    } else {
+      if (selectedProvince != null && selectedProvince!.isNotEmpty) {
+        addressParts.add(selectedProvince!);
+      }
+      query = addressParts.join(', ');
+    }
 
     if (query.isEmpty) {
       GetIt.instance<ErrorDisplayService>().show(

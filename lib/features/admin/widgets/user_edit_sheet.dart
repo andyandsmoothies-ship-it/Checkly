@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:dio/dio.dart';
 
 import '../../../locator.dart';
@@ -181,18 +182,32 @@ class _UserEditSheetState extends State<UserEditSheet> {
           }
         });
       },
-      onSave: () => widget.onSave(
-        userId: widget.user['id'] as String,
-        fullName: _fullNameCtrl.text.trim().isEmpty
-            ? null
-            : _fullNameCtrl.text.trim(),
-        role: selectedRole,
-        storeId: selectedStoreId,
-        assignedStoreIds:
-            selectedRole == AppRoles.areaManager && _selectedStoreIds.isNotEmpty
-            ? _selectedStoreIds
-            : null,
-      ),
+      onSave: () {
+        setState(() {
+          isDirty = false;
+        });
+        void save() {
+          widget.onSave(
+            userId: widget.user['id'] as String,
+            fullName: _fullNameCtrl.text.trim().isEmpty
+                ? null
+                : _fullNameCtrl.text.trim(),
+            role: selectedRole,
+            storeId: selectedStoreId,
+            assignedStoreIds:
+                selectedRole == AppRoles.areaManager
+                ? _selectedStoreIds
+                : null,
+          );
+        }
+        if (WidgetsBinding.instance.schedulerPhase == SchedulerPhase.idle) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => save());
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) => save());
+          });
+        }
+      },
       onResetPassword: () => widget.onResetPassword(
         context,
         widget.user['id'] as String,

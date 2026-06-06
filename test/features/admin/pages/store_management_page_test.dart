@@ -471,6 +471,42 @@ void main() {
     verify(() => mockGeocoding.geocode('Nguyễn Huệ, Bến Nghé, Quận 1, Ho Chi Minh')).called(1);
   });
 
+  testWidgets('Locate on Map button uses legacy address when structured address fields are empty', (tester) async {
+    tester.view.physicalSize = const Size(800, 2000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    when(() => mockGeocoding.geocode(any())).thenAnswer((_) async => const LatLng(14.108696, 109.114590));
+
+    await tester.pumpWidget(buildTestableWidget());
+    await tester.pumpAndSettle();
+
+    // Open Store Form
+    await tester.tap(find.byKey(const Key('create_store_fab')));
+    await tester.pumpAndSettle();
+
+    // Fill only legacy Address field
+    final addressFinder = find.byWidgetPredicate((w) => w is TextField && w.decoration?.hintText == 'Address');
+    await tester.enterText(addressFinder, '7 Nguyen Tat Thanh, Quy Nhon, Binh Dinh');
+
+    // Select Province Ho Chi Minh
+    await tester.tap(find.byType(DropdownButtonFormField<String>).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ho Chi Minh').last);
+    await tester.pumpAndSettle();
+
+    // Tap "Locate on Map" button
+    final locateButtonFinder = find.byKey(const Key('locate_on_map_button'));
+    await tester.tap(locateButtonFinder);
+    await tester.pumpAndSettle();
+
+    // Verify geocode was called with legacy address string, NOT the province
+    verify(() => mockGeocoding.geocode('7 Nguyen Tat Thanh, Quy Nhon, Binh Dinh')).called(1);
+  });
+
   testWidgets('Map tap reverse geocodes coordinates and auto-populates address fields', (tester) async {
     tester.view.physicalSize = const Size(800, 2000);
     tester.view.devicePixelRatio = 1.0;

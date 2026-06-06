@@ -66,29 +66,27 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 - **@@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Debug skills loaded? (2) Any `.agents/rules/` explain failure?
 
-## Step 4: Resolution Plan
+## Step 4: Root Cause Synthesis & Validation
 
 - **Skill Refresh**: IF (Root cause domain != Symptom domain) THEN Re-scan and load new Domain `SKILL.md`.
 
-- **Redundancy Check**: MANDATORY: Before proposing a fix that swaps in a shared utility/widget, verify if it makes surrounding `if` guards or boilerplate redundant. Delete the redundant code.
-
-- **First Principles Gate**: MANDATORY: Before choosing a fix, evaluate and answer these 4 questions in your report:
+- **First Principles Gate**: MANDATORY: Evaluate and answer these 4 questions in your report:
   1. *Physics & Limit*: What physical system limit (network, memory, lock, CPU) causes this, and what is the absolute source of truth?
-  2. *Simplicity Check*: What is the absolute simplest (least code) way to patch this, and why should we NOT do it that way?
-  3. *Blast Radius*: If this fix fails or contains a new bug, what is the worst-case system impact?
-  4. *Observability*: How will we prove in production (using logs or metrics) that this fix worked without asking users?
+  2. *Simplicity Check*: What is the simplest way to describe the failure mechanism to a human or another agent?
+  3. *Blast Radius*: If this root cause is left unaddressed, what is the worst-case system impact?
+  4. *Observability*: How can we observe/detect the symptoms of this failure in production logs or metrics?
 
 - **Artifact Gen**: Export `failure_report_[YYYYMMDD_HHMMSS].md`.
 
-- **Constraint (Micro-Experiments)**: PROHIBITED: Broad code refactors. ALLOWED: "Micro-Experiments" (max 5 lines) to falsify hypotheses. IF a test fails twice, you MUST formally reject it in the `task_` file and pivot.
+- **Constraint (Micro-Experiments)**: PROHIBITED: Proposing or writing permanent fix code. ALLOWED: "Micro-Experiments" (max 5 lines) only to trigger the failure or verify the root cause. IF the test fails to reproduce the bug twice, you MUST formally reject your hypothesis in the `task_` file and pivot.
 
-- **@@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) If code was changed, was it strictly under 5 lines? (2) Did you delete redundant guards when applying shared tools? (3) If a test failed twice, did you officially pivot to a new hypothesis? (4) Did you answer all 4 First Principles Gate questions?
+- **@@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Is the code change strictly under 5 lines and only used for validation? (2) If a test failed to reproduce the issue twice, did you officially pivot to a new hypothesis? (3) Did you answer all 4 First Principles Gate questions?
 
 ## Step 5: Deliverable Handoff
 
 - **Gotcha Protocol**: MANDATORY: Propose edits to the local sub-folder's `GEMINI.md` (e.g., `server/GEMINI.md` or `lib/GEMINI.md`) if a project-specific rule caused the bug. ELSE: State "No new gotcha".
 
-- **Routing**: MANDATORY: Output an "Execution Queue" checklist in the final chat response containing the exact implementation command (e.g., `- [ ] Execute Build Step: docs/reports/diagnostics/failure_report.md`) so the user can easily invoke the Builder Agent. -> YIELD.
+- **Routing**: MANDATORY: Output an "Execution Queue" checklist in the final chat response containing the exact build command (e.g., `- [ ] Execute Diagnostic Step: docs/reports/diagnostics/failure_report.md`) so the user can easily pass the diagnostic report to a planning/implementation agent. -> YIELD.
 
 ### Final Generation Mandate (Suffix)
 
@@ -96,7 +94,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 <output_schema>
 
-> **Payload Schema:** Your `failure_report_[YYYYMMDD_HHMMSS].md` MUST INCLUDE: `## Input Lineage` (the absolute path of the input bug report/log), `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `<forensic_evidence>` tags logging all terminal tools/commands executed.<br><br>**CRITICAL:** For the `Proposed Scope-Limited Fix`, you MUST present the **Trade-offs / Pros & Cons** of the solution (e.g., performance impact, edge cases). Yield to the user to make the final executive decision before jumping to implementation.
+> **Payload Schema:** Your `failure_report_[YYYYMMDD_HHMMSS].md` MUST INCLUDE: `## Input Lineage` (the absolute path of the input bug report/log), `Root Cause Description`, `Explicit Code Trace (Premises + Proof)`, and `<forensic_evidence>` tags logging all terminal tools/commands executed. Do NOT propose fixes or write fix code in this report; focus strictly on root-cause verification.
 
 >
 
@@ -104,11 +102,11 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 > 1. Final Diagnostic Verdict & Persistent path.
 
-> 2. The required fix and its blast radius.
+> 2. The identified root cause and its blast radius.
 
-> 3. **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do).
+> 3. **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the planning or builder agent instantly knows exactly what root cause they need to address).
 
-> 4. An "Execution Queue" checklist of the exact commands for the user to copy-paste (e.g., `- [ ] Execute Build Step: docs/reports/diagnostics/failure_report.md`).
+> 4. An "Execution Queue" checklist of the exact commands for the user to copy-paste (e.g., `- [ ] Execute Diagnostic Verification: docs/reports/diagnostics/failure_report.md`).
 
 >
 

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import '../../../_shared/constants/app_roles.dart';
 import '../../../_shared/theme/app_theme.dart';
@@ -132,7 +133,7 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
         role: selectedRole,
         storeId: selectedStoreId,
         assignedStoreIds:
-            selectedRole == AppRoles.areaManager && _selectedStoreIds.isNotEmpty
+            selectedRole == AppRoles.areaManager
             ? _selectedStoreIds
             : null,
         forceReassign: forceReassign,
@@ -140,8 +141,20 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
       if (mounted) {
         setState(() {
           isSubmitting = false;
+          isDirty = false;
         });
-        Navigator.maybePop(context, true); // Signal page to refresh
+        void pop() {
+          if (mounted) {
+            Navigator.maybePop(context, true); // Signal page to refresh
+          }
+        }
+        if (WidgetsBinding.instance.schedulerPhase == SchedulerPhase.idle) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => pop());
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) => pop());
+          });
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('User created successfully'),

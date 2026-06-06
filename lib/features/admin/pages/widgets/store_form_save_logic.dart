@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 
@@ -157,11 +158,18 @@ mixin StoreFormSaveLogic<T extends StatefulWidget> on State<T> {
           isDirty = false;
           isSaving = false;
         });
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+        void pop() {
           if (mounted) {
             Navigator.maybePop(context);
           }
-        });
+        }
+        if (WidgetsBinding.instance.schedulerPhase == SchedulerPhase.idle) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => pop());
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) => pop());
+          });
+        }
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

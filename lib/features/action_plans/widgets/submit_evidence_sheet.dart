@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -102,9 +103,18 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
           _rootCauseCtrl.clear();
           _correctionPlanCtrl.clear();
         });
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) Navigator.maybePop(context);
-        });
+        void pop() {
+          if (mounted) {
+            Navigator.maybePop(context);
+          }
+        }
+        if (WidgetsBinding.instance.schedulerPhase == SchedulerPhase.idle) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => pop());
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) => pop());
+          });
+        }
       }
     } on RoleGuardException catch (_) {
       if (mounted) {

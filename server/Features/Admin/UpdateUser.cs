@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
@@ -24,12 +25,19 @@ public static class UpdateUser
 
     public static async Task<IResult> HandleAsync(
         Guid id,
-        Request request,
+        JsonElement requestJson,
         ClaimsPrincipal user,
         AppDbContext db,
         UserManager<AppUser> userManager,
         CancellationToken ct)
     {
+        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        var request = requestJson.Deserialize<Request>(options);
+        if (request is null)
+            return TypedResults.BadRequest(new { error = "Invalid request payload" });
+
+        bool hasStoreId = requestJson.TryGetProperty("storeId", out _);
+        bool hasAssignedStoreIds = requestJson.TryGetProperty("assignedStoreIds", out _);
         // Admin guard
         var callerRole = user.FindFirstValue(ClaimTypes.Role) ?? "";
         if (callerRole != "admin")
@@ -90,29 +98,55 @@ public static class UpdateUser
             userRole.Role = request.Role;
 
         string? storeName = null;
-        if (request.StoreId.HasValue)
+        if (effectiveRole != "store_manager")
         {
-            var targetStore = await db.Stores.AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == request.StoreId.Value, ct);
-            if (targetStore is null)
-                return TypedResults.BadRequest(new { error = "Store not found" });
-            if (targetStore.IsActive == false)
-                return TypedResults.BadRequest(new { error = "Cannot assign user to a deactivated store" });
+            profile.StoreId = null;
+        }
+        else if (hasStoreId)
+        {
+            if (request.StoreId.HasValue)
+            {
+                var targetStore = await db.Stores.AsNoTracking()
+                    .FirstOrDefaultAsync(s => s.Id == request.StoreId.Value, ct);
+                if (targetStore is null)
+                    return TypedResults.BadRequest(new { error = "Store not found" });
+                if (targetStore.IsActive == false)
+                    return TypedResults.BadRequest(new { error = "Cannot assign user to a deactivated store" });
 
-            profile.StoreId = request.StoreId;
-            storeName = targetStore.Name;
+                profile.StoreId = request.StoreId;
+                storeName = targetStore.Name;
+            }
+            else
+            {
+                profile.StoreId = null;
+            }
+        }
+        else if (profile.StoreId.HasValue)
+        {
+            storeName = await db.Stores.AsNoTracking()
+                .Where(s => s.Id == profile.StoreId.Value)
+                .Select(s => s.Name)
+                .FirstOrDefaultAsync(ct);
         }
 
-
+        if (effectiveRole != "area_manager")
+        {
+            var existingAssignments = await db.ProfileStoreAssignments
+                .Where(a => a.ProfileId == id)
+                .ToListAsync(ct);
+            if (existingAssignments.Count > 0)
+            {
+                db.ProfileStoreAssignments.RemoveRange(existingAssignments);
+            }
+        }
 
         var targetStoreIds = new HashSet<Guid>();
         if (effectiveRole == "area_manager")
         {
-
-
-            if (request.AssignedStoreIds is not null)
+            if (hasAssignedStoreIds)
             {
-                targetStoreIds.UnionWith(request.AssignedStoreIds);
+                var assignedStoreIds = request.AssignedStoreIds ?? Array.Empty<Guid>();
+                targetStoreIds.UnionWith(assignedStoreIds);
 
                 if (targetStoreIds.Count > 0)
                 {
@@ -160,10 +194,7 @@ public static class UpdateUser
                         }
                     }
                 }
-            }
 
-            if (request.AssignedStoreIds is not null)
-            {
                 var existingAssignments = await db.ProfileStoreAssignments
                     .Where(a => a.ProfileId == id)
                     .ToListAsync(ct);
@@ -188,6 +219,14 @@ public static class UpdateUser
                         CreatedAt = now,
                     });
                 db.ProfileStoreAssignments.AddRange(toAdd);
+            }
+            else
+            {
+                var currentAssignments = await db.ProfileStoreAssignments
+                    .Where(a => a.ProfileId == id)
+                    .Select(a => a.StoreId)
+                    .ToListAsync(ct);
+                targetStoreIds.UnionWith(currentAssignments);
             }
         }
 
