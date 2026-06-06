@@ -4,6 +4,7 @@
 
 - **Gotcha: RETRY must await Outbox update.** Any UI action that resets outbox records (e.g. `requeueExhausted`) returns a `Future`. You MUST `await` this future before calling `SyncEngine.requestSync()`. Because SQLite local commits have microsecond latency, falling into a synchronous race condition will cause `requestSync()` to fetch from the DB before the records are marked `pending`, resulting in a silent failure where nothing is sent.
 - **Gotcha: SyncEngine batch abort.** Do not use `return` or `break` to exit early when catching a connection error in `requestSync()`. Exiting the event loop kills the entire pending batch. New submissions queued logically behind older failing records will be dropped as collateral damage. ALWAYS use `continue` inside the record-processing loop to attempt every record in the batch.
+- **Gotcha: SyncEngine module resilience.** `_runModuleSyncCycle()` collects all errors thrown by individual modules during pull/push cycles. A module failure must not prevent other modules from executing. If pull fails, push is skipped for that module but subsequent modules are still processed. A combined exception containing all failures is thrown at the end of the loop.
 
 ## Scoring Engine (scoring_engine.dart)
 

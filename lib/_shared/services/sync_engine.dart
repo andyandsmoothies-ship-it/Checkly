@@ -143,18 +143,28 @@ class SyncEngine {
   }
 
   Future<void> _runModuleSyncCycle() async {
+    final List<Object> errors = [];
+
     for (final module in _modules) {
       if (!_connectivity.isOnline) {
         _state = SyncState.offline;
         return;
       }
 
+      bool pullFailed = false;
       try {
         await module.executePull();
       } catch (e, stackTrace) {
+        pullFailed = true;
         // ignore: avoid_print
-        debugPrint('[SyncEngine] ${module.runtimeType} pull error: $e\n$stackTrace');
-        throw Exception('Sync module failed during executePull: $e');
+        debugPrint(
+          '[SyncEngine] ${module.runtimeType} pull error: $e\n$stackTrace',
+        );
+        errors.add(e);
+      }
+
+      if (pullFailed) {
+        continue;
       }
 
       if (!_connectivity.isOnline) {
@@ -166,9 +176,17 @@ class SyncEngine {
         await module.executePush();
       } catch (e, stackTrace) {
         // ignore: avoid_print
-        debugPrint('[SyncEngine] ${module.runtimeType} push error: $e\n$stackTrace');
-        throw Exception('Sync module failed during executePush: $e');
+        debugPrint(
+          '[SyncEngine] ${module.runtimeType} push error: $e\n$stackTrace',
+        );
+        errors.add(e);
       }
+    }
+
+    if (errors.isNotEmpty) {
+      throw Exception(
+        'Sync engine failed with ${errors.length} error(s): ${errors.join("; ")}',
+      );
     }
   }
 

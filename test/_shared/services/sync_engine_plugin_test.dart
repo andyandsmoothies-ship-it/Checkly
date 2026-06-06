@@ -121,13 +121,13 @@ void main() {
         await engine.requestSync();
 
         expect(engine.state, equals(SyncState.error));
-        // execution halts at 20, 30 is never reached
+        // execution does not halt, module 30 is executed
         expect(
           log,
           equals([
             'pull-10', 'push-10',
-            'pull-20', // pull succeeds
-            // push throws
+            'pull-20', // pull throws, push-20 skipped
+            'pull-30', 'push-30',
           ]),
         );
       },

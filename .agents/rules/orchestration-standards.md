@@ -23,6 +23,7 @@ description: AI Orchestration, Workflow, and Handoff Standards.
 - **ATDD (Acceptance/Integration)**: Business Features/APIs. Run *before* technical design. Tests *WHAT* system does (API, serialization, e2e flows).
 - **TDD (Unit)**: Internal Logic/Math. Run *after* design, during coding. Tests *HOW* system computes (states, calculations).
 - **Universal Application**: When names differ, write contract/integration tests to define requirements first, then unit tests to drive class-level code.
+- **No Existence-Only Tests**: PROHIBITED: Tests asserting only imports/compilation (e.g. `expect(MyClass, isNotNull)`). Every test must verify at least one behavioral output (UI rendering, mock API responses, or state changes).
 ## 4. Workflow Execution & Handoff
 - **Pre-Flight**: Load `.agents/skills/`. Run `list_dir` to read local `GEMINI.md` files before starting design.
 - **Micro-Slicing**: If modifying >2 files or crossing boundaries, execute ONE slice/file, verify, and YIELD. PROHIBITED: bulk execution in one turn.

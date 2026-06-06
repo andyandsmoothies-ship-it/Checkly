@@ -55,6 +55,10 @@
 - **Rule**: Tests verify behavior, not implementation. Do not test business logic through volatile UI layers.
 - **Enforcement**: Refactoring internal code should not break tests (Liskov substitution). Keep test-only APIs (e.g., DB seeders) strictly bounded to the test project.
 
+### Rule: No Existence-Only Tests
+- **Rule**: Tests must assert behavior, not just imports or compilation.
+- **Enforcement**: Banned: assertions that only check if a class, widget, or file is not null (e.g., `expect(MyClass, isNotNull)`). Every test must verify at least one behavioral output (e.g., UI rendering text, a mock call return, or a state transition).
+
 ### Rule: Small Discrete Functions & Files
 - **Rule**: Files must NEVER exceed 400 lines. Split them to prevent AI confusion.
 - **Enforcement**: Functions MUST NOT exceed 30 lines. Max Cyclomatic Complexity is 10. Reduce size by pulling logic into new files, not by deleting comments or whitespace.
@@ -73,6 +77,10 @@
 ### Rule: No Premature Handoff
 - **Rule**: Do not claim completion, write handoff notes, or declare a feature/task finished until you have successfully executed the tests/compilation and verified they are 100% GREEN and passing.
 - **Enforcement**: Never assume a background command has succeeded. You must wait for the command to finish, call `command_status`, and view output files or stdout to confirm success before presenting results to the user.
+
+### Rule: Pattern Search Over Quick Fixes
+- **Rule**: Prioritize established industry-standard architectural patterns over simple local code changes for complex problems.
+- **Enforcement**: Research and present how other systems solve the problem at scale (e.g., CQRS Read-Model Caching, Event-Driven Communication, Concurrent Loops) before finalizing design plans.
 
 ## 2. Platform Architecture
 - **Frontend**: Flutter (Dart) — Offline-first with SQLite. Core UI rules are in `lib/GEMINI.md`.

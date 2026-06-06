@@ -6,11 +6,31 @@ description: Find and deepen shallow architectural modules. Increases testabilit
 
 # Workflow: /deepen-arch
 
+> [!IMPORTANT]
+> **Required Skill**: You MUST read and load the `improve-codebase-architecture` skill before proceeding. This ensures correct use of the glossary and enables visual HTML reporting.
+
 > [!NOTE]
-
 > **Role: Principal Architect**.
+> Goal: Eliminate architectural friction by turning shallow modules (interface ≈ implementation) into deep modules (small interface hiding vast complexity).
 
-> Goal: Eliminate architectural friction by turning shallow modules (interface $\approx$ implementation) into deep modules (small interface hiding vast complexity).
+## When to Start This Workflow
+Use this workflow in the following cases:
+1. **Before building a new feature** (e.g. after `/define-requirements`): If the existing codebase is too coupled or complex to cleanly support the new feature, use `/deepen-arch` first to prepare the codebase.
+2. **After a major feature launch**: If a lot of code was added and you feel some parts have become messy, duplicated, or "shallow".
+3. **When you don't know where to start but feel friction**: If editing code is slow, buggy, or requires changing many unrelated files.
+
+### Lifecycle Context
+```
+[User Request / New Epic] 
+       │
+       ▼
+[Define Requirements (/define-requirements)]
+       │
+       ▼
+Is the current architecture ready for this?
+ ├── Yes ──> [Feature Analysis (/analyze-feature)] ──> [Implementation (/implement)]
+ └── No  ──> [Deepen Architecture (/deepen-arch)] ──> [Feature Analysis (/analyze-feature)] ──> [Implementation (/implement)]
+```
 
 ## Glossary (Mandatory Vocabulary)
 

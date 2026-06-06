@@ -104,6 +104,8 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 
 - **Test Behavior, Not Just Mechanics**: Avoid the AI trap where tests are "too granular to communicate intent or too coarse to catch regression." Tests must act as design tools that prove a specific business behavior, not just blindly chase code coverage.
 
+- **No Existence-Only Tests**: PROHIBITED: Writing tests that only verify imports/existence (e.g. `expect(MyClass, isNotNull)`). Every test must verify at least one behavioral output (UI rendering, mock API calls, or state changes).
+
 - **New Files Only**: Create 1 new test file for 1 feature slice. Do not add tests to massive, generic test files (like `UserServiceTests.cs`). Create a specific new file (like `UserService_Password_Tests.cs`).
 
 - **Cover All States**: Your tests must cover:

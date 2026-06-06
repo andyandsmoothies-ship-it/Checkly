@@ -108,6 +108,8 @@ Workflow: /atdd | Track: [B2 / C]
 
 - **Assertions**: MANDATORY: Assert WHAT returned. PROHIBITED: Bare `Assert.NotNull()`. Max 5 HTTP/DB calls per test.
 
+- **No Existence-Only Tests**: PROHIBITED: Writing tests that only verify imports/existence (e.g. `expect(MyClass, isNotNull)`). Every test must verify at least one behavioral output (UI rendering, mock API calls, or state changes).
+
 ### 2c. Smoke Gate (Red for the Right Reason)
 
 - **Pre-Flight**: Run Infrastructure Checklist from `atdd-quality-gates` Gate 1.
