@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/tests/">
+    <Project Path="tests/Checkly.Api.Tests/Checkly.Api.Tests.csproj" />
+  </Folder>
+  <Project Path="Checkly.Api.csproj" />
+</Solution>

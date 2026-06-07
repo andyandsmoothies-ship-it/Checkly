@@ -46,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 35;
+  int get schemaVersion => 36;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -287,6 +287,14 @@ class AppDatabase extends _$AppDatabase {
           pendingActionPlanUpdates,
           pendingActionPlanUpdates.rootCause,
         );
+      }
+      if (from < 36) {
+        await m.addColumn(cachedSubmissions, cachedSubmissions.areaManagerId);
+        await m.addColumn(cachedSubmissions, cachedSubmissions.areaManagerName);
+        await m.addColumn(cachedSubmissions, cachedSubmissions.storeManagerId);
+        await m.addColumn(cachedSubmissions, cachedSubmissions.storeManagerName);
+        await m.addColumn(cachedActionPlans, cachedActionPlans.areaManagerId);
+        await m.addColumn(cachedActionPlans, cachedActionPlans.areaManagerName);
       }
     },
     beforeOpen: (details) async {

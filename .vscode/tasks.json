@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Drift Watcher",
+      "type": "shell",
+      "command": "dart run build_runner watch --delete-conflicting-outputs",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Drift Build (Database Only)",
+      "type": "shell",
+      "command": "dart run build_runner build --build-filter=\"lib/core/database/app_database.dart\"",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Build Backend (Solution)",
+      "type": "shell",
+      "command": "rtk dotnet build Checkly.slnx",
+      "options": {
+        "cwd": "${workspaceFolder}/server"
+      },
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "build"
+    }
+  ]
+}

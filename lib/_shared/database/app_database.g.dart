@@ -3467,6 +3467,50 @@ class $CachedSubmissionsTable extends CachedSubmissions
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _areaManagerIdMeta = const VerificationMeta(
+    'areaManagerId',
+  );
+  @override
+  late final GeneratedColumn<String> areaManagerId = GeneratedColumn<String>(
+    'area_manager_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _areaManagerNameMeta = const VerificationMeta(
+    'areaManagerName',
+  );
+  @override
+  late final GeneratedColumn<String> areaManagerName = GeneratedColumn<String>(
+    'area_manager_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _storeManagerIdMeta = const VerificationMeta(
+    'storeManagerId',
+  );
+  @override
+  late final GeneratedColumn<String> storeManagerId = GeneratedColumn<String>(
+    'store_manager_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _storeManagerNameMeta = const VerificationMeta(
+    'storeManagerName',
+  );
+  @override
+  late final GeneratedColumn<String> storeManagerName = GeneratedColumn<String>(
+    'store_manager_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -3490,6 +3534,10 @@ class $CachedSubmissionsTable extends CachedSubmissions
     voidedAt,
     isGeofenceBypassed,
     distanceMetersOff,
+    areaManagerId,
+    areaManagerName,
+    storeManagerId,
+    storeManagerName,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3662,6 +3710,42 @@ class $CachedSubmissionsTable extends CachedSubmissions
         ),
       );
     }
+    if (data.containsKey('area_manager_id')) {
+      context.handle(
+        _areaManagerIdMeta,
+        areaManagerId.isAcceptableOrUnknown(
+          data['area_manager_id']!,
+          _areaManagerIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('area_manager_name')) {
+      context.handle(
+        _areaManagerNameMeta,
+        areaManagerName.isAcceptableOrUnknown(
+          data['area_manager_name']!,
+          _areaManagerNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('store_manager_id')) {
+      context.handle(
+        _storeManagerIdMeta,
+        storeManagerId.isAcceptableOrUnknown(
+          data['store_manager_id']!,
+          _storeManagerIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('store_manager_name')) {
+      context.handle(
+        _storeManagerNameMeta,
+        storeManagerName.isAcceptableOrUnknown(
+          data['store_manager_name']!,
+          _storeManagerNameMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -3755,6 +3839,22 @@ class $CachedSubmissionsTable extends CachedSubmissions
         DriftSqlType.int,
         data['${effectivePrefix}distance_meters_off'],
       ),
+      areaManagerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}area_manager_id'],
+      ),
+      areaManagerName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}area_manager_name'],
+      ),
+      storeManagerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store_manager_id'],
+      ),
+      storeManagerName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store_manager_name'],
+      ),
     );
   }
 
@@ -3787,6 +3887,10 @@ class CachedSubmission extends DataClass
   final DateTime? voidedAt;
   final bool? isGeofenceBypassed;
   final int? distanceMetersOff;
+  final String? areaManagerId;
+  final String? areaManagerName;
+  final String? storeManagerId;
+  final String? storeManagerName;
   const CachedSubmission({
     required this.id,
     this.templateId,
@@ -3809,6 +3913,10 @@ class CachedSubmission extends DataClass
     this.voidedAt,
     this.isGeofenceBypassed,
     this.distanceMetersOff,
+    this.areaManagerId,
+    this.areaManagerName,
+    this.storeManagerId,
+    this.storeManagerName,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3869,6 +3977,18 @@ class CachedSubmission extends DataClass
     }
     if (!nullToAbsent || distanceMetersOff != null) {
       map['distance_meters_off'] = Variable<int>(distanceMetersOff);
+    }
+    if (!nullToAbsent || areaManagerId != null) {
+      map['area_manager_id'] = Variable<String>(areaManagerId);
+    }
+    if (!nullToAbsent || areaManagerName != null) {
+      map['area_manager_name'] = Variable<String>(areaManagerName);
+    }
+    if (!nullToAbsent || storeManagerId != null) {
+      map['store_manager_id'] = Variable<String>(storeManagerId);
+    }
+    if (!nullToAbsent || storeManagerName != null) {
+      map['store_manager_name'] = Variable<String>(storeManagerName);
     }
     return map;
   }
@@ -3932,6 +4052,18 @@ class CachedSubmission extends DataClass
       distanceMetersOff: distanceMetersOff == null && nullToAbsent
           ? const Value.absent()
           : Value(distanceMetersOff),
+      areaManagerId: areaManagerId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(areaManagerId),
+      areaManagerName: areaManagerName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(areaManagerName),
+      storeManagerId: storeManagerId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(storeManagerId),
+      storeManagerName: storeManagerName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(storeManagerName),
     );
   }
 
@@ -3964,6 +4096,10 @@ class CachedSubmission extends DataClass
         json['isGeofenceBypassed'],
       ),
       distanceMetersOff: serializer.fromJson<int?>(json['distanceMetersOff']),
+      areaManagerId: serializer.fromJson<String?>(json['areaManagerId']),
+      areaManagerName: serializer.fromJson<String?>(json['areaManagerName']),
+      storeManagerId: serializer.fromJson<String?>(json['storeManagerId']),
+      storeManagerName: serializer.fromJson<String?>(json['storeManagerName']),
     );
   }
   @override
@@ -3991,6 +4127,10 @@ class CachedSubmission extends DataClass
       'voidedAt': serializer.toJson<DateTime?>(voidedAt),
       'isGeofenceBypassed': serializer.toJson<bool?>(isGeofenceBypassed),
       'distanceMetersOff': serializer.toJson<int?>(distanceMetersOff),
+      'areaManagerId': serializer.toJson<String?>(areaManagerId),
+      'areaManagerName': serializer.toJson<String?>(areaManagerName),
+      'storeManagerId': serializer.toJson<String?>(storeManagerId),
+      'storeManagerName': serializer.toJson<String?>(storeManagerName),
     };
   }
 
@@ -4016,6 +4156,10 @@ class CachedSubmission extends DataClass
     Value<DateTime?> voidedAt = const Value.absent(),
     Value<bool?> isGeofenceBypassed = const Value.absent(),
     Value<int?> distanceMetersOff = const Value.absent(),
+    Value<String?> areaManagerId = const Value.absent(),
+    Value<String?> areaManagerName = const Value.absent(),
+    Value<String?> storeManagerId = const Value.absent(),
+    Value<String?> storeManagerName = const Value.absent(),
   }) => CachedSubmission(
     id: id ?? this.id,
     templateId: templateId.present ? templateId.value : this.templateId,
@@ -4050,6 +4194,18 @@ class CachedSubmission extends DataClass
     distanceMetersOff: distanceMetersOff.present
         ? distanceMetersOff.value
         : this.distanceMetersOff,
+    areaManagerId: areaManagerId.present
+        ? areaManagerId.value
+        : this.areaManagerId,
+    areaManagerName: areaManagerName.present
+        ? areaManagerName.value
+        : this.areaManagerName,
+    storeManagerId: storeManagerId.present
+        ? storeManagerId.value
+        : this.storeManagerId,
+    storeManagerName: storeManagerName.present
+        ? storeManagerName.value
+        : this.storeManagerName,
   );
   CachedSubmission copyWithCompanion(CachedSubmissionsCompanion data) {
     return CachedSubmission(
@@ -4100,6 +4256,18 @@ class CachedSubmission extends DataClass
       distanceMetersOff: data.distanceMetersOff.present
           ? data.distanceMetersOff.value
           : this.distanceMetersOff,
+      areaManagerId: data.areaManagerId.present
+          ? data.areaManagerId.value
+          : this.areaManagerId,
+      areaManagerName: data.areaManagerName.present
+          ? data.areaManagerName.value
+          : this.areaManagerName,
+      storeManagerId: data.storeManagerId.present
+          ? data.storeManagerId.value
+          : this.storeManagerId,
+      storeManagerName: data.storeManagerName.present
+          ? data.storeManagerName.value
+          : this.storeManagerName,
     );
   }
 
@@ -4126,7 +4294,11 @@ class CachedSubmission extends DataClass
           ..write('voidReason: $voidReason, ')
           ..write('voidedAt: $voidedAt, ')
           ..write('isGeofenceBypassed: $isGeofenceBypassed, ')
-          ..write('distanceMetersOff: $distanceMetersOff')
+          ..write('distanceMetersOff: $distanceMetersOff, ')
+          ..write('areaManagerId: $areaManagerId, ')
+          ..write('areaManagerName: $areaManagerName, ')
+          ..write('storeManagerId: $storeManagerId, ')
+          ..write('storeManagerName: $storeManagerName')
           ..write(')'))
         .toString();
   }
@@ -4154,6 +4326,10 @@ class CachedSubmission extends DataClass
     voidedAt,
     isGeofenceBypassed,
     distanceMetersOff,
+    areaManagerId,
+    areaManagerName,
+    storeManagerId,
+    storeManagerName,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -4179,7 +4355,11 @@ class CachedSubmission extends DataClass
           other.voidReason == this.voidReason &&
           other.voidedAt == this.voidedAt &&
           other.isGeofenceBypassed == this.isGeofenceBypassed &&
-          other.distanceMetersOff == this.distanceMetersOff);
+          other.distanceMetersOff == this.distanceMetersOff &&
+          other.areaManagerId == this.areaManagerId &&
+          other.areaManagerName == this.areaManagerName &&
+          other.storeManagerId == this.storeManagerId &&
+          other.storeManagerName == this.storeManagerName);
 }
 
 class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
@@ -4204,6 +4384,10 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
   final Value<DateTime?> voidedAt;
   final Value<bool?> isGeofenceBypassed;
   final Value<int?> distanceMetersOff;
+  final Value<String?> areaManagerId;
+  final Value<String?> areaManagerName;
+  final Value<String?> storeManagerId;
+  final Value<String?> storeManagerName;
   final Value<int> rowid;
   const CachedSubmissionsCompanion({
     this.id = const Value.absent(),
@@ -4227,6 +4411,10 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     this.voidedAt = const Value.absent(),
     this.isGeofenceBypassed = const Value.absent(),
     this.distanceMetersOff = const Value.absent(),
+    this.areaManagerId = const Value.absent(),
+    this.areaManagerName = const Value.absent(),
+    this.storeManagerId = const Value.absent(),
+    this.storeManagerName = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CachedSubmissionsCompanion.insert({
@@ -4251,6 +4439,10 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     this.voidedAt = const Value.absent(),
     this.isGeofenceBypassed = const Value.absent(),
     this.distanceMetersOff = const Value.absent(),
+    this.areaManagerId = const Value.absent(),
+    this.areaManagerName = const Value.absent(),
+    this.storeManagerId = const Value.absent(),
+    this.storeManagerName = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        status = Value(status),
@@ -4277,6 +4469,10 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     Expression<DateTime>? voidedAt,
     Expression<bool>? isGeofenceBypassed,
     Expression<int>? distanceMetersOff,
+    Expression<String>? areaManagerId,
+    Expression<String>? areaManagerName,
+    Expression<String>? storeManagerId,
+    Expression<String>? storeManagerName,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4302,6 +4498,10 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
       if (isGeofenceBypassed != null)
         'is_geofence_bypassed': isGeofenceBypassed,
       if (distanceMetersOff != null) 'distance_meters_off': distanceMetersOff,
+      if (areaManagerId != null) 'area_manager_id': areaManagerId,
+      if (areaManagerName != null) 'area_manager_name': areaManagerName,
+      if (storeManagerId != null) 'store_manager_id': storeManagerId,
+      if (storeManagerName != null) 'store_manager_name': storeManagerName,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4328,6 +4528,10 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     Value<DateTime?>? voidedAt,
     Value<bool?>? isGeofenceBypassed,
     Value<int?>? distanceMetersOff,
+    Value<String?>? areaManagerId,
+    Value<String?>? areaManagerName,
+    Value<String?>? storeManagerId,
+    Value<String?>? storeManagerName,
     Value<int>? rowid,
   }) {
     return CachedSubmissionsCompanion(
@@ -4352,6 +4556,10 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
       voidedAt: voidedAt ?? this.voidedAt,
       isGeofenceBypassed: isGeofenceBypassed ?? this.isGeofenceBypassed,
       distanceMetersOff: distanceMetersOff ?? this.distanceMetersOff,
+      areaManagerId: areaManagerId ?? this.areaManagerId,
+      areaManagerName: areaManagerName ?? this.areaManagerName,
+      storeManagerId: storeManagerId ?? this.storeManagerId,
+      storeManagerName: storeManagerName ?? this.storeManagerName,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4422,6 +4630,18 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     if (distanceMetersOff.present) {
       map['distance_meters_off'] = Variable<int>(distanceMetersOff.value);
     }
+    if (areaManagerId.present) {
+      map['area_manager_id'] = Variable<String>(areaManagerId.value);
+    }
+    if (areaManagerName.present) {
+      map['area_manager_name'] = Variable<String>(areaManagerName.value);
+    }
+    if (storeManagerId.present) {
+      map['store_manager_id'] = Variable<String>(storeManagerId.value);
+    }
+    if (storeManagerName.present) {
+      map['store_manager_name'] = Variable<String>(storeManagerName.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4452,6 +4672,10 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
           ..write('voidedAt: $voidedAt, ')
           ..write('isGeofenceBypassed: $isGeofenceBypassed, ')
           ..write('distanceMetersOff: $distanceMetersOff, ')
+          ..write('areaManagerId: $areaManagerId, ')
+          ..write('areaManagerName: $areaManagerName, ')
+          ..write('storeManagerId: $storeManagerId, ')
+          ..write('storeManagerName: $storeManagerName, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4637,6 +4861,28 @@ class $CachedActionPlansTable extends CachedActionPlans
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _areaManagerIdMeta = const VerificationMeta(
+    'areaManagerId',
+  );
+  @override
+  late final GeneratedColumn<String> areaManagerId = GeneratedColumn<String>(
+    'area_manager_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _areaManagerNameMeta = const VerificationMeta(
+    'areaManagerName',
+  );
+  @override
+  late final GeneratedColumn<String> areaManagerName = GeneratedColumn<String>(
+    'area_manager_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _verifierNameMeta = const VerificationMeta(
     'verifierName',
   );
@@ -4721,6 +4967,8 @@ class $CachedActionPlansTable extends CachedActionPlans
     storeName,
     storeId,
     storeManagerName,
+    areaManagerId,
+    areaManagerName,
     verifierName,
     evidenceSubmittedAt,
     evidenceSubmittedByName,
@@ -4860,6 +5108,24 @@ class $CachedActionPlansTable extends CachedActionPlans
         ),
       );
     }
+    if (data.containsKey('area_manager_id')) {
+      context.handle(
+        _areaManagerIdMeta,
+        areaManagerId.isAcceptableOrUnknown(
+          data['area_manager_id']!,
+          _areaManagerIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('area_manager_name')) {
+      context.handle(
+        _areaManagerNameMeta,
+        areaManagerName.isAcceptableOrUnknown(
+          data['area_manager_name']!,
+          _areaManagerNameMeta,
+        ),
+      );
+    }
     if (data.containsKey('verifier_name')) {
       context.handle(
         _verifierNameMeta,
@@ -4985,6 +5251,14 @@ class $CachedActionPlansTable extends CachedActionPlans
         DriftSqlType.string,
         data['${effectivePrefix}store_manager_name'],
       ),
+      areaManagerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}area_manager_id'],
+      ),
+      areaManagerName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}area_manager_name'],
+      ),
       verifierName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}verifier_name'],
@@ -5036,6 +5310,8 @@ class CachedActionPlan extends DataClass
   final String? storeName;
   final String? storeId;
   final String? storeManagerName;
+  final String? areaManagerId;
+  final String? areaManagerName;
   final String? verifierName;
   final DateTime? evidenceSubmittedAt;
   final String? evidenceSubmittedByName;
@@ -5059,6 +5335,8 @@ class CachedActionPlan extends DataClass
     this.storeName,
     this.storeId,
     this.storeManagerName,
+    this.areaManagerId,
+    this.areaManagerName,
     this.verifierName,
     this.evidenceSubmittedAt,
     this.evidenceSubmittedByName,
@@ -5108,6 +5386,12 @@ class CachedActionPlan extends DataClass
     }
     if (!nullToAbsent || storeManagerName != null) {
       map['store_manager_name'] = Variable<String>(storeManagerName);
+    }
+    if (!nullToAbsent || areaManagerId != null) {
+      map['area_manager_id'] = Variable<String>(areaManagerId);
+    }
+    if (!nullToAbsent || areaManagerName != null) {
+      map['area_manager_name'] = Variable<String>(areaManagerName);
     }
     if (!nullToAbsent || verifierName != null) {
       map['verifier_name'] = Variable<String>(verifierName);
@@ -5170,6 +5454,12 @@ class CachedActionPlan extends DataClass
       storeManagerName: storeManagerName == null && nullToAbsent
           ? const Value.absent()
           : Value(storeManagerName),
+      areaManagerId: areaManagerId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(areaManagerId),
+      areaManagerName: areaManagerName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(areaManagerName),
       verifierName: verifierName == null && nullToAbsent
           ? const Value.absent()
           : Value(verifierName),
@@ -5209,6 +5499,8 @@ class CachedActionPlan extends DataClass
       storeName: serializer.fromJson<String?>(json['storeName']),
       storeId: serializer.fromJson<String?>(json['storeId']),
       storeManagerName: serializer.fromJson<String?>(json['storeManagerName']),
+      areaManagerId: serializer.fromJson<String?>(json['areaManagerId']),
+      areaManagerName: serializer.fromJson<String?>(json['areaManagerName']),
       verifierName: serializer.fromJson<String?>(json['verifierName']),
       evidenceSubmittedAt: serializer.fromJson<DateTime?>(
         json['evidenceSubmittedAt'],
@@ -5243,6 +5535,8 @@ class CachedActionPlan extends DataClass
       'storeName': serializer.toJson<String?>(storeName),
       'storeId': serializer.toJson<String?>(storeId),
       'storeManagerName': serializer.toJson<String?>(storeManagerName),
+      'areaManagerId': serializer.toJson<String?>(areaManagerId),
+      'areaManagerName': serializer.toJson<String?>(areaManagerName),
       'verifierName': serializer.toJson<String?>(verifierName),
       'evidenceSubmittedAt': serializer.toJson<DateTime?>(evidenceSubmittedAt),
       'evidenceSubmittedByName': serializer.toJson<String?>(
@@ -5271,6 +5565,8 @@ class CachedActionPlan extends DataClass
     Value<String?> storeName = const Value.absent(),
     Value<String?> storeId = const Value.absent(),
     Value<String?> storeManagerName = const Value.absent(),
+    Value<String?> areaManagerId = const Value.absent(),
+    Value<String?> areaManagerName = const Value.absent(),
     Value<String?> verifierName = const Value.absent(),
     Value<DateTime?> evidenceSubmittedAt = const Value.absent(),
     Value<String?> evidenceSubmittedByName = const Value.absent(),
@@ -5302,6 +5598,12 @@ class CachedActionPlan extends DataClass
     storeManagerName: storeManagerName.present
         ? storeManagerName.value
         : this.storeManagerName,
+    areaManagerId: areaManagerId.present
+        ? areaManagerId.value
+        : this.areaManagerId,
+    areaManagerName: areaManagerName.present
+        ? areaManagerName.value
+        : this.areaManagerName,
     verifierName: verifierName.present ? verifierName.value : this.verifierName,
     evidenceSubmittedAt: evidenceSubmittedAt.present
         ? evidenceSubmittedAt.value
@@ -5349,6 +5651,12 @@ class CachedActionPlan extends DataClass
       storeManagerName: data.storeManagerName.present
           ? data.storeManagerName.value
           : this.storeManagerName,
+      areaManagerId: data.areaManagerId.present
+          ? data.areaManagerId.value
+          : this.areaManagerId,
+      areaManagerName: data.areaManagerName.present
+          ? data.areaManagerName.value
+          : this.areaManagerName,
       verifierName: data.verifierName.present
           ? data.verifierName.value
           : this.verifierName,
@@ -5385,6 +5693,8 @@ class CachedActionPlan extends DataClass
           ..write('storeName: $storeName, ')
           ..write('storeId: $storeId, ')
           ..write('storeManagerName: $storeManagerName, ')
+          ..write('areaManagerId: $areaManagerId, ')
+          ..write('areaManagerName: $areaManagerName, ')
           ..write('verifierName: $verifierName, ')
           ..write('evidenceSubmittedAt: $evidenceSubmittedAt, ')
           ..write('evidenceSubmittedByName: $evidenceSubmittedByName, ')
@@ -5413,6 +5723,8 @@ class CachedActionPlan extends DataClass
     storeName,
     storeId,
     storeManagerName,
+    areaManagerId,
+    areaManagerName,
     verifierName,
     evidenceSubmittedAt,
     evidenceSubmittedByName,
@@ -5440,6 +5752,8 @@ class CachedActionPlan extends DataClass
           other.storeName == this.storeName &&
           other.storeId == this.storeId &&
           other.storeManagerName == this.storeManagerName &&
+          other.areaManagerId == this.areaManagerId &&
+          other.areaManagerName == this.areaManagerName &&
           other.verifierName == this.verifierName &&
           other.evidenceSubmittedAt == this.evidenceSubmittedAt &&
           other.evidenceSubmittedByName == this.evidenceSubmittedByName &&
@@ -5465,6 +5779,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
   final Value<String?> storeName;
   final Value<String?> storeId;
   final Value<String?> storeManagerName;
+  final Value<String?> areaManagerId;
+  final Value<String?> areaManagerName;
   final Value<String?> verifierName;
   final Value<DateTime?> evidenceSubmittedAt;
   final Value<String?> evidenceSubmittedByName;
@@ -5489,6 +5805,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     this.storeName = const Value.absent(),
     this.storeId = const Value.absent(),
     this.storeManagerName = const Value.absent(),
+    this.areaManagerId = const Value.absent(),
+    this.areaManagerName = const Value.absent(),
     this.verifierName = const Value.absent(),
     this.evidenceSubmittedAt = const Value.absent(),
     this.evidenceSubmittedByName = const Value.absent(),
@@ -5514,6 +5832,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     this.storeName = const Value.absent(),
     this.storeId = const Value.absent(),
     this.storeManagerName = const Value.absent(),
+    this.areaManagerId = const Value.absent(),
+    this.areaManagerName = const Value.absent(),
     this.verifierName = const Value.absent(),
     this.evidenceSubmittedAt = const Value.absent(),
     this.evidenceSubmittedByName = const Value.absent(),
@@ -5543,6 +5863,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     Expression<String>? storeName,
     Expression<String>? storeId,
     Expression<String>? storeManagerName,
+    Expression<String>? areaManagerId,
+    Expression<String>? areaManagerName,
     Expression<String>? verifierName,
     Expression<DateTime>? evidenceSubmittedAt,
     Expression<String>? evidenceSubmittedByName,
@@ -5568,6 +5890,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
       if (storeName != null) 'store_name': storeName,
       if (storeId != null) 'store_id': storeId,
       if (storeManagerName != null) 'store_manager_name': storeManagerName,
+      if (areaManagerId != null) 'area_manager_id': areaManagerId,
+      if (areaManagerName != null) 'area_manager_name': areaManagerName,
       if (verifierName != null) 'verifier_name': verifierName,
       if (evidenceSubmittedAt != null)
         'evidence_submitted_at': evidenceSubmittedAt,
@@ -5598,6 +5922,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     Value<String?>? storeName,
     Value<String?>? storeId,
     Value<String?>? storeManagerName,
+    Value<String?>? areaManagerId,
+    Value<String?>? areaManagerName,
     Value<String?>? verifierName,
     Value<DateTime?>? evidenceSubmittedAt,
     Value<String?>? evidenceSubmittedByName,
@@ -5623,6 +5949,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
       storeName: storeName ?? this.storeName,
       storeId: storeId ?? this.storeId,
       storeManagerName: storeManagerName ?? this.storeManagerName,
+      areaManagerId: areaManagerId ?? this.areaManagerId,
+      areaManagerName: areaManagerName ?? this.areaManagerName,
       verifierName: verifierName ?? this.verifierName,
       evidenceSubmittedAt: evidenceSubmittedAt ?? this.evidenceSubmittedAt,
       evidenceSubmittedByName:
@@ -5685,6 +6013,12 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     if (storeManagerName.present) {
       map['store_manager_name'] = Variable<String>(storeManagerName.value);
     }
+    if (areaManagerId.present) {
+      map['area_manager_id'] = Variable<String>(areaManagerId.value);
+    }
+    if (areaManagerName.present) {
+      map['area_manager_name'] = Variable<String>(areaManagerName.value);
+    }
     if (verifierName.present) {
       map['verifier_name'] = Variable<String>(verifierName.value);
     }
@@ -5734,6 +6068,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
           ..write('storeName: $storeName, ')
           ..write('storeId: $storeId, ')
           ..write('storeManagerName: $storeManagerName, ')
+          ..write('areaManagerId: $areaManagerId, ')
+          ..write('areaManagerName: $areaManagerName, ')
           ..write('verifierName: $verifierName, ')
           ..write('evidenceSubmittedAt: $evidenceSubmittedAt, ')
           ..write('evidenceSubmittedByName: $evidenceSubmittedByName, ')
@@ -14125,6 +14461,10 @@ typedef $$CachedSubmissionsTableCreateCompanionBuilder =
       Value<DateTime?> voidedAt,
       Value<bool?> isGeofenceBypassed,
       Value<int?> distanceMetersOff,
+      Value<String?> areaManagerId,
+      Value<String?> areaManagerName,
+      Value<String?> storeManagerId,
+      Value<String?> storeManagerName,
       Value<int> rowid,
     });
 typedef $$CachedSubmissionsTableUpdateCompanionBuilder =
@@ -14150,6 +14490,10 @@ typedef $$CachedSubmissionsTableUpdateCompanionBuilder =
       Value<DateTime?> voidedAt,
       Value<bool?> isGeofenceBypassed,
       Value<int?> distanceMetersOff,
+      Value<String?> areaManagerId,
+      Value<String?> areaManagerName,
+      Value<String?> storeManagerId,
+      Value<String?> storeManagerName,
       Value<int> rowid,
     });
 
@@ -14264,6 +14608,26 @@ class $$CachedSubmissionsTableFilterComposer
 
   ColumnFilters<int> get distanceMetersOff => $composableBuilder(
     column: $table.distanceMetersOff,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get areaManagerId => $composableBuilder(
+    column: $table.areaManagerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get areaManagerName => $composableBuilder(
+    column: $table.areaManagerName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get storeManagerId => $composableBuilder(
+    column: $table.storeManagerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get storeManagerName => $composableBuilder(
+    column: $table.storeManagerName,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -14381,6 +14745,26 @@ class $$CachedSubmissionsTableOrderingComposer
     column: $table.distanceMetersOff,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get areaManagerId => $composableBuilder(
+    column: $table.areaManagerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get areaManagerName => $composableBuilder(
+    column: $table.areaManagerName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get storeManagerId => $composableBuilder(
+    column: $table.storeManagerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get storeManagerName => $composableBuilder(
+    column: $table.storeManagerName,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CachedSubmissionsTableAnnotationComposer
@@ -14480,6 +14864,26 @@ class $$CachedSubmissionsTableAnnotationComposer
     column: $table.distanceMetersOff,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get areaManagerId => $composableBuilder(
+    column: $table.areaManagerId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get areaManagerName => $composableBuilder(
+    column: $table.areaManagerName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get storeManagerId => $composableBuilder(
+    column: $table.storeManagerId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get storeManagerName => $composableBuilder(
+    column: $table.storeManagerName,
+    builder: (column) => column,
+  );
 }
 
 class $$CachedSubmissionsTableTableManager
@@ -14543,6 +14947,10 @@ class $$CachedSubmissionsTableTableManager
                 Value<DateTime?> voidedAt = const Value.absent(),
                 Value<bool?> isGeofenceBypassed = const Value.absent(),
                 Value<int?> distanceMetersOff = const Value.absent(),
+                Value<String?> areaManagerId = const Value.absent(),
+                Value<String?> areaManagerName = const Value.absent(),
+                Value<String?> storeManagerId = const Value.absent(),
+                Value<String?> storeManagerName = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedSubmissionsCompanion(
                 id: id,
@@ -14566,6 +14974,10 @@ class $$CachedSubmissionsTableTableManager
                 voidedAt: voidedAt,
                 isGeofenceBypassed: isGeofenceBypassed,
                 distanceMetersOff: distanceMetersOff,
+                areaManagerId: areaManagerId,
+                areaManagerName: areaManagerName,
+                storeManagerId: storeManagerId,
+                storeManagerName: storeManagerName,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -14591,6 +15003,10 @@ class $$CachedSubmissionsTableTableManager
                 Value<DateTime?> voidedAt = const Value.absent(),
                 Value<bool?> isGeofenceBypassed = const Value.absent(),
                 Value<int?> distanceMetersOff = const Value.absent(),
+                Value<String?> areaManagerId = const Value.absent(),
+                Value<String?> areaManagerName = const Value.absent(),
+                Value<String?> storeManagerId = const Value.absent(),
+                Value<String?> storeManagerName = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedSubmissionsCompanion.insert(
                 id: id,
@@ -14614,6 +15030,10 @@ class $$CachedSubmissionsTableTableManager
                 voidedAt: voidedAt,
                 isGeofenceBypassed: isGeofenceBypassed,
                 distanceMetersOff: distanceMetersOff,
+                areaManagerId: areaManagerId,
+                areaManagerName: areaManagerName,
+                storeManagerId: storeManagerId,
+                storeManagerName: storeManagerName,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -14663,6 +15083,8 @@ typedef $$CachedActionPlansTableCreateCompanionBuilder =
       Value<String?> storeName,
       Value<String?> storeId,
       Value<String?> storeManagerName,
+      Value<String?> areaManagerId,
+      Value<String?> areaManagerName,
       Value<String?> verifierName,
       Value<DateTime?> evidenceSubmittedAt,
       Value<String?> evidenceSubmittedByName,
@@ -14689,6 +15111,8 @@ typedef $$CachedActionPlansTableUpdateCompanionBuilder =
       Value<String?> storeName,
       Value<String?> storeId,
       Value<String?> storeManagerName,
+      Value<String?> areaManagerId,
+      Value<String?> areaManagerName,
       Value<String?> verifierName,
       Value<DateTime?> evidenceSubmittedAt,
       Value<String?> evidenceSubmittedByName,
@@ -14784,6 +15208,16 @@ class $$CachedActionPlansTableFilterComposer
 
   ColumnFilters<String> get storeManagerName => $composableBuilder(
     column: $table.storeManagerName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get areaManagerId => $composableBuilder(
+    column: $table.areaManagerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get areaManagerName => $composableBuilder(
+    column: $table.areaManagerName,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -14907,6 +15341,16 @@ class $$CachedActionPlansTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get areaManagerId => $composableBuilder(
+    column: $table.areaManagerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get areaManagerName => $composableBuilder(
+    column: $table.areaManagerName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get verifierName => $composableBuilder(
     column: $table.verifierName,
     builder: (column) => ColumnOrderings(column),
@@ -15011,6 +15455,16 @@ class $$CachedActionPlansTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get areaManagerId => $composableBuilder(
+    column: $table.areaManagerId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get areaManagerName => $composableBuilder(
+    column: $table.areaManagerName,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get verifierName => $composableBuilder(
     column: $table.verifierName,
     builder: (column) => column,
@@ -15094,6 +15548,8 @@ class $$CachedActionPlansTableTableManager
                 Value<String?> storeName = const Value.absent(),
                 Value<String?> storeId = const Value.absent(),
                 Value<String?> storeManagerName = const Value.absent(),
+                Value<String?> areaManagerId = const Value.absent(),
+                Value<String?> areaManagerName = const Value.absent(),
                 Value<String?> verifierName = const Value.absent(),
                 Value<DateTime?> evidenceSubmittedAt = const Value.absent(),
                 Value<String?> evidenceSubmittedByName = const Value.absent(),
@@ -15118,6 +15574,8 @@ class $$CachedActionPlansTableTableManager
                 storeName: storeName,
                 storeId: storeId,
                 storeManagerName: storeManagerName,
+                areaManagerId: areaManagerId,
+                areaManagerName: areaManagerName,
                 verifierName: verifierName,
                 evidenceSubmittedAt: evidenceSubmittedAt,
                 evidenceSubmittedByName: evidenceSubmittedByName,
@@ -15144,6 +15602,8 @@ class $$CachedActionPlansTableTableManager
                 Value<String?> storeName = const Value.absent(),
                 Value<String?> storeId = const Value.absent(),
                 Value<String?> storeManagerName = const Value.absent(),
+                Value<String?> areaManagerId = const Value.absent(),
+                Value<String?> areaManagerName = const Value.absent(),
                 Value<String?> verifierName = const Value.absent(),
                 Value<DateTime?> evidenceSubmittedAt = const Value.absent(),
                 Value<String?> evidenceSubmittedByName = const Value.absent(),
@@ -15168,6 +15628,8 @@ class $$CachedActionPlansTableTableManager
                 storeName: storeName,
                 storeId: storeId,
                 storeManagerName: storeManagerName,
+                areaManagerId: areaManagerId,
+                areaManagerName: areaManagerName,
                 verifierName: verifierName,
                 evidenceSubmittedAt: evidenceSubmittedAt,
                 evidenceSubmittedByName: evidenceSubmittedByName,

@@ -97,5 +97,67 @@ void main() {
       );
       expect(find.byIcon(Icons.info_outline), findsNothing);
     });
+
+    testWidgets('Renders Area Manager and Store Manager info rows when present', (tester) async {
+      final detail = SubmissionDetailDto(
+        id: 's4',
+        templateTitle: 'Weekly Kitchen Audit',
+        storeName: 'Store 101',
+        auditorName: 'John Doe',
+        status: 'completed',
+        totalScore: 92.5,
+        createdAt: DateTime.now(),
+        completedAt: DateTime.now(),
+        answers: [],
+        isWeighted: false,
+        scoringMode: 'up',
+        areaManagerName: 'Alice Smith',
+        storeManagerName: 'Bob Jones',
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HeaderCard(detail: detail, scoringMode: 'up'),
+          ),
+        ),
+      );
+
+      expect(find.text('Area Manager: Alice Smith'), findsOneWidget);
+      expect(find.text('Store Manager: Bob Jones'), findsOneWidget);
+      expect(find.byIcon(Icons.supervised_user_circle_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.badge_outlined), findsOneWidget);
+    });
+
+    testWidgets('Hides Area Manager and Store Manager info rows when they are null', (tester) async {
+      final detail = SubmissionDetailDto(
+        id: 's5',
+        templateTitle: 'Weekly Kitchen Audit',
+        storeName: 'Store 101',
+        auditorName: 'John Doe',
+        status: 'completed',
+        totalScore: 92.5,
+        createdAt: DateTime.now(),
+        completedAt: DateTime.now(),
+        answers: [],
+        isWeighted: false,
+        scoringMode: 'up',
+        areaManagerName: null,
+        storeManagerName: null,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HeaderCard(detail: detail, scoringMode: 'up'),
+          ),
+        ),
+      );
+
+      expect(find.textContaining('Area Manager:'), findsNothing);
+      expect(find.textContaining('Store Manager:'), findsNothing);
+      expect(find.byIcon(Icons.supervised_user_circle_outlined), findsNothing);
+      expect(find.byIcon(Icons.badge_outlined), findsNothing);
+    });
   });
 }

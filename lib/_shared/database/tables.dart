@@ -119,6 +119,10 @@ class CachedSubmissions extends Table {
   DateTimeColumn get voidedAt => dateTime().nullable()();
   BoolColumn get isGeofenceBypassed => boolean().nullable()();
   IntColumn get distanceMetersOff => integer().nullable()();
+  TextColumn get areaManagerId => text().nullable()();
+  TextColumn get areaManagerName => text().nullable()();
+  TextColumn get storeManagerId => text().nullable()();
+  TextColumn get storeManagerName => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -147,6 +151,8 @@ class CachedActionPlans extends Table {
   TextColumn get storeName => text().nullable()();
   TextColumn get storeId => text().nullable()();
   TextColumn get storeManagerName => text().nullable()();
+  TextColumn get areaManagerId => text().nullable()();
+  TextColumn get areaManagerName => text().nullable()();
   TextColumn get verifierName => text().nullable()();
   DateTimeColumn get evidenceSubmittedAt => dateTime().nullable()();
   TextColumn get evidenceSubmittedByName => text().nullable()();

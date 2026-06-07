@@ -41,6 +41,11 @@ public sealed class Submission
     public string? ApproverName { get; set; }
     public string? ReviewStatus { get; set; }
 
+    public Guid? AreaManagerId { get; set; }
+    public string? AreaManagerName { get; set; }
+    public Guid? StoreManagerId { get; set; }
+    public string? StoreManagerName { get; set; }
+
     // Template versioning — frozen template tree at submission creation
     public string? TemplateSnapshot { get; set; }
     public int? TemplateVersion { get; set; }

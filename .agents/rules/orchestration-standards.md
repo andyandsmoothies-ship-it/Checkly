@@ -28,7 +28,7 @@ description: AI Orchestration, Workflow, and Handoff Standards.
 - **No Existence-Only Tests**: PROHIBITED: Tests asserting only imports/compilation (e.g. `expect(MyClass, isNotNull)`). Every test must verify at least one behavioral output (UI rendering, mock API responses, or state changes).
 ## 4. Workflow Execution & Handoff
 - **Pre-Flight**: Load `.agents/skills/`. Run `list_dir` to read local `GEMINI.md` files before starting design.
-- **Micro-Slicing**: If modifying >2 files or crossing boundaries, execute ONE slice/file, verify, and YIELD. PROHIBITED: bulk execution in one turn.
+- **Micro-Slicing**: If modifying >2 files or crossing boundaries, execute one slice/file and verify. Bulk execution without verification is prohibited.
 - **Context Pruning**: Use JIT loading (`grep_search`/`view_file`). Never dump massive source files into chat prompts.
 - **Bypass Protocol**: If skipping a workflow step, document: `> [!NOTE] AI Decision: Skipped [Step] - [Reason]`.
 - **Heavy Math Exception**: Complex calculations bypass ATDD directly to `[/tdd]` for isolated unit tests.

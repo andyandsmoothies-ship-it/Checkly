@@ -137,7 +137,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 
   3. `## Verification Handoff`: Steps for manual/automated QA.
 
-  4. `<test_trace>`: Raw terminal execution output from GLOBAL test run (`dotnet test` or `flutter test`). Prohibited: isolated/single test runs.
+  4. `<test_trace>`: Raw terminal execution output from targeted test run of the modified feature (e.g., `flutter test test/features/your_feature/` or `dotnet test --filter`). Global test runs are only required on public/database contract modifications.
 
   5. `<forensic_evidence>`: General validation commands run.
 

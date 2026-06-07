@@ -261,6 +261,21 @@ public static class CreateSubmission
         var (submissionScoreDirection, submissionIsWeighted, _) = ScoringConfigParser.Parse(template.ScoringLogicConfig);
 
         var now = DateTimeOffset.UtcNow;
+
+        Profile? smProfile = null;
+        Profile? amProfile = null;
+
+        if (!isDraft && !isScheduled)
+        {
+            smProfile = await db.Profiles.AsNoTracking()
+                .FirstOrDefaultAsync(p => p.StoreId == request.StoreId, ct);
+
+            var amAssignment = await db.ProfileStoreAssignments.AsNoTracking()
+                .Include(a => a.Profile)
+                .FirstOrDefaultAsync(a => a.StoreId == request.StoreId, ct);
+            amProfile = amAssignment?.Profile;
+        }
+
         var submission = new Submission
         {
             Id = request.Id ?? Guid.NewGuid(),
@@ -292,7 +307,11 @@ public static class CreateSubmission
             TemplateVersion = template.Version,
             ProgramAssignmentId = request.ProgramAssignmentId,
             IsGeofenceBypassed = request.IsGeofenceBypassed,
-            DistanceMetersOff = request.DistanceMetersOff
+            DistanceMetersOff = request.DistanceMetersOff,
+            StoreManagerId = smProfile?.Id,
+            StoreManagerName = smProfile?.FullName,
+            AreaManagerId = amProfile?.Id,
+            AreaManagerName = amProfile?.FullName
         };
 
         var strategy = db.Database.CreateExecutionStrategy();
@@ -329,7 +348,9 @@ public static class CreateSubmission
                     submission.Id, submission.StoreId,
                     answers, criteria, groups, now, db, ct,
                     scoringMode: submissionScoreDirection == "none" ? "survey" : null,
-                    scoringLogicConfig: template.ScoringLogicConfig);
+                    scoringLogicConfig: template.ScoringLogicConfig,
+                    areaManagerId: submission.AreaManagerId,
+                    areaManagerName: submission.AreaManagerName);
             }
 
             AuditLogger.Log(db, user, "submission_started", "Submission", submission.Id,

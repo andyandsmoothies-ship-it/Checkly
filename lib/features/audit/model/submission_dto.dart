@@ -43,6 +43,10 @@ class SubmissionDto {
   final double? rawMaxPoints;
   final bool? isWeighted;
   final String? scoringMode;
+  final String? areaManagerId;
+  final String? areaManagerName;
+  final String? storeManagerId;
+  final String? storeManagerName;
 
   /// Transient field — computed by the server based on user role + entity status.
   /// Null when loaded from the local Drift cache (offline).
@@ -80,6 +84,10 @@ class SubmissionDto {
     this.isWeighted,
     this.scoringMode,
     this.allowedActions,
+    this.areaManagerId,
+    this.areaManagerName,
+    this.storeManagerId,
+    this.storeManagerName,
   });
 
   /// Whether this audit has been voided.
@@ -139,6 +147,10 @@ class SubmissionDto {
     isWeighted: json['isWeighted'] as bool?,
     scoringMode: json['scoringMode'] as String?,
     allowedActions: (json['allowedActions'] as List?)?.cast<String>(),
+    areaManagerId: json['areaManagerId'] as String?,
+    areaManagerName: json['areaManagerName'] as String?,
+    storeManagerId: json['storeManagerId'] as String?,
+    storeManagerName: json['storeManagerName'] as String?,
   );
 
   /// Returns a copy of this DTO with [status] overridden.
@@ -173,5 +185,9 @@ class SubmissionDto {
     isWeighted: isWeighted,
     scoringMode: scoringMode,
     allowedActions: allowedActions,
+    areaManagerId: areaManagerId,
+    areaManagerName: areaManagerName,
+    storeManagerId: storeManagerId,
+    storeManagerName: storeManagerName,
   );
 }

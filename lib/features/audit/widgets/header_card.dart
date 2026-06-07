@@ -66,6 +66,16 @@ class HeaderCard extends StatelessWidget {
                   ? 'Voided ${_fmt(detail.voidedAt)}'
                   : 'Completed ${_fmt(detail.completedAt)}',
             ),
+            if (detail.areaManagerName != null)
+              MetaRow(
+                icon: Icons.supervised_user_circle_outlined,
+                label: 'Area Manager: ${detail.areaManagerName}',
+              ),
+            if (detail.storeManagerName != null)
+              MetaRow(
+                icon: Icons.badge_outlined,
+                label: 'Store Manager: ${detail.storeManagerName}',
+              ),
 
             // Void reason
             if (isVoided && detail.voidReason != null) ...[

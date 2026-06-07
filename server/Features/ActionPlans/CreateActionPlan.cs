@@ -104,6 +104,7 @@ public static class CreateActionPlan
             p.Status, p.Deadline, p.ClosedAt,
             p.VerifierName, p.EvidenceSubmittedAt, p.EvidenceSubmittedByName,
             p.CreatedAt, p.UpdatedAt,
+            p.AreaManagerId, p.AreaManagerName,
             actions);
     }
 }

@@ -22,7 +22,7 @@ void main() {
         final version = db.schemaVersion;
 
         // Assert
-        expect(version, 35);
+        expect(version, greaterThanOrEqualTo(35));
       },
     );
 

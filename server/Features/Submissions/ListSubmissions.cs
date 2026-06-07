@@ -78,7 +78,11 @@ public static class ListSubmissions
                 s.IsWeighted,
                 s.ScoringMode,
                 s.IsGeofenceBypassed,
-                s.DistanceMetersOff
+                s.DistanceMetersOff,
+                s.AreaManagerId,
+                s.AreaManagerName,
+                s.StoreManagerId,
+                s.StoreManagerName
             })
             .ToListAsync(ct);
 
@@ -109,7 +113,11 @@ public static class ListSubmissions
                 s.ScoringMode,
                 AllowedActions: actions,
                 IsGeofenceBypassed: s.IsGeofenceBypassed,
-                DistanceMetersOff: s.DistanceMetersOff);
+                DistanceMetersOff: s.DistanceMetersOff,
+                AreaManagerId: s.AreaManagerId,
+                AreaManagerName: s.AreaManagerName,
+                StoreManagerId: s.StoreManagerId,
+                StoreManagerName: s.StoreManagerName);
         }).ToList();
 
         return TypedResults.Ok(new PagedResult<SubmissionDto>(submissions, total, page, pageSize));

@@ -35,6 +35,8 @@ public class ActionPlanConfiguration : IEntityTypeConfiguration<ActionPlan>
         e.Property(x => x.VerifierName).HasColumnName("verifier_name");
         e.Property(x => x.EvidenceSubmittedAt).HasColumnName("evidence_submitted_at");
         e.Property(x => x.EvidenceSubmittedByName).HasColumnName("evidence_submitted_by_name");
+        e.Property(x => x.AreaManagerId).HasColumnName("area_manager_id");
+        e.Property(x => x.AreaManagerName).HasColumnName("area_manager_name");
 
         e.HasOne(x => x.Answer)
             .WithMany(a => a.ActionPlans)

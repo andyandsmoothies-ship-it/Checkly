@@ -191,7 +191,26 @@ public static class FinalizeSubmission
 
         // 5. Update submission
         var now = DateTimeOffset.UtcNow;
+
+        Profile? smProfile = null;
+        Profile? amProfile = null;
+
+        if (submission.StoreId.HasValue)
+        {
+            smProfile = await db.Profiles.AsNoTracking()
+                .FirstOrDefaultAsync(p => p.StoreId == submission.StoreId.Value, ct);
+
+            var amAssignment = await db.ProfileStoreAssignments.AsNoTracking()
+                .Include(a => a.Profile)
+                .FirstOrDefaultAsync(a => a.StoreId == submission.StoreId.Value, ct);
+            amProfile = amAssignment?.Profile;
+        }
+
         submission.Status = "completed";
+        submission.StoreManagerId = smProfile?.Id;
+        submission.StoreManagerName = smProfile?.FullName;
+        submission.AreaManagerId = amProfile?.Id;
+        submission.AreaManagerName = amProfile?.FullName;
         submission.TotalScore = scoreDirection == "none" ? null : verification.ServerScore;
         submission.RawEarnedPoints = scoreDirection == "none" ? null : verification.RawEarned;
         submission.RawMaxPoints = scoreDirection == "none" ? null : verification.RawMax;
@@ -252,7 +271,9 @@ public static class FinalizeSubmission
                 answers, criteria, groups, now, db, ct,
                 scoringMode: scoreDirection == "none" ? "survey" : null,
                 scoringLogicConfig: scoringLogicConfig,
-                globalRisks: globalRisks);
+                globalRisks: globalRisks,
+                areaManagerId: submission.AreaManagerId,
+                areaManagerName: submission.AreaManagerName);
 
             // Atomic flush 1: submission update + answers + audit log + action plans
             try
@@ -289,7 +310,11 @@ public static class FinalizeSubmission
                 submission.TemplateVersion,
                 submission.RawEarnedPoints, submission.RawMaxPoints, submission.IsWeighted,
                 IsGeofenceBypassed: submission.IsGeofenceBypassed,
-                DistanceMetersOff: submission.DistanceMetersOff));
+                DistanceMetersOff: submission.DistanceMetersOff,
+                AreaManagerId: submission.AreaManagerId,
+                AreaManagerName: submission.AreaManagerName,
+                StoreManagerId: submission.StoreManagerId,
+                StoreManagerName: submission.StoreManagerName));
         });
 
         // 10. Insert domain notification outside the primary transaction, only on success

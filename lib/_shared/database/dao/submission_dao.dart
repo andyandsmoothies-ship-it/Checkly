@@ -75,6 +75,10 @@ class SubmissionDao {
     templateVersion: row.templateVersion,
     voidReason: row.voidReason,
     voidedAt: row.voidedAt,
+    areaManagerId: row.areaManagerId,
+    areaManagerName: row.areaManagerName,
+    storeManagerId: row.storeManagerId,
+    storeManagerName: row.storeManagerName,
   );
 
   CachedSubmissionsCompanion _dtoToCompanion(SubmissionDto dto) =>
@@ -97,5 +101,9 @@ class SubmissionDao {
         templateVersion: Value(dto.templateVersion),
         voidReason: Value(dto.voidReason),
         voidedAt: Value(dto.voidedAt),
+        areaManagerId: Value(dto.areaManagerId),
+        areaManagerName: Value(dto.areaManagerName),
+        storeManagerId: Value(dto.storeManagerId),
+        storeManagerName: Value(dto.storeManagerName),
       );
 }

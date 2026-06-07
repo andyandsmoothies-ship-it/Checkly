@@ -238,13 +238,21 @@ public class ActionPlan_PbacUi_Tests : IClassFixture<TestWebApplicationFactory>
 
         await db.SaveChangesAsync();
         
-        // We'll use a super admin token just to query it, but verify their specific allowed actions if possible.
-        // Actually, let's use an Area Manager who has programs:list but NO action_plans:write.
+        // Clear action_plans:write from area_manager if it was seeded by other tests to prevent cross-test pollution
+        var existingAmWrite = await db.RoleCapabilities.FirstOrDefaultAsync(rc => rc.Role == "area_manager" && rc.Capability == "action_plans:write");
+        if (existingAmWrite != null)
+        {
+            db.RoleCapabilities.Remove(existingAmWrite);
+            await db.SaveChangesAsync();
+            using var scopeCache = _factory.Services.CreateScope();
+            var cache = scopeCache.ServiceProvider.GetRequiredService<Checkly.Api.Common.Auth.PbacDictionaryCache>();
+            await cache.InitializeAsync(scopeCache.ServiceProvider);
+        }
+
         var (tokenAM, amId) = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"am_{Guid.NewGuid()}@test.com", "Aa1234567@", "Area Manager", "area_manager");
             
         var client = _factory.CreateAuthenticatedClient(tokenAM);
-
         var response = await client.GetAsync("/api/action-plans");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         

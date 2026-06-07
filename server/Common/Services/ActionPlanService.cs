@@ -31,7 +31,9 @@ public static class ActionPlanService
         CancellationToken ct,
         string? scoringMode = null,
         string? scoringLogicConfig = null,
-        List<SubmissionRisk>? globalRisks = null)
+        List<SubmissionRisk>? globalRisks = null,
+        Guid? areaManagerId = null,
+        string? areaManagerName = null)
     {
         // F2: Survey-mode submissions should never generate action plans
         if (string.Equals(scoringMode, "survey", StringComparison.OrdinalIgnoreCase))
@@ -98,6 +100,8 @@ public static class ActionPlanService
                 Deadline = deadline,
                 StoreName = store?.Name,
                 StoreManagerName = smProfile?.FullName,
+                AreaManagerId = areaManagerId,
+                AreaManagerName = areaManagerName,
                 CreatedAt = now,
                 UpdatedAt = now
             });
@@ -120,6 +124,8 @@ public static class ActionPlanService
                     Deadline = deadline,
                     StoreName = store?.Name,
                     StoreManagerName = smProfile?.FullName,
+                    AreaManagerId = areaManagerId,
+                    AreaManagerName = areaManagerName,
                     CreatedAt = now,
                     UpdatedAt = now
                 });

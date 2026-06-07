@@ -79,7 +79,11 @@ public static class GetSubmission
             submission.ScoringMode,
             AllowedActions: allowedActions,
             IsGeofenceBypassed: submission.IsGeofenceBypassed,
-            DistanceMetersOff: submission.DistanceMetersOff);
+            DistanceMetersOff: submission.DistanceMetersOff,
+            AreaManagerId: submission.AreaManagerId,
+            AreaManagerName: submission.AreaManagerName,
+            StoreManagerId: submission.StoreManagerId,
+            StoreManagerName: submission.StoreManagerName);
 
         return TypedResults.Ok(dto);
     }

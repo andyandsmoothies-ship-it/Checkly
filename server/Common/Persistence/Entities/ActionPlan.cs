@@ -34,6 +34,8 @@ public sealed class ActionPlan
     public DateTimeOffset? EvidenceSubmittedAt { get; set; }
     public string? EvidenceSubmittedByName { get; set; }
     public string? SourceTitle { get; set; }
+    public Guid? AreaManagerId { get; set; }
+    public string? AreaManagerName { get; set; }
 
     // Navigation properties
     public Answer? Answer { get; set; }

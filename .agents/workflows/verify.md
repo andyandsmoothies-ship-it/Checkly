@@ -77,7 +77,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 - **Coverage & Metrics Gen**: MANDATORY: Execute available tooling to calculate Test Coverage, Cyclomatic Complexity, File Sizing, and Mutation scores (e.g., `dotnet test /p:CollectCoverage=true`). The human relies on these metrics to govern the factory; do not skip them.
 
-- **Artifact Form**: MANDATORY: Use `write_to_file` to save `verification_[YYYYMMDD_HHMMSS].md` into the `docs/reports/qa/` directory. MUST INCLUDE: (1) `## Input Lineage` containing the absolute path to the verified artifact, (2) The Quantitative Metrics Dashboard (Coverage %, Complexity, Warnings count), and (3) Terminal log proof of the green test suite.
+- **Artifact Form**: MANDATORY: Use `write_to_file` to save `verification_[YYYYMMDD_HHMMSS].md` into the `docs/reports/qa/` directory. MUST INCLUDE: (1) `## Input Lineage` containing the absolute path to the verified artifact, (2) The Quantitative Metrics Dashboard (Coverage %, Complexity, Warnings count), and (3) Terminal log proof of the targeted/modified green test suite.
 
 - **Yield & Handoff**: Yield to the user with the exact Next Command explicitly referencing `{Absolute_Path_to_verification_artifact.md}`.
 

@@ -58,7 +58,11 @@ public sealed record SubmissionDto(
     string? ScoringMode = null,
     List<string>? AllowedActions = null,
     bool? IsGeofenceBypassed = null,
-    int? DistanceMetersOff = null);
+    int? DistanceMetersOff = null,
+    Guid? AreaManagerId = null,
+    string? AreaManagerName = null,
+    Guid? StoreManagerId = null,
+    string? StoreManagerName = null);
 
 public sealed record SubmissionDetailDto(
     Guid Id,
@@ -87,7 +91,11 @@ public sealed record SubmissionDetailDto(
     string? ScoringMode = null,
     List<string>? AllowedActions = null,
     bool? IsGeofenceBypassed = null,
-    int? DistanceMetersOff = null);
+    int? DistanceMetersOff = null,
+    Guid? AreaManagerId = null,
+    string? AreaManagerName = null,
+    Guid? StoreManagerId = null,
+    string? StoreManagerName = null);
 
 public sealed record AnswerDto(
     Guid Id,

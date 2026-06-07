@@ -34,6 +34,10 @@ class SubmissionDetailDto {
   final double? rawMaxPoints;
   final bool? isWeighted;
   final String? scoringMode;
+  final String? areaManagerId;
+  final String? areaManagerName;
+  final String? storeManagerId;
+  final String? storeManagerName;
 
   const SubmissionDetailDto({
     required this.id,
@@ -57,6 +61,10 @@ class SubmissionDetailDto {
     this.rawMaxPoints,
     this.isWeighted,
     this.scoringMode,
+    this.areaManagerId,
+    this.areaManagerName,
+    this.storeManagerId,
+    this.storeManagerName,
   });
 
   factory SubmissionDetailDto.fromJson(Map<String, dynamic> json) =>
@@ -88,5 +96,9 @@ class SubmissionDetailDto {
         rawMaxPoints: (json['rawMaxPoints'] as num?)?.toDouble(),
         isWeighted: json['isWeighted'] as bool?,
         scoringMode: json['scoringMode'] as String?,
+        areaManagerId: json['areaManagerId'] as String?,
+        areaManagerName: json['areaManagerName'] as String?,
+        storeManagerId: json['storeManagerId'] as String?,
+        storeManagerName: json['storeManagerName'] as String?,
       );
 }

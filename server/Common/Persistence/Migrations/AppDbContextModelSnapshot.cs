@@ -35,6 +35,14 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("answer_id");
 
+                    b.Property<Guid?>("AreaManagerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("area_manager_id");
+
+                    b.Property<string>("AreaManagerName")
+                        .HasColumnType("text")
+                        .HasColumnName("area_manager_name");
+
                     b.Property<DateTimeOffset?>("ClosedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("closed_at");
@@ -1054,6 +1062,14 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("approver_name");
 
+                    b.Property<Guid?>("AreaManagerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("area_manager_id");
+
+                    b.Property<string>("AreaManagerName")
+                        .HasColumnType("text")
+                        .HasColumnName("area_manager_name");
+
                     b.Property<string>("AuditorEmail")
                         .HasColumnType("text")
                         .HasColumnName("auditor_email");
@@ -1170,6 +1186,14 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Property<Guid?>("StoreId")
                         .HasColumnType("uuid")
                         .HasColumnName("store_id");
+
+                    b.Property<Guid?>("StoreManagerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("store_manager_id");
+
+                    b.Property<string>("StoreManagerName")
+                        .HasColumnType("text")
+                        .HasColumnName("store_manager_name");
 
                     b.Property<string>("StoreName")
                         .HasColumnType("text")

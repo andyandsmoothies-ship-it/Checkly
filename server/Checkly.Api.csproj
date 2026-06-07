@@ -38,4 +38,8 @@
     <InternalsVisibleTo Include="Checkly.Api.Tests" />
   </ItemGroup>
 
+  <Target Name="KillApiProcess" BeforeTargets="BeforeBuild" Condition="'$(OS)' == 'Windows_NT'">
+    <Exec Command="taskkill /f /im Checkly.Api.exe 2&gt;nul" IgnoreExitCode="true" />
+  </Target>
+
 </Project>

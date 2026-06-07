@@ -9,8 +9,8 @@ Template ID: b5617868-2aeb-4c5d-bd68-a0f03653b393 | Title: Taskforce Audit Templ
 
 ==================== DATABASE: checkly_test ====================
 --- templates ---
-Template ID: b823c37e-914a-4628-983a-8e9d80bd1611 | Title: General Tasks Audit | Type: General | Config: NULL
+Template ID: 74b8b549-34c6-40aa-b8c8-21529cf93573 | Title: General Tasks Audit | Type: General | Config: NULL
   -- Groups --
-Template ID: 22b37ed3-9af8-4c4f-8b9b-a8fecf01fd9f | Title: General Tasks Live | Type: General | Config: NULL
+Template ID: 3d29b59f-3cdb-47e3-a0f9-12feb9dfac61 | Title: General Tasks Live | Type: General | Config: NULL
   -- Groups --
 

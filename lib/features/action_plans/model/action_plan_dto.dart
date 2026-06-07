@@ -18,6 +18,8 @@ class ActionPlanDto {
   final String? storeName;
   final String? storeId;
   final String? storeManagerName;
+  final String? areaManagerId;
+  final String? areaManagerName;
   final String? sourceTitle;
   final String? rootCause;
   final String? correctionPlan;
@@ -42,6 +44,8 @@ class ActionPlanDto {
     this.storeName,
     this.storeId,
     this.storeManagerName,
+    this.areaManagerId,
+    this.areaManagerName,
     this.sourceTitle,
     this.rootCause,
     this.correctionPlan,
@@ -67,6 +71,8 @@ class ActionPlanDto {
     storeName: json['storeName'] as String?,
     storeId: json['storeId'] as String?,
     storeManagerName: json['storeManagerName'] as String?,
+    areaManagerId: json['areaManagerId'] as String?,
+    areaManagerName: json['areaManagerName'] as String?,
     sourceTitle: json['sourceTitle'] as String?,
     rootCause: json['rootCause'] as String?,
     correctionPlan: json['correctionPlan'] as String?,
@@ -121,6 +127,8 @@ class ActionPlanDto {
     'storeName': storeName,
     'storeId': storeId,
     'storeManagerName': storeManagerName,
+    'areaManagerId': areaManagerId,
+    'areaManagerName': areaManagerName,
     'sourceTitle': sourceTitle,
     'rootCause': rootCause,
     'correctionPlan': correctionPlan,

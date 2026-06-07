@@ -40,6 +40,10 @@ public class SubmissionConfiguration : IEntityTypeConfiguration<Submission>
         e.Property(x => x.DisplayNoun).HasColumnName("display_noun");
         e.Property(x => x.ApproverName).HasColumnName("approver_name");
         e.Property(x => x.ReviewStatus).HasColumnName("review_status");
+        e.Property(x => x.AreaManagerId).HasColumnName("area_manager_id");
+        e.Property(x => x.AreaManagerName).HasColumnName("area_manager_name");
+        e.Property(x => x.StoreManagerId).HasColumnName("store_manager_id");
+        e.Property(x => x.StoreManagerName).HasColumnName("store_manager_name");
         e.Property(x => x.IdempotencyKey).HasColumnName("idempotency_key");
         e.Property(x => x.TemplateSnapshot).HasColumnName("template_snapshot").HasColumnType("jsonb");
         e.Property(x => x.TemplateVersion).HasColumnName("template_version");

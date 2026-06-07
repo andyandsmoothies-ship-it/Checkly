@@ -35,7 +35,11 @@ public static class SyncSubmissions
         string? ScoringMode,
         decimal? RawEarnedPoints = null,
         decimal? RawMaxPoints = null,
-        bool? IsWeighted = null);
+        bool? IsWeighted = null,
+        Guid? AreaManagerId = null,
+        string? AreaManagerName = null,
+        Guid? StoreManagerId = null,
+        string? StoreManagerName = null);
 
     public sealed record CursorPagedResult<T>(IEnumerable<T> Items, bool HasNextPage);
 
@@ -160,7 +164,11 @@ public static class SyncSubmissions
                 s.StoreName,
                 s.TotalScore,
                 s.ScoringMode,
-                s.RawEarnedPoints, s.RawMaxPoints, s.IsWeighted))
+                s.RawEarnedPoints, s.RawMaxPoints, s.IsWeighted,
+                s.AreaManagerId,
+                s.AreaManagerName,
+                s.StoreManagerId,
+                s.StoreManagerName))
             .ToListAsync(ct);
 
         var hasNextPage = items.Count > limit;

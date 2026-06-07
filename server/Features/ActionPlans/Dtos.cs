@@ -45,6 +45,8 @@ public sealed record ActionPlanDto(
     string? EvidenceSubmittedByName,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt,
+    Guid? AreaManagerId,
+    string? AreaManagerName,
     IReadOnlyList<string> AllowedActions);
 public sealed record AddCommentRequest(string Body);
 
