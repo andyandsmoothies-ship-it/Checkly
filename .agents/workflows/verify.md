@@ -42,7 +42,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 - **Zero Trust Gate**: MANDATORY: Ensure no secrets/keys are hardcoded, explicit `[Authorize]` tags are applied, CORS is strict, and no unapproved "Shadow IT" packages were added.
 
-- **Supportability (Crickett's Rule)**: MANDATORY: Reject code that is non-idiomatic. Demand explicit documentation answering: What does this do? Why is this done this way? What are the tradeoffs?
+- **Supportability (Crickett's Rule)**: MANDATORY: Reject code that is non-idiomatic. Demand explicit documentation answering: What does this do? Why is this done this way? What are the tradeoffs? (**Rule:** When listing tradeoffs, you MUST include a short and concise example of the **Best Context (When to use)** and **Worst Context (When to avoid)**).
 
 - **@@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Hostile Interrogation run? (2) Drift/OOM/Stability Scans executed (if applicable)? (3) Supportability tradeoffs documented?
 
@@ -84,6 +84,9 @@ description: Universal verification gate proving upstream artifacts (code, plans
 > [!IMPORTANT]
 
 <output_schema>
+
+> **Analysis Trace**: If requested, record the step-by-step trace of all analyzing activities from start to end in `docs/reports/diagnostics/traces/trace_analysis_[YYYYMMDD_HHMMSS].md` (short and concise).
+>
 
 > **Script Verification Gate (MANDATORY)**:
 

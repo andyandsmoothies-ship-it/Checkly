@@ -107,9 +107,9 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 > 3. **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the planning or builder agent instantly knows exactly what root cause they need to address).
 
 > 4. An "Execution Queue" checklist of the exact commands for the user to copy-paste (e.g., `- [ ] Execute Diagnostic Verification: docs/reports/diagnostics/failure_report.md`).
-
 >
-
+> **Analysis Trace**: If requested, record the step-by-step trace of all analyzing activities from start to end in `docs/reports/diagnostics/traces/trace_analysis_[YYYYMMDD_HHMMSS].md` (short and concise).
+>
 > **Update docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 
 > **Document Cleanup (Required)**:

@@ -62,7 +62,7 @@ Workflow: /analyze-epic | Track: C
 
 - **System & Lifecycle Context**: Define constraints (offline-first, sync, RBAC) and edge states (Empty/Error) to optimize options.
 
-- **Cross-Feature Audit**: Identify potential impacts and regressions on existing features, shared states, or APIs.
+- **Six-Dimensional Impact Audit**: Analyze impact across the 6 dimensions: (1) Technical Dependency & Regression, (2) Functional Impact (View & Filter, Access & Scope, Report & Math, Import & Export, Legacy State), (3) Operational Capacity & Cost, (4) User Friction & Cognitive Load, (5) Business Operational Impact, and (6) Regulatory & Security Compliance.
 
 - **Backfill Strategy**: Evaluate database schema changes and plan the high-level historical data backfill or migration path.
 
@@ -85,7 +85,7 @@ Workflow: /analyze-epic | Track: C
 
 - **Set Limits**: Define strict Performance, Security, and Logging limits upfront.
 
-- **@@SCAN**: Print checklist in response: (1) Goal verified? (2) Connections found? (3) 2 options compared? (4) Limits defined? (5) Cross-feature, backfill, and graceful degradation strategies analyzed?
+- **@@SCAN**: Print checklist in response: (1) Goal verified? (2) Connections found? (3) 2 options compared? (4) Limits defined? (5) Downstream impact, backfill, and graceful degradation strategies analyzed?
 
 ## Step 3: Review Risks
 
@@ -157,21 +157,23 @@ Workflow: /analyze-epic | Track: C
 
 > 7. `## Visual & Functional Context`: (Mapped UI Screens, Use Cases, and explicit Truncation/Overflow Routing tables for lists)
 
-> 8. `## System Context`: (Offline/Online, RBAC, API Contracts)
+> 8. `## Six-Dimensional Impact Assessment`: (Explicit analysis across: (1) Technical & Regression, (2) Functional (View & Filter, Access & Scope, Report & Math, Import & Export, Legacy State), (3) Operational & Cost, (4) User Friction, (5) Business Operations, and (6) Regulatory & Security)
 
-> 9. `## Lifecycle Context`: (Edge cases, Error states, Rollback Plan, Graceful Degradation Strategy)
+> 9. `## System Context`: (Offline/Online, RBAC, API Contracts)
 
-> 10. `## Data Context`: (Database Migrations, Schema, Historical Backfill Plan)
+> 10. `## Lifecycle Context`: (Edge cases, Error states, Rollback Plan, Graceful Degradation Strategy)
 
-> 11. `## Architecture Flow`: (Clear text summary of how data moves)
+> 11. `## Data Context`: (Database Migrations, Schema, Historical Backfill Plan)
 
-> 12. `## Risk Review & Security`
+> 12. `## Architecture Flow`: (Clear text summary of how data moves)
 
-> 13. `## Logs & Audits`
+> 13. `## Risk Review & Security`
 
-> 14. `## Testing Expectations`
+> 14. `## Logs & Audits`
 
-> 15. `<command_logs>`: A list of terminal commands you ran.
+> 15. `## Testing Expectations`
+
+> 16. `<command_logs>`: A list of terminal commands you ran.
 
 >
 
@@ -184,6 +186,10 @@ Workflow: /analyze-epic | Track: C
 > 3. **Next Steps**: A short summary for the next agent.
 
 > 4. **Handoff Roadmap**: You MUST explicitly state the Risk Classification (Visuals, Internal Logic, Network/Database, or High-Risk Database + Logic) for **EVERY slice**, and then provide the matching sequence of actions. Example: `- **Slice 1**: [Risk: Network/Database] Plan -> Write Acceptance Tests -> Build` or `- **Slice 2**: [Risk: High-Risk Database + Logic] Plan -> Write Acceptance & Unit Tests -> Build`. Do not use project-specific workflow names (like `/tdd` or `/implement`), just generic actions. Tell the user to execute them ONE AT A TIME. Include the absolute file path to the epic plan.
+
+>
+
+> **Analysis Trace**: If requested, record the step-by-step trace of all analyzing activities from start to end in `docs/reports/diagnostics/traces/trace_analysis_[YYYYMMDD_HHMMSS].md` (short and concise).
 
 >
 

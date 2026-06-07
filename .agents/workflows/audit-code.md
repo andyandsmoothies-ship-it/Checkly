@@ -56,6 +56,8 @@ Workflow: /audit-code | Track: B1
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
 <output_schema>
+> **Analysis Trace**: If requested, record the step-by-step trace of all analyzing activities from start to end in `docs/reports/diagnostics/traces/trace_analysis_[YYYYMMDD_HHMMSS].md` (short and concise).
+>
 > **Script Verification Gate (MANDATORY)**:
 > You MUST use the `run_command` tool to execute this script before considering the task complete.
 > // turbo

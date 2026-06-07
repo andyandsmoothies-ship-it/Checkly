@@ -15,7 +15,7 @@ description: SRE Failure Mode & Flop-Catcher Review.
   [ /catch-flops Audit ] ──► [ Check Failures: DB, Math, Sync, UI ]
            │
            ▼
-   [ Failure Report ] ──► [ Feed directly into Tests & Implementation ]
+   [ Failure Report ] ──► [ User Review/Approval ] ──► [ Update Plan ]
 ```
 
 ---
@@ -84,11 +84,12 @@ Verify layout scaling, animation disposes, and accessibility tags in Flutter:
 - [ ] **Write the Failure Scenarios**: Explicitly list the discovered flops, categorizing them by severity:
   - `🔴 Critical`: Causes system crash, database error, or data corruption.
   - `🟡 Warning`: Causes visual/layout bugs, test hanging, or incorrect calculations.
-- [ ] **Map to Actionable Tasks**: Convert every discovered flop into an explicit test case or guard check inside your implementation plan.
+- [ ] **Propose Actionable Tasks in Report**: List recommended changes or test cases in the generated report. Do not modify the source plan directly until approved.
 
 ---
 
 ## ## Handoff Block
 - **Audit Verdict**: [Fatal/Brittle/Resilient]
 - **Failure Report Path**: `docs/reports/diagnostics/[topic]/audit_failure_report_[YYYYMMDD_HHMMSS].md`
+- **Analysis Trace**: If requested, record the step-by-step trace of all analyzing activities from start to end in `docs/reports/diagnostics/traces/trace_analysis_[YYYYMMDD_HHMMSS].md` (short and concise).
 - **Next Steps**: A short 1-2 sentence TL;DR for the next agent to implement the required fixes.

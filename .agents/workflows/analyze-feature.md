@@ -70,7 +70,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
 - **Lifecycle Context**: Define the 4-State Matrix: how presentation layer handles Success, Loading, Error, and Empty states.
 
-- **Cross-Feature Audit**: Audit how changes impact other existing features, shared states, or APIs.
+- **Six-Dimensional Impact Audit**: Analyze impact across the 6 dimensions: (1) Technical Dependency & Regression, (2) Functional Impact (View & Filter, Access & Scope, Report & Math, Import & Export, Legacy State), (3) Operational Capacity & Cost, (4) User Friction & Cognitive Load, (5) Business Operational Impact, and (6) Regulatory & Security Compliance.
 
 - **Backfill Strategy**: Define how old/existing data handles new fields or schema changes (e.g., default values, migrations).
 
@@ -82,7 +82,7 @@ description: Concise, high-density analysis workflow for standard features and b
   // turbo
   `cmd /c python .agents/scripts/verify_sync_contracts.py; python .agents/scripts/verify_pbac_ui.py --advisory`
 
-- **Mandatory Scan**: Print checklist in response: (1) Is Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Are System and Lifecycle Contexts defined? (5) Are DI and Layout Safety verified? (6) Did you answer all 4 First Principles Gate questions? (7) Baseline Verification executed? (8) Cross-feature, backfill, and graceful degradation strategies planned?
+- **Mandatory Scan**: Print checklist in response: (1) Is Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Are System, Lifecycle, and Functional & Downstream Impact Contexts defined? (5) Are DI and Layout Safety verified? (6) Did you answer all 4 First Principles Gate questions? (7) Baseline Verification executed? (8) Downstream impact, backfill, and graceful degradation strategies planned?
 
 
 ## Step 4: Create Plan
@@ -147,6 +147,8 @@ description: Concise, high-density analysis workflow for standard features and b
 
   - `## First Principles Gate`: Explicit answers to the 4 First Principles questions (Physics & Limit, Simplicity, Blast Radius, Observability).
 
+  - `## Six-Dimensional Impact Assessment`: Explicit analysis across: (1) Technical & Regression, (2) Functional (View & Filter, Access & Scope, Report & Math, Import & Export, Legacy State), (3) Operational & Cost, (4) User Friction, (5) Business Operations, and (6) Regulatory & Security.
+
   - `## System Context`: Offline/online behavior, APIs, RBAC capabilities, and telemetry.
 
   - `## Lifecycle Context`: 4-State Matrix (Success, Error, Empty, Loading).
@@ -178,6 +180,8 @@ description: Concise, high-density analysis workflow for standard features and b
   - `<command_logs>`: List of commands run during planning.
 
   - `## Handoff Block`: Absolute plan path, and generic action sequence per slice (e.g. `- **Slice 1**: Plan -> Write Acceptance & Unit Tests -> Build`). Tell user to execute them ONE AT A TIME.
+
+- **Analysis Trace**: If requested, record the step-by-step trace of all analyzing activities from start to end in `docs/reports/diagnostics/traces/trace_analysis_[YYYYMMDD_HHMMSS].md` (short and concise).
 
 - **Task Tracking Update**: Update `docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md` (change `[ ]` to `[x]`, append absolute file paths).
 

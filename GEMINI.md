@@ -82,6 +82,23 @@
 - **Rule**: Prioritize established industry-standard architectural patterns over simple local code changes for complex problems.
 - **Enforcement**: Research and present how other systems solve the problem at scale (e.g., CQRS Read-Model Caching, Event-Driven Communication, Concurrent Loops) before finalizing design plans.
 
+### Rule: Six-Dimensional Impact Analysis
+- **Rule**: Every new feature or database change must be audited across 6 impact dimensions before coding.
+- **Enforcement**: You must explicitly document and analyze:
+  1. **Technical Dependency & Regression**: Code files and test regression risks.
+  2. **Functional & Downstream Impact**: UI View & Filter, Access & Scope, Report & Math, Import & Export, and Legacy State (null values/sync).
+  3. **Operational Capacity & Cost**: Server load, DB locking, and hosting fees.
+  4. **User Friction & Cognitive Load**: Learning curve, workflows, and help docs.
+  5. **Business Operational Impact**: Support workload and administrative setup.
+  6. **Regulatory & Security Compliance**: PII encryption, audit logs, and security scope.
+
+### Rule: Chat Payload Truncation (Large Reports)
+- **Rule**: Workflows producing large outputs (such as audits, deepening reviews, or complex reports) must write the full detailed report directly to a file under `docs/reports/` instead of printing the content in the chat.
+- **Enforcement**: The chat response must contain only a short bulleted executive summary and the path to the generated file.
+
+### Rule: Model-Agnostic Depth & Quality
+- **Rule**: To ensure high-quality architectural design from any model: (1) Research the codebase using `grep_search` and `view_file` before suggesting candidates or code changes. (2) Restrict analysis scope to a specific feature/folder instead of the entire project to prevent token overflow. (3) Generate 3 distinct design options (Minimalist, Flexible, Ergonomic) and use a Pugh Matrix to evaluate them before coding.
+
 ## 2. Platform Architecture
 - **Frontend**: Flutter (Dart) — Offline-first with SQLite. Core UI rules are in `lib/GEMINI.md`.
 - **Backend**: ASP.NET Core (.NET 10) Minimal API. Database and endpoint rules are in `server/GEMINI.md`.

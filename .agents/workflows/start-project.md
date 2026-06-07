@@ -22,7 +22,7 @@ description: Guided workflow to initialize a brand new project, pick a tech stac
 
 | **Pattern Recognition**| MANDATORY: Before recommending any tools, explicitly label the System Design Pattern (e.g., Ledger, State Machine, Pub/Sub, Feed). The pattern dictates the required tools. |
 
-| **Selection** | Output the recommended Tech Stack (Frontend, Backend, DB, Infra) along with Tradeoffs and Risks. |
+| **Selection** | Output the recommended Tech Stack (Frontend, Backend, DB, Infra) along with Tradeoffs and Risks. **Rule:** When listing trade-offs or pros/cons, you MUST include a short and concise example of the **Best Context (When to use)** and **Worst Context (When to avoid)**. |
 
 | **Approval** | Yield to the user. Do they accept this stack, or want to pivot? |
 

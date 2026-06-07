@@ -8,7 +8,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 > [!NOTE]
 
-> Discovery & Architecture workflow. Used to explore ideas *before* spec writing. Handoff to `/analyze-epic` (for massive systems) or `/analyze-feature` (for tactical additions).
+> Discovery & Architecture workflow. Used to explore ideas *before* spec writing. Research is purely exploratory; do not modify or overwrite any source code files, existing plans, or existing research reports. Handoff to `/analyze-epic` (for massive systems) or `/analyze-feature` (for tactical additions) after user review and approval.
 
 ## Step 1: Pre-Flight
 
@@ -47,7 +47,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `research_[YYYYMMDD_HHMMSS].md` to the `docs/reports/research/[topic]/` directory. NEVER overwrite existing research files with the same topic; always create a new file. NEVER output the research directly to the chat UI. Output the absolute path to this visible file in your final message. |
+| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `research_[YYYYMMDD_HHMMSS].md` to the `docs/reports/research/[topic]/` directory. NEVER overwrite existing research files; always create a new file with a unique timestamp. NEVER modify any source code files or active implementation plans during research. Output the absolute path to this visible file in your final message. |
 
 ### Final Generation Mandate (Suffix)
 
@@ -58,6 +58,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > 2. `<latent_space_scratchpad>`: Before writing your final plan, use this block to explicitly state your internal reasoning, debate architectural tradeoffs, and explore edge cases to artificially expand your test-time compute.
 > 3. `E2E Workflow Map`: MUST include ASCII state-machine diagrams for all interactions to prevent dead ends.
 > 4. `Pugh Decision Matrix` (Score Option A and Option B relative to the Status Quo as the baseline `0`).
+> 4.1 **Trade-offs Rule**: When listing trade-offs or pros/cons, you MUST include a short and concise example of the **Best Context (When to use)** and **Worst Context (When to avoid)**.
 > 4.5 `UI Component Routing Table`: Map overflow limits and downstream routes for all proposed lists/widgets (if UI changes are involved).
 > 5. Strict `<forensic_evidence>` tags (proof of searched files/code).
 
@@ -72,6 +73,8 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > 3. **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do).
 
 > 4. The exact next workflow command the user should run, which MUST explicitly reference `{Absolute_Path_to_research_artifact.md}` instead of pasting contents.
+
+> **Analysis Trace**: If requested, record the step-by-step trace of all analyzing activities from start to end in `docs/reports/diagnostics/traces/trace_analysis_[YYYYMMDD_HHMMSS].md` (short and concise).
 
 > [!IMPORTANT]
 

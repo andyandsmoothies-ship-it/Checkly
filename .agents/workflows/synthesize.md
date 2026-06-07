@@ -71,7 +71,7 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 
     8. The Final Verdict (The mathematical winner).
 
-    9. **Executive Business Summary**: A plain-English translation for the Product Owner explaining *what this means in real life* (e.g., business benefits, operational tradeoffs, maintenance costs, and UX impact).
+    9. **Executive Business Summary**: A plain-English translation for the Product Owner explaining *what this means in real life* (e.g., business benefits, operational tradeoffs, maintenance costs, and UX impact). When listing pros/cons or trade-offs, you MUST include a short and concise example of the **Best Context (When to use)** and **Worst Context (When to avoid)** to ground the decision in reality.
 
     10. **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing: (1) Final Verdict, (2) Strict Constraints (critical context the next Agent must not ignore), (3) Execution Slices if applicable, (4) **Requirements Alignment Check**: If the winning technical architecture alters the user flow or business logic previously defined in a `requirements.md` file, you MUST explicitly inform the user that the Requirements document needs to be updated. (5) **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do), (6) The exact next workflow command, which MUST explicitly reference `{Absolute_Path_to_decision_record.md}` instead of pasting contents.
 

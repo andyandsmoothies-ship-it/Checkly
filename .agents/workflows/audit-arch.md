@@ -65,6 +65,8 @@ You must subject the proposed architecture to these 4 hostile critics. If it sur
 > 3. **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do).
 > 4. The exact next workflow command the user should run (e.g. `/analyze-epic`).
 >
+> **Analysis Trace**: If requested, record the step-by-step trace of all analyzing activities from start to end in `docs/reports/diagnostics/traces/trace_analysis_[YYYYMMDD_HHMMSS].md` (short and concise).
+>
 > **Document Cleanup (Required)**:
 > Automatically clean up and organize newly created markdown plans into their correct topic folders:
 > // turbo

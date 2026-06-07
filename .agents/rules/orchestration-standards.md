@@ -18,6 +18,8 @@ description: AI Orchestration, Workflow, and Handoff Standards.
 - **ASCII-First**: Markdown artifacts must start with a simple text diagram (e.g., `[UI] -> [API]`). Think inside `<latent_space_scratchpad>` first, then draw. No Mermaid/C4 unless requested.
 - **Absolute Paths**: Always output absolute paths (`C:\Users\...`) in handoff logs to prevent user path confusion.
 - **Context Portability**: Artifacts must self-contain all constraints and gotchas needed for the next agent.
+- **Chat Payload Truncation**: Write large outputs (audits, reviews, reports) to files under `docs/reports/` instead of printing in chat. Present only a bulleted executive summary and the path in chat.
+
 ## 3. Testing Workflows: ATDD vs TDD
 - **Anti-Bias Law**: PROHIBITED: Writing both tests and implementation code in the same session. QA writes the failing test (Outer Loop), Builder writes code to pass it (Inner Loop).
 - **ATDD (Acceptance/Integration)**: Business Features/APIs. Run *before* technical design. Tests *WHAT* system does (API, serialization, e2e flows).
@@ -37,9 +39,11 @@ description: AI Orchestration, Workflow, and Handoff Standards.
 - **Visual Verification**: Quote paths `""`. Always verify file operations visually via `list_dir` instead of trusting success exit codes.
 - **No Orphaned Assumptions**: If analysis finds a dependency (e.g. DB migration, config change), translate it to explicit file instructions. Do not leave assumptions to the Builder.
 - **No Dead Ends**: Interactive elements must be fully wired. PROHIBITED: empty interaction stubs (e.g. `onPressed: () {}`, `href="#"`).
+- **Analysis Trace Recording**: If requested or when performing complex analysis, research, diagnostics, or audits, record the step-by-step trace to `docs/reports/diagnostics/traces/trace_analysis_[YYYYMMDD_HHMMSS].md`. The trace must exactly record all analyzing activities step-by-step from start to end, listing prompts, tools used, folders/files accessed with rationale, and decisions made, keeping it short and concise.
 ## 6. Quality Principles (Global)
 - **Structure**: Enforce clean boundaries. Fail builds on illegal cross-ring imports.
 - **Testing**: Overload tests with edge cases. Use property-based and mutation tests for core math.
 - **Small Files**: Keep files small (Max 30 lines per function, Max 400 lines per file). Split components proactively.
 - **Decoupled Domains**: Keep modules partitioned. Do not couple features directly.
 - **Zero Bloat**: Whitelist external packages. Scan dependencies in audits.
+- **Model-Agnostic Heuristics**: To ensure high quality from any model: (1) Research the codebase using `grep_search`/`view_file` before suggesting candidates or code changes. (2) Restrict analysis scope to a specific feature/folder instead of the entire project to prevent token overflow. (3) Propose 3 distinct design options (Minimalist, Flexible, Ergonomic) and use a Pugh Matrix to evaluate them before coding.
