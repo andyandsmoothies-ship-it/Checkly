@@ -25,6 +25,7 @@ import '../services/scoring_input_mapper.dart';
 
 part 'audit_manager_draft.dart';
 part 'audit_manager_submit.dart';
+part 'audit_manager_scoring.dart';
 
 final _di = GetIt.instance;
 const _uuid = Uuid();
@@ -292,35 +293,11 @@ class AuditManager extends ChangeNotifier {
   }
 
   // ---------- Live scoring ----------
-  void _recalculateScore() {
-    if (_template == null) return;
-    final input = ScoringInputMapper.fromTemplate(
-      _template!,
-      _answers,
-      hasGlobalRisk: _triggeredRiskIds.isNotEmpty,
-    );
-    final result = ScoringEngine.calculate(input);
-    _liveScore = result.totalScore;
-    _sectionScores = result.sectionScores;
-  }
+  void _recalculateScore() => _recalculateScoreLogic(this);
 
   // ---------- Section scores JSON ----------
   // Reads from _sectionScores computed by _recalculateScore() — no re-calculation.
-  String _buildSectionScoresJson() {
-    if (_template == null) return '{}';
-    final sections = <String, dynamic>{};
-    for (final group in _template!.groups) {
-      final secScore = _sectionScores[group.id];
-      sections[group.id] = {
-        'title': group.title,
-        'weight': group.weight,
-        'maxPoints': secScore?.maxPoints ?? 0.0,
-        'score': secScore?.score ?? 0.0,
-        'maxScore': secScore?.maxPoints ?? 0.0,
-      };
-    }
-    return jsonEncode(sections);
-  }
+  String _buildSectionScoresJson() => _buildSectionScoresJsonLogic(this);
 
   // ---------- Global Risk Actions ----------
 
@@ -344,13 +321,7 @@ class AuditManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _recalculateScoreDebounced() {
-    _scoreDebounceTimer?.cancel();
-    _scoreDebounceTimer = Timer(const Duration(milliseconds: 200), () {
-      _recalculateScore();
-      notifyListeners();
-    });
-  }
+  void _recalculateScoreDebounced() => _recalculateScoreDebouncedLogic(this);
 
   // ---------- Pending count (syncable-only — excludes exhausted) ----------
   Future<int> get pendingCount => _outbox.syncableCount();

@@ -26,6 +26,18 @@ namespace Checkly.Api.Tests.Features.Analytics
             _factory.EnsureDatabaseCreated();
         }
 
+        private async Task ClearDatabaseAsync(AppDbContext db)
+        {
+            await db.Database.ExecuteSqlRawAsync("DELETE FROM profile_store_assignments");
+            await db.Database.ExecuteSqlRawAsync("DELETE FROM program_assignments");
+            await db.Database.ExecuteSqlRawAsync("DELETE FROM action_plans");
+            await db.Database.ExecuteSqlRawAsync("DELETE FROM submission_section_scores");
+            await db.Database.ExecuteSqlRawAsync("DELETE FROM submission_risks");
+            await db.Database.ExecuteSqlRawAsync("DELETE FROM answers");
+            await db.Database.ExecuteSqlRawAsync("DELETE FROM submissions");
+            await db.Database.ExecuteSqlRawAsync("DELETE FROM stores");
+        }
+
         [Fact]
         public async Task GetBodReport_LiveQuery_ComputesGeofenceBypassesCorrectly()
         {
@@ -40,6 +52,7 @@ namespace Checkly.Api.Tests.Features.Analytics
             using (var scope = _factory.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                await ClearDatabaseAsync(db);
 
                 var store = new Store
                 {
@@ -170,6 +183,7 @@ namespace Checkly.Api.Tests.Features.Analytics
             using (var scope = _factory.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                await ClearDatabaseAsync(db);
 
                 var store = new Store
                 {
@@ -212,9 +226,13 @@ namespace Checkly.Api.Tests.Features.Analytics
                 });
 
                 await db.SaveChangesAsync();
+            }
 
-                // Act
-                var calculator = new BodReportCalculator();
+            // Act
+            var calculator = new BodReportCalculator();
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 var payloadJson = await calculator.ComputeDailyReportWithTimezoneAsync(db, today, "Asia/Ho_Chi_Minh", CancellationToken.None);
 
                 // Assert

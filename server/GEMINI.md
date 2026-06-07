@@ -59,3 +59,22 @@ All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`). Query pa
 - **Gotcha: Safe Non-Nullable Column Migration & Backfill**: When adding a new non-nullable column (like `score_direction`) to an existing database with production data, adding it directly as non-nullable in the migration step can cause issues or fill with a generic default.
   - **Fix:** Always add the column as `nullable: true` first, execute custom SQL to backfill values based on existing states (e.g., mapping `scoring_mode` using CASE), and then alter the column to `nullable: false` with its final default value constraint. This guarantees historical correctness and zero data corruption.
 
+## Code Style & Compiler Warnings
+- **Gotcha: Nullable Structs in ADO.NET Binding**
+  - **Problem:** Direct cast of nullable structs (like `Guid?`) to `object` triggers compiler warnings (CS8600/CS8604) for potential null reference.
+  - **Fix:** Explicitly check `.HasValue` or cast to `object?` before null-coalescing.
+    ```csharp
+    myId.HasValue ? (object)myId.Value : DBNull.Value
+    // OR:
+    (object?)myId ?? DBNull.Value
+    ```
+- **Gotcha: Tuple Deconstruction**
+  - **Problem:** Accessing values via `.Item1`/`.Item2` triggers code style warning `IDE0042`.
+  - **Fix:** Deconstruct tuples into named local variables.
+    ```csharp
+    var (id, name) = tuple;
+    ```
+- **Gotcha: Target-Typed New**
+  - **Problem:** Redundantly naming the type in `new` expressions triggers style warning `IDE0090`.
+  - **Fix:** Use simplified `new(...)` syntax.
+

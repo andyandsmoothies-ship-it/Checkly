@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:go_router/go_router.dart';
 
 import 'package:checkly/_shared/services/error_display_service.dart';
 import 'package:checkly/_shared/services/geocoding_service.dart';
@@ -10,20 +9,13 @@ import 'package:checkly/features/admin/services/admin_api_service.dart';
 import 'package:checkly/features/admin/widgets/user_create_sheet.dart';
 import 'package:checkly/features/admin/widgets/user_edit_sheet.dart';
 import 'package:checkly/features/admin/pages/widgets/risk_form_sheet.dart';
-import 'package:checkly/features/admin/pages/widgets/store_form_sheet.dart';
 import 'package:checkly/features/stores/services/store_api_service.dart';
-import 'package:checkly/features/action_plans/widgets/submit_evidence_sheet.dart';
-import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
-import 'package:checkly/features/action_plans/model/action_plan_dto.dart';
-import 'package:checkly/features/templates/pages/template_builder_page.dart';
 import 'package:checkly/features/templates/manager/template_manager.dart';
-import 'package:checkly/features/templates/models/template_dto.dart';
 
 class MockAdminApiService extends Mock implements AdminApiService {}
 class MockErrorDisplayService extends Mock implements ErrorDisplayService {}
 class MockStoreApiService extends Mock implements StoreApiService {}
 class MockGeocodingService extends Mock implements GeocodingService {}
-class MockActionPlanManager extends Mock implements ActionPlanManager {}
 class MockTemplateManager extends Mock implements TemplateManager {}
 
 void main() {

@@ -1,0 +1,574 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:19.25]     Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_UnassignedTemplate_VisibleToAllAuditors [SKIP]
+[xUnit.net 00:00:19.25]     Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_Admin_SeesAllTemplatesRegardless [SKIP]
+[xUnit.net 00:00:19.25]     Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_AssignedTemplate_VisibleOnlyToGroupMembers [SKIP]
+  Skipped Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_UnassignedTemplate_VisibleToAllAuditors [1 ms]
+  Skipped Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_Admin_SeesAllTemplatesRegardless [1 ms]
+  Skipped Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_AssignedTemplate_VisibleOnlyToGroupMembers [1 ms]
+[xUnit.net 00:01:10.59]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC03_Reviewer_VoidedSubmission_CannotVoid [SKIP]
+  Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC03_Reviewer_VoidedSubmission_CannotVoid [1 ms]
+[xUnit.net 00:01:11.64]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC06_Creator_FinalizedSubmission_CannotEdit [SKIP]
+[xUnit.net 00:01:12.19]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC02_Reviewer_FinalizedSubmission_CannotFinalize [SKIP]
+[xUnit.net 00:01:12.19]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC07_GAP_UnrecognizedStatus_ReturnsOnlyView [SKIP]
+  Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC06_Creator_FinalizedSubmission_CannotEdit [1 ms]
+  Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC02_Reviewer_FinalizedSubmission_CannotFinalize [1 ms]
+  Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC07_GAP_UnrecognizedStatus_ReturnsOnlyView [1 ms]
+  Failed Checkly.Api.Tests.Features.ActionPlans.ActionPlan_PbacUi_Tests.GetActionPlans_ReturnsEmptyActionsForUserWithoutCapabilities [440 ms]
+  Error Message:
+   Assert.DoesNotContain() Failure: Item found in collection
+                     ↓ (pos 1)
+Collection: ["view", "submit_evidence"]
+Found:      "submit_evidence"
+  Stack Trace:
+     at Checkly.Api.Tests.Features.ActionPlans.ActionPlan_PbacUi_Tests.GetActionPlans_ReturnsEmptyActionsForUserWithoutCapabilities() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\ActionPlans\ActionPlanPbacUiTests.cs:line 264
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Analytics.GeofenceBypassKpiTests.ComputeDailyReport_NightlySnapshot_ComputesGeofenceBypassesCorrectly [207 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 1
+Actual:   3
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Analytics.GeofenceBypassKpiTests.ComputeDailyReport_NightlySnapshot_ComputesGeofenceBypassesCorrectly() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Analytics\GeofenceBypassKpiTests.cs:line 225
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Analytics.BodReportCalculatorArchetypeTests.ComputeDailyReport_NullTemplateId_TreatedAsQCFallback [415 ms]
+  Error Message:
+   Expected submission with null TemplateId to be treated as QC and included in top/bottom calculations.
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Analytics.BodReportCalculatorArchetypeTests.ComputeDailyReport_NullTemplateId_TreatedAsQCFallback() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Analytics\BodReportCalculatorArchetypeTests.cs:line 246
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Analytics.BodReportCalculatorArchetypeTests.ComputeDailyReport_QCStore_IncludedInTopBottomCalculation [17 ms]
+  Error Message:
+   Expected QC store to be included in nightly leaderboard calculations.
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Analytics.BodReportCalculatorArchetypeTests.ComputeDailyReport_QCStore_IncludedInTopBottomCalculation() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Analytics\BodReportCalculatorArchetypeTests.cs:line 98
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Analytics.BodLiveQueries_Slice1_Tests.GetGlobalReport_SeededSubmissions_ReturnsLiveComputedValues [93 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 1
+Actual:   0
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Analytics.BodLiveQueries_Slice1_Tests.GetGlobalReport_SeededSubmissions_ReturnsLiveComputedValues() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Analytics\BodLiveQueries_Slice1_Tests.cs:line 157
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Analytics.BodAnalyticsSlice1Tests.DumpRealDatabaseContent [198 ms]
+  Error Message:
+   SECTIONS (376):
+- Title: 'Opening Tasks', Score: 77.0, MaxScore: 100.0, SubmissionId: e2e2609f-be57-4d0a-baf4-09c3b4786ae6
+- Title: 'Closing Tasks', Score: 80.7, MaxScore: 100.0, SubmissionId: e2e2609f-be57-4d0a-baf4-09c3b4786ae6
+- Title: 'Daily Operations', Score: 79.0, MaxScore: 100.0, SubmissionId: e2e2609f-be57-4d0a-baf4-09c3b4786ae6
+- Title: 'Opening Tasks', Score: 81.4, MaxScore: 100.0, SubmissionId: 5742cf65-22f4-4060-9cab-f4bfa0c06933
+- Title: 'Closing Tasks', Score: 80.5, MaxScore: 100.0, SubmissionId: 5742cf65-22f4-4060-9cab-f4bfa0c06933
+- Title: 'Daily Operations', Score: 82.5, MaxScore: 100.0, SubmissionId: 5742cf65-22f4-4060-9cab-f4bfa0c06933
+- Title: 'Opening Tasks', Score: 78.7, MaxScore: 100.0, SubmissionId: c6fc1eb5-2d04-47ef-bf98-b7cfd4f63491
+- Title: 'Closing Tasks', Score: 79.6, MaxScore: 100.0, SubmissionId: c6fc1eb5-2d04-47ef-bf98-b7cfd4f63491
+- Title: 'Daily Operations', Score: 77.4, MaxScore: 100.0, SubmissionId: c6fc1eb5-2d04-47ef-bf98-b7cfd4f63491
+- Title: 'Opening Tasks', Score: 84.4, MaxScore: 100.0, SubmissionId: 0901ef35-b931-498f-b021-213ad1968fdf
+- Title: 'Closing Tasks', Score: 83.2, MaxScore: 100.0, SubmissionId: 0901ef35-b931-498f-b021-213ad1968fdf
+- Title: 'Daily Operations', Score: 85.4, MaxScore: 100.0, SubmissionId: 0901ef35-b931-498f-b021-213ad1968fdf
+- Title: 'Opening Tasks', Score: 95.5, MaxScore: 100.0, SubmissionId: b0ce7b13-b115-4cf1-9519-36395e812f4d
+- Title: 'Closing Tasks', Score: 92.6, MaxScore: 100.0, SubmissionId: b0ce7b13-b115-4cf1-9519-36395e812f4d
+- Title: 'Daily Operations', Score: 90.7, MaxScore: 100.0, SubmissionId: b0ce7b13-b115-4cf1-9519-36395e812f4d
+- Title: 'Opening Tasks', Score: 75.6, MaxScore: 100.0, SubmissionId: 580eb9ac-a2ac-4c51-bae2-cef93e2ba57a
+- Title: 'Closing Tasks', Score: 79.8, MaxScore: 100.0, SubmissionId: 580eb9ac-a2ac-4c51-bae2-cef93e2ba57a
+- Title: 'Daily Operations', Score: 75.9, MaxScore: 100.0, SubmissionId: 580eb9ac-a2ac-4c51-bae2-cef93e2ba57a
+- Title: 'Opening Tasks', Score: 75.6, MaxScore: 100.0, SubmissionId: 31a41b08-695a-4b5a-8dd2-ac4f76e65408
+- Title: 'Closing Tasks', Score: 77.9, MaxScore: 100.0, SubmissionId: 31a41b08-695a-4b5a-8dd2-ac4f76e65408
+- Title: 'Daily Operations', Score: 77.2, MaxScore: 100.0, SubmissionId: 31a41b08-695a-4b5a-8dd2-ac4f76e65408
+- Title: 'Opening Tasks', Score: 88.1, MaxScore: 100.0, SubmissionId: 83e0c2a3-4b5d-41ea-be18-6e9746fa56a7
+- Title: 'Closing Tasks', Score: 91.2, MaxScore: 100.0, SubmissionId: 83e0c2a3-4b5d-41ea-be18-6e9746fa56a7
+- Title: 'Daily Operations', Score: 87.6, MaxScore: 100.0, SubmissionId: 83e0c2a3-4b5d-41ea-be18-6e9746fa56a7
+- Title: 'Opening Tasks', Score: 77.8, MaxScore: 100.0, SubmissionId: 4b46b70e-bceb-471d-ba67-b242b53b7aa8
+- Title: 'Closing Tasks', Score: 71.3, MaxScore: 100.0, SubmissionId: 4b46b70e-bceb-471d-ba67-b242b53b7aa8
+- Title: 'Daily Operations', Score: 71.2, MaxScore: 100.0, SubmissionId: 4b46b70e-bceb-471d-ba67-b242b53b7aa8
+- Title: 'Opening Tasks', Score: 84.6, MaxScore: 100.0, SubmissionId: 68b97da8-e796-4d59-9ffb-a048502edbd7
+- Title: 'Closing Tasks', Score: 86.5, MaxScore: 100.0, SubmissionId: 68b97da8-e796-4d59-9ffb-a048502edbd7
+- Title: 'Daily Operations', Score: 82.0, MaxScore: 100.0, SubmissionId: 68b97da8-e796-4d59-9ffb-a048502edbd7
+- Title: 'Opening Tasks', Score: 86.4, MaxScore: 100.0, SubmissionId: 7c59a250-c4e9-4172-aace-5c3a2dcf6e2f
+- Title: 'Closing Tasks', Score: 85.6, MaxScore: 100.0, SubmissionId: 7c59a250-c4e9-4172-aace-5c3a2dcf6e2f
+- Title: 'Daily Operations', Score: 90.5, MaxScore: 100.0, SubmissionId: 7c59a250-c4e9-4172-aace-5c3a2dcf6e2f
+- Title: 'Opening Tasks', Score: 95.7, MaxScore: 100.0, SubmissionId: 01f7e814-3c03-47cb-bc1a-c65b2962e141
+- Title: 'Closing Tasks', Score: 98.7, MaxScore: 100.0, SubmissionId: 01f7e814-3c03-47cb-bc1a-c65b2962e141
+- Title: 'Daily Operations', Score: 94.3, MaxScore: 100.0, SubmissionId: 01f7e814-3c03-47cb-bc1a-c65b2962e141
+- Title: 'Opening Tasks', Score: 75.5, MaxScore: 100.0, SubmissionId: 928dfa28-1a33-408a-8a0d-4bdff22e97a3
+- Title: 'Closing Tasks', Score: 76.1, MaxScore: 100.0, SubmissionId: 928dfa28-1a33-408a-8a0d-4bdff22e97a3
+- Title: 'Daily Operations', Score: 79.1, MaxScore: 100.0, SubmissionId: 928dfa28-1a33-408a-8a0d-4bdff22e97a3
+- Title: 'Opening Tasks', Score: 82.1, MaxScore: 100.0, SubmissionId: ae20c8e0-9418-4efd-817e-d70545353eeb
+- Title: 'Closing Tasks', Score: 85.6, MaxScore: 100.0, SubmissionId: ae20c8e0-9418-4efd-817e-d70545353eeb
+- Title: 'Daily Operations', Score: 82.9, MaxScore: 100.0, SubmissionId: ae20c8e0-9418-4efd-817e-d70545353eeb
+- Title: 'Opening Tasks', Score: 77.4, MaxScore: 100.0, SubmissionId: d05ebc84-4139-4650-a024-88c26358ea8b
+- Title: 'Closing Tasks', Score: 78.8, MaxScore: 100.0, SubmissionId: d05ebc84-4139-4650-a024-88c26358ea8b
+- Title: 'Daily Operations', Score: 81.8, MaxScore: 100.0, SubmissionId: d05ebc84-4139-4650-a024-88c26358ea8b
+- Title: 'Opening Tasks', Score: 81.0, MaxScore: 100.0, SubmissionId: 6bb32a7e-2865-44f3-8527-e67ee522551c
+- Title: 'Closing Tasks', Score: 84.4, MaxScore: 100.0, SubmissionId: 6bb32a7e-2865-44f3-8527-e67ee522551c
+- Title: 'Daily Operations', Score: 85.0, MaxScore: 100.0, SubmissionId: 6bb32a7e-2865-44f3-8527-e67ee522551c
+- Title: 'Opening Tasks', Score: 99.1, MaxScore: 100.0, SubmissionId: 1d95446b-e8c8-4b64-8661-e5eccbb42096
+- Title: 'Closing Tasks', Score: 94.5, MaxScore: 100.0, SubmissionId: 1d95446b-e8c8-4b64-8661-e5eccbb42096
+- Title: 'Daily Operations', Score: 96.7, MaxScore: 100.0, SubmissionId: 1d95446b-e8c8-4b64-8661-e5eccbb42096
+- Title: 'Opening Tasks', Score: 75.4, MaxScore: 100.0, SubmissionId: 9e521ac6-6e14-4ad6-aa67-382e4a2a05a3
+- Title: 'Closing Tasks', Score: 77.0, MaxScore: 100.0, SubmissionId: 9e521ac6-6e14-4ad6-aa67-382e4a2a05a3
+- Title: 'Daily Operations', Score: 82.7, MaxScore: 100.0, SubmissionId: 9e521ac6-6e14-4ad6-aa67-382e4a2a05a3
+- Title: 'Opening Tasks', Score: 82.3, MaxScore: 100.0, SubmissionId: 7b7cbc04-41f8-4b82-a35b-654814be2b80
+- Title: 'Closing Tasks', Score: 82.2, MaxScore: 100.0, SubmissionId: 7b7cbc04-41f8-4b82-a35b-654814be2b80
+- Title: 'Daily Operations', Score: 83.5, MaxScore: 100.0, SubmissionId: 7b7cbc04-41f8-4b82-a35b-654814be2b80
+- Title: 'Opening Tasks', Score: 86.7, MaxScore: 100.0, SubmissionId: 7efc6f08-300e-4a6f-8b5f-02b634c39b1a
+- Title: 'Closing Tasks', Score: 82.7, MaxScore: 100.0, SubmissionId: 7efc6f08-300e-4a6f-8b5f-02b634c39b1a
+- Title: 'Daily Operations', Score: 83.3, MaxScore: 100.0, SubmissionId: 7efc6f08-300e-4a6f-8b5f-02b634c39b1a
+- Title: 'Opening Tasks', Score: 82.7, MaxScore: 100.0, SubmissionId: 4a71371b-77a7-4a82-8f55-d3a3c60aad4d
+- Title: 'Closing Tasks', Score: 81.0, MaxScore: 100.0, SubmissionId: 4a71371b-77a7-4a82-8f55-d3a3c60aad4d
+- Title: 'Daily Operations', Score: 78.4, MaxScore: 100.0, SubmissionId: 4a71371b-77a7-4a82-8f55-d3a3c60aad4d
+- Title: 'Opening Tasks', Score: 92.9, MaxScore: 100.0, SubmissionId: 3fa0cd02-855c-4945-88d6-caa308423bf4
+- Title: 'Closing Tasks', Score: 94.2, MaxScore: 100.0, SubmissionId: 3fa0cd02-855c-4945-88d6-caa308423bf4
+- Title: 'Daily Operations', Score: 95.8, MaxScore: 100.0, SubmissionId: 3fa0cd02-855c-4945-88d6-caa308423bf4
+- Title: 'Opening Tasks', Score: 80.2, MaxScore: 100.0, SubmissionId: 56c1f3df-2ba8-4b9f-b048-b6923e316bf2
+- Title: 'Closing Tasks', Score: 81.7, MaxScore: 100.0, SubmissionId: 56c1f3df-2ba8-4b9f-b048-b6923e316bf2
+- Title: 'Daily Operations', Score: 83.9, MaxScore: 100.0, SubmissionId: 56c1f3df-2ba8-4b9f-b048-b6923e316bf2
+- Title: 'Opening Tasks', Score: 83.0, MaxScore: 100.0, SubmissionId: 9088cc8f-afd4-4798-ba17-77a700b99208
+- Title: 'Closing Tasks', Score: 81.4, MaxScore: 100.0, SubmissionId: 9088cc8f-afd4-4798-ba17-77a700b99208
+- Title: 'Daily Operations', Score: 77.0, MaxScore: 100.0, SubmissionId: 9088cc8f-afd4-4798-ba17-77a700b99208
+- Title: 'Opening Tasks', Score: 96.4, MaxScore: 100.0, SubmissionId: 65514410-610b-43f1-9d19-17103020fa76
+- Title: 'Closing Tasks', Score: 99.8, MaxScore: 100.0, SubmissionId: 65514410-610b-43f1-9d19-17103020fa76
+- Title: 'Daily Operations', Score: 100, MaxScore: 100.0, SubmissionId: 65514410-610b-43f1-9d19-17103020fa76
+- Title: 'Opening Tasks', Score: 88.2, MaxScore: 100.0, SubmissionId: d00eb27c-fa5b-4bd8-bd2d-79e0b4d88d16
+- Title: 'Closing Tasks', Score: 83.4, MaxScore: 100.0, SubmissionId: d00eb27c-fa5b-4bd8-bd2d-79e0b4d88d16
+- Title: 'Daily Operations', Score: 88.9, MaxScore: 100.0, SubmissionId: d00eb27c-fa5b-4bd8-bd2d-79e0b4d88d16
+- Title: 'Opening Tasks', Score: 89.5, MaxScore: 100.0, SubmissionId: 84c4a061-1001-4f45-8e45-98972a20839b
+- Title: 'Closing Tasks', Score: 87.9, MaxScore: 100.0, SubmissionId: 84c4a061-1001-4f45-8e45-98972a20839b
+- Title: 'Daily Operations', Score: 84.8, MaxScore: 100.0, SubmissionId: 84c4a061-1001-4f45-8e45-98972a20839b
+- Title: 'Opening Tasks', Score: 79.6, MaxScore: 100.0, SubmissionId: 91dc6913-dd24-4a91-9a51-2901b6b4e316
+- Title: 'Section A: Core Check', Score: 1.0, MaxScore: 2.0, SubmissionId: 913d5477-5d6c-4343-92be-c9e0d2204ba3
+- Title: 'Closing Tasks', Score: 80.5, MaxScore: 100.0, SubmissionId: 91dc6913-dd24-4a91-9a51-2901b6b4e316
+- Title: 'Daily Operations', Score: 80.4, MaxScore: 100.0, SubmissionId: 91dc6913-dd24-4a91-9a51-2901b6b4e316
+- Title: 'Opening Tasks', Score: 94.2, MaxScore: 100.0, SubmissionId: e157ac17-18d2-482d-a3d7-f262753ca2bc
+- Title: 'Closing Tasks', Score: 89.0, MaxScore: 100.0, SubmissionId: e157ac17-18d2-482d-a3d7-f262753ca2bc
+- Title: 'Daily Operations', Score: 93.1, MaxScore: 100.0, SubmissionId: e157ac17-18d2-482d-a3d7-f262753ca2bc
+- Title: 'Opening Tasks', Score: 88.2, MaxScore: 100.0, SubmissionId: 6ca539ac-2fe4-4fe2-bf08-9b86b63b7ae1
+- Title: 'Closing Tasks', Score: 92.7, MaxScore: 100.0, SubmissionId: 6ca539ac-2fe4-4fe2-bf08-9b86b63b7ae1
+- Title: 'Daily Operations', Score: 85.7, MaxScore: 100.0, SubmissionId: 6ca539ac-2fe4-4fe2-bf08-9b86b63b7ae1
+- Title: 'Opening Tasks', Score: 98.4, MaxScore: 100.0, SubmissionId: becef460-d832-4195-a04e-50a4a7b32059
+- Title: 'Closing Tasks', Score: 91.4, MaxScore: 100.0, SubmissionId: becef460-d832-4195-a04e-50a4a7b32059
+- Title: 'Daily Operations', Score: 93.7, MaxScore: 100.0, SubmissionId: becef460-d832-4195-a04e-50a4a7b32059
+- Title: 'Opening Tasks', Score: 91.8, MaxScore: 100.0, SubmissionId: d1c409fb-17c5-4e23-8e4f-f55b2e78f02a
+- Title: 'Closing Tasks', Score: 94.5, MaxScore: 100.0, SubmissionId: d1c409fb-17c5-4e23-8e4f-f55b2e78f02a
+- Title: 'Daily Operations', Score: 89.0, MaxScore: 100.0, SubmissionId: d1c409fb-17c5-4e23-8e4f-f55b2e78f02a
+- Title: 'Opening Tasks', Score: 86.4, MaxScore: 100.0, SubmissionId: 8cabee41-abc6-4744-8f02-0248a20237d6
+- Title: 'Closing Tasks', Score: 91.6, MaxScore: 100.0, SubmissionId: 8cabee41-abc6-4744-8f02-0248a20237d6
+- Title: 'Daily Operations', Score: 90.3, MaxScore: 100.0, SubmissionId: 8cabee41-abc6-4744-8f02-0248a20237d6
+- Title: 'Opening Tasks', Score: 90.6, MaxScore: 100.0, SubmissionId: 5eb16d18-53e9-42f3-b528-0bb690ba237f
+- Title: 'Closing Tasks', Score: 88.4, MaxScore: 100.0, SubmissionId: 5eb16d18-53e9-42f3-b528-0bb690ba237f
+- Title: 'Daily Operations', Score: 91.1, MaxScore: 100.0, SubmissionId: 5eb16d18-53e9-42f3-b528-0bb690ba237f
+- Title: 'Opening Tasks', Score: 96.3, MaxScore: 100.0, SubmissionId: 8d477011-b7b4-4428-b07b-7e7754fa3894
+- Title: 'Closing Tasks', Score: 93.5, MaxScore: 100.0, SubmissionId: 8d477011-b7b4-4428-b07b-7e7754fa3894
+- Title: 'Daily Operations', Score: 98.1, MaxScore: 100.0, SubmissionId: 8d477011-b7b4-4428-b07b-7e7754fa3894
+- Title: 'Opening Tasks', Score: 81.1, MaxScore: 100.0, SubmissionId: fefd8d0b-4527-4ffa-9d2a-eac9f9aaca64
+- Title: 'Closing Tasks', Score: 74.9, MaxScore: 100.0, SubmissionId: fefd8d0b-4527-4ffa-9d2a-eac9f9aaca64
+- Title: 'Daily Operations', Score: 78.7, MaxScore: 100.0, SubmissionId: fefd8d0b-4527-4ffa-9d2a-eac9f9aaca64
+- Title: 'Opening Tasks', Score: 88.6, MaxScore: 100.0, SubmissionId: 702e2e48-471c-4906-b04b-567a0df90ff4
+- Title: 'Closing Tasks', Score: 88.6, MaxScore: 100.0, SubmissionId: 702e2e48-471c-4906-b04b-567a0df90ff4
+- Title: 'Daily Operations', Score: 86.8, MaxScore: 100.0, SubmissionId: 702e2e48-471c-4906-b04b-567a0df90ff4
+- Title: 'Opening Tasks', Score: 85.7, MaxScore: 100.0, SubmissionId: a6cf3b1a-9d6d-4052-8ef1-78aaefcb0dd8
+- Title: 'Closing Tasks', Score: 88.3, MaxScore: 100.0, SubmissionId: a6cf3b1a-9d6d-4052-8ef1-78aaefcb0dd8
+- Title: 'Daily Operations', Score: 86.1, MaxScore: 100.0, SubmissionId: a6cf3b1a-9d6d-4052-8ef1-78aaefcb0dd8
+- Title: 'Opening Tasks', Score: 83.0, MaxScore: 100.0, SubmissionId: 39b3c2d4-441f-4307-960c-d4758262e6ae
+- Title: 'Closing Tasks', Score: 84.3, MaxScore: 100.0, SubmissionId: 39b3c2d4-441f-4307-960c-d4758262e6ae
+- Title: 'Daily Operations', Score: 81.9, MaxScore: 100.0, SubmissionId: 39b3c2d4-441f-4307-960c-d4758262e6ae
+- Title: 'Opening Tasks', Score: 82.0, MaxScore: 100.0, SubmissionId: 40e9256f-db95-4016-8237-56bc4f244994
+- Title: 'Closing Tasks', Score: 85.2, MaxScore: 100.0, SubmissionId: 40e9256f-db95-4016-8237-56bc4f244994
+- Title: 'Daily Operations', Score: 84.0, MaxScore: 100.0, SubmissionId: 40e9256f-db95-4016-8237-56bc4f244994
+- Title: 'Opening Tasks', Score: 90.7, MaxScore: 100.0, SubmissionId: bba16a63-00da-49c7-8bfe-6eb13cd32c73
+- Title: 'Closing Tasks', Score: 88.2, MaxScore: 100.0, SubmissionId: bba16a63-00da-49c7-8bfe-6eb13cd32c73
+- Title: 'Daily Operations', Score: 88.9, MaxScore: 100.0, SubmissionId: bba16a63-00da-49c7-8bfe-6eb13cd32c73
+- Title: 'Opening Tasks', Score: 84.2, MaxScore: 100.0, SubmissionId: d0c6f014-231b-4158-93ee-6bd745454893
+- Title: 'Closing Tasks', Score: 90.1, MaxScore: 100.0, SubmissionId: d0c6f014-231b-4158-93ee-6bd745454893
+- Title: 'Daily Operations', Score: 89.6, MaxScore: 100.0, SubmissionId: d0c6f014-231b-4158-93ee-6bd745454893
+- Title: 'Opening Tasks', Score: 79.0, MaxScore: 100.0, SubmissionId: bdc27de2-f8cb-48a6-9823-79aeb24e6169
+- Title: 'Closing Tasks', Score: 79.4, MaxScore: 100.0, SubmissionId: bdc27de2-f8cb-48a6-9823-79aeb24e6169
+- Title: 'Daily Operations', Score: 85.7, MaxScore: 100.0, SubmissionId: bdc27de2-f8cb-48a6-9823-79aeb24e6169
+- Title: 'Opening Tasks', Score: 77.1, MaxScore: 100.0, SubmissionId: a8b25921-851a-4b8d-b762-1582df1afa45
+- Title: 'Closing Tasks', Score: 75.0, MaxScore: 100.0, SubmissionId: a8b25921-851a-4b8d-b762-1582df1afa45
+- Title: 'Daily Operations', Score: 74.1, MaxScore: 100.0, SubmissionId: a8b25921-851a-4b8d-b762-1582df1afa45
+- Title: 'Opening Tasks', Score: 93.2, MaxScore: 100.0, SubmissionId: e36834fc-d8a9-4445-8e0a-820f7750348e
+- Title: 'Closing Tasks', Score: 94.8, MaxScore: 100.0, SubmissionId: e36834fc-d8a9-4445-8e0a-820f7750348e
+- Title: 'Daily Operations', Score: 91.0, MaxScore: 100.0, SubmissionId: e36834fc-d8a9-4445-8e0a-820f7750348e
+- Title: 'Opening Tasks', Score: 76.2, MaxScore: 100.0, SubmissionId: 7d127039-ccfe-43f7-a67a-e0e03c66b94a
+- Title: 'Closing Tasks', Score: 71.8, MaxScore: 100.0, SubmissionId: 7d127039-ccfe-43f7-a67a-e0e03c66b94a
+- Title: 'Daily Operations', Score: 75.2, MaxScore: 100.0, SubmissionId: 7d127039-ccfe-43f7-a67a-e0e03c66b94a
+- Title: 'Opening Tasks', Score: 94.3, MaxScore: 100.0, SubmissionId: b228ac5c-f814-40e1-a8e2-3480d3a7bda4
+- Title: 'Closing Tasks', Score: 94.7, MaxScore: 100.0, SubmissionId: b228ac5c-f814-40e1-a8e2-3480d3a7bda4
+- Title: 'Daily Operations', Score: 98.4, MaxScore: 100.0, SubmissionId: b228ac5c-f814-40e1-a8e2-3480d3a7bda4
+- Title: 'Opening Tasks', Score: 86.9, MaxScore: 100.0, SubmissionId: f377b7fb-056d-412f-be08-4ab9dcaadc57
+- Title: 'Closing Tasks', Score: 92.6, MaxScore: 100.0, SubmissionId: f377b7fb-056d-412f-be08-4ab9dcaadc57
+- Title: 'Daily Operations', Score: 93.7, MaxScore: 100.0, SubmissionId: f377b7fb-056d-412f-be08-4ab9dcaadc57
+- Title: 'Opening Tasks', Score: 96.0, MaxScore: 100.0, SubmissionId: c23c4a11-83e6-4809-b551-05421c3a02ee
+- Title: 'Closing Tasks', Score: 93.1, MaxScore: 100.0, SubmissionId: c23c4a11-83e6-4809-b551-05421c3a02ee
+- Title: 'Daily Operations', Score: 96.8, MaxScore: 100.0, SubmissionId: c23c4a11-83e6-4809-b551-05421c3a02ee
+- Title: 'Opening Tasks', Score: 91.5, MaxScore: 100.0, SubmissionId: 1c62d0d6-b133-41bb-9cd7-7b3fed614db1
+- Title: 'Closing Tasks', Score: 91.5, MaxScore: 100.0, SubmissionId: 1c62d0d6-b133-41bb-9cd7-7b3fed614db1
+- Title: 'Daily Operations', Score: 84.7, MaxScore: 100.0, SubmissionId: 1c62d0d6-b133-41bb-9cd7-7b3fed614db1
+- Title: 'Opening Tasks', Score: 81.2, MaxScore: 100.0, SubmissionId: df4a78a3-3a69-4d40-bcb1-91a5a3114d7b
+- Title: 'Closing Tasks', Score: 74.5, MaxScore: 100.0, SubmissionId: df4a78a3-3a69-4d40-bcb1-91a5a3114d7b
+- Title: 'Daily Operations', Score: 80.5, MaxScore: 100.0, SubmissionId: df4a78a3-3a69-4d40-bcb1-91a5a3114d7b
+- Title: 'Opening Tasks', Score: 79.3, MaxScore: 100.0, SubmissionId: 198662d7-dbf3-421c-b8c4-39343ff2e87d
+- Title: 'Closing Tasks', Score: 79.9, MaxScore: 100.0, SubmissionId: 198662d7-dbf3-421c-b8c4-39343ff2e87d
+- Title: 'Daily Operations', Score: 84.3, MaxScore: 100.0, SubmissionId: 198662d7-dbf3-421c-b8c4-39343ff2e87d
+- Title: 'Opening Tasks', Score: 99.2, MaxScore: 100.0, SubmissionId: 5af4409e-75ba-4c9c-bced-9cee714fe604
+- Title: 'Closing Tasks', Score: 95.7, MaxScore: 100.0, SubmissionId: 5af4409e-75ba-4c9c-bced-9cee714fe604
+- Title: 'Daily Operations', Score: 100, MaxScore: 100.0, SubmissionId: 5af4409e-75ba-4c9c-bced-9cee714fe604
+- Title: 'Opening Tasks', Score: 84.5, MaxScore: 100.0, SubmissionId: ed79914f-0e59-4bb4-823b-cc210b74ded8
+- Title: 'Closing Tasks', Score: 84.9, MaxScore: 100.0, SubmissionId: ed79914f-0e59-4bb4-823b-cc210b74ded8
+- Title: 'Daily Operations', Score: 84.6, MaxScore: 100.0, SubmissionId: ed79914f-0e59-4bb4-823b-cc210b74ded8
+- Title: 'Opening Tasks', Score: 91.5, MaxScore: 100.0, SubmissionId: 7618b09e-3a63-4684-a14d-498e711060a7
+- Title: 'Closing Tasks', Score: 97.7, MaxScore: 100.0, SubmissionId: 7618b09e-3a63-4684-a14d-498e711060a7
+- Title: 'Daily Operations', Score: 94.7, MaxScore: 100.0, SubmissionId: 7618b09e-3a63-4684-a14d-498e711060a7
+- Title: 'Opening Tasks', Score: 92.3, MaxScore: 100.0, SubmissionId: 70d6aa0e-b279-4b5d-8967-754d1d7c7c83
+- Title: 'Closing Tasks', Score: 96.2, MaxScore: 100.0, SubmissionId: 70d6aa0e-b279-4b5d-8967-754d1d7c7c83
+- Title: 'Daily Operations', Score: 96.1, MaxScore: 100.0, SubmissionId: 70d6aa0e-b279-4b5d-8967-754d1d7c7c83
+- Title: 'Opening Tasks', Score: 80.4, MaxScore: 100.0, SubmissionId: 7fe6509c-d7df-4162-b507-9b33a0b51d20
+- Title: 'Closing Tasks', Score: 78.6, MaxScore: 100.0, SubmissionId: 7fe6509c-d7df-4162-b507-9b33a0b51d20
+- Title: 'Daily Operations', Score: 78.4, MaxScore: 100.0, SubmissionId: 7fe6509c-d7df-4162-b507-9b33a0b51d20
+- Title: 'Opening Tasks', Score: 88.0, MaxScore: 100.0, SubmissionId: c76fe306-0448-48e9-a647-74f51bef287e
+- Title: 'Closing Tasks', Score: 91.8, MaxScore: 100.0, SubmissionId: c76fe306-0448-48e9-a647-74f51bef287e
+- Title: 'Daily Operations', Score: 93.0, MaxScore: 100.0, SubmissionId: c76fe306-0448-48e9-a647-74f51bef287e
+- Title: 'Opening Tasks', Score: 79.8, MaxScore: 100.0, SubmissionId: 77978cb1-5f39-47ed-bc89-d0487e2f709b
+- Title: 'Closing Tasks', Score: 80.9, MaxScore: 100.0, SubmissionId: 77978cb1-5f39-47ed-bc89-d0487e2f709b
+- Title: 'Daily Operations', Score: 82.0, MaxScore: 100.0, SubmissionId: 77978cb1-5f39-47ed-bc89-d0487e2f709b
+- Title: 'Opening Tasks', Score: 88.7, MaxScore: 100.0, SubmissionId: 36db3d48-f7ee-4dc8-a90b-85df32ead7b3
+- Title: 'Closing Tasks', Score: 92.2, MaxScore: 100.0, SubmissionId: 36db3d48-f7ee-4dc8-a90b-85df32ead7b3
+- Title: 'Daily Operations', Score: 88.3, MaxScore: 100.0, SubmissionId: 36db3d48-f7ee-4dc8-a90b-85df32ead7b3
+- Title: 'Opening Tasks', Score: 94.3, MaxScore: 100.0, SubmissionId: 8ca7ad20-c82d-4539-bc38-72c34e0a382f
+- Title: 'Closing Tasks', Score: 87.5, MaxScore: 100.0, SubmissionId: 8ca7ad20-c82d-4539-bc38-72c34e0a382f
+- Title: 'Daily Operations', Score: 89.1, MaxScore: 100.0, SubmissionId: 8ca7ad20-c82d-4539-bc38-72c34e0a382f
+- Title: 'Opening Tasks', Score: 94.9, MaxScore: 100.0, SubmissionId: dd1d01a7-fc64-435f-83ed-84edf6257f26
+- Title: 'Closing Tasks', Score: 98.7, MaxScore: 100.0, SubmissionId: dd1d01a7-fc64-435f-83ed-84edf6257f26
+- Title: 'Daily Operations', Score: 95.8, MaxScore: 100.0, SubmissionId: dd1d01a7-fc64-435f-83ed-84edf6257f26
+- Title: 'Opening Tasks', Score: 78.7, MaxScore: 100.0, SubmissionId: 1f108754-3207-42a8-94d6-c28a61abe38b
+- Title: 'Closing Tasks', Score: 81.2, MaxScore: 100.0, SubmissionId: 1f108754-3207-42a8-94d6-c28a61abe38b
+- Title: 'Daily Operations', Score: 77.7, MaxScore: 100.0, SubmissionId: 1f108754-3207-42a8-94d6-c28a61abe38b
+- Title: 'Opening Tasks', Score: 86.5, MaxScore: 100.0, SubmissionId: 6ef69875-41ce-4a5f-b73b-cd993afa20ee
+- Title: 'Closing Tasks', Score: 79.7, MaxScore: 100.0, SubmissionId: 6ef69875-41ce-4a5f-b73b-cd993afa20ee
+- Title: 'Daily Operations', Score: 82.9, MaxScore: 100.0, SubmissionId: 6ef69875-41ce-4a5f-b73b-cd993afa20ee
+- Title: 'Opening Tasks', Score: 93.3, MaxScore: 100.0, SubmissionId: eafd188d-a522-4903-a01f-ff5b2bbbc40a
+- Title: 'Closing Tasks', Score: 93.3, MaxScore: 100.0, SubmissionId: eafd188d-a522-4903-a01f-ff5b2bbbc40a
+- Title: 'Daily Operations', Score: 86.8, MaxScore: 100.0, SubmissionId: eafd188d-a522-4903-a01f-ff5b2bbbc40a
+- Title: 'Opening Tasks', Score: 81.8, MaxScore: 100.0, SubmissionId: ffb995e3-24f6-43e5-8d62-1bfda52ba6d3
+- Title: 'Closing Tasks', Score: 76.3, MaxScore: 100.0, SubmissionId: ffb995e3-24f6-43e5-8d62-1bfda52ba6d3
+- Title: 'Daily Operations', Score: 74.9, MaxScore: 100.0, SubmissionId: ffb995e3-24f6-43e5-8d62-1bfda52ba6d3
+- Title: 'Opening Tasks', Score: 90.9, MaxScore: 100.0, SubmissionId: 6b8d6656-7afb-4343-ab99-882b7fe75879
+- Title: 'Closing Tasks', Score: 89.3, MaxScore: 100.0, SubmissionId: 6b8d6656-7afb-4343-ab99-882b7fe75879
+- Title: 'Daily Operations', Score: 86.5, MaxScore: 100.0, SubmissionId: 6b8d6656-7afb-4343-ab99-882b7fe75879
+- Title: 'Opening Tasks', Score: 83.1, MaxScore: 100.0, SubmissionId: 4e728737-8f14-4797-992a-b1e272c9d5c3
+- Title: 'Closing Tasks', Score: 83.3, MaxScore: 100.0, SubmissionId: 4e728737-8f14-4797-992a-b1e272c9d5c3
+- Title: 'Daily Operations', Score: 79.5, MaxScore: 100.0, SubmissionId: 4e728737-8f14-4797-992a-b1e272c9d5c3
+- Title: 'Opening Tasks', Score: 94.3, MaxScore: 100.0, SubmissionId: a4165384-cdc8-45b1-b380-a31a73a6563f
+- Title: 'Closing Tasks', Score: 97.0, MaxScore: 100.0, SubmissionId: a4165384-cdc8-45b1-b380-a31a73a6563f
+- Title: 'Daily Operations', Score: 92.5, MaxScore: 100.0, SubmissionId: a4165384-cdc8-45b1-b380-a31a73a6563f
+- Title: 'Opening Tasks', Score: 74.0, MaxScore: 100.0, SubmissionId: 5890787b-f7e5-4c88-b0c4-5a6866967ea9
+- Title: 'Closing Tasks', Score: 79.4, MaxScore: 100.0, SubmissionId: 5890787b-f7e5-4c88-b0c4-5a6866967ea9
+- Title: 'Daily Operations', Score: 76.9, MaxScore: 100.0, SubmissionId: 5890787b-f7e5-4c88-b0c4-5a6866967ea9
+- Title: 'Opening Tasks', Score: 79.2, MaxScore: 100.0, SubmissionId: 0e0ed938-a2de-4a0c-877b-68815869e00c
+- Title: 'Closing Tasks', Score: 81.7, MaxScore: 100.0, SubmissionId: 0e0ed938-a2de-4a0c-877b-68815869e00c
+- Title: 'Daily Operations', Score: 79.8, MaxScore: 100.0, SubmissionId: 0e0ed938-a2de-4a0c-877b-68815869e00c
+- Title: 'Opening Tasks', Score: 83.5, MaxScore: 100.0, SubmissionId: 9180dd97-f4bb-46b1-8354-5e097837a5e1
+- Title: 'Closing Tasks', Score: 80.9, MaxScore: 100.0, SubmissionId: 9180dd97-f4bb-46b1-8354-5e097837a5e1
+- Title: 'Daily Operations', Score: 82.0, MaxScore: 100.0, SubmissionId: 9180dd97-f4bb-46b1-8354-5e097837a5e1
+- Title: 'Opening Tasks', Score: 90.5, MaxScore: 100.0, SubmissionId: a73e4538-eaec-4896-ab97-a42a727fc2b5
+- Title: 'Closing Tasks', Score: 94.3, MaxScore: 100.0, SubmissionId: a73e4538-eaec-4896-ab97-a42a727fc2b5
+- Title: 'Daily Operations', Score: 87.2, MaxScore: 100.0, SubmissionId: a73e4538-eaec-4896-ab97-a42a727fc2b5
+- Title: 'Opening Tasks', Score: 89.9, MaxScore: 100.0, SubmissionId: dcd9c3a1-6027-490c-93b7-8a9077b7527f
+- Title: 'Closing Tasks', Score: 89.9, MaxScore: 100.0, SubmissionId: dcd9c3a1-6027-490c-93b7-8a9077b7527f
+- Title: 'Daily Operations', Score: 84.3, MaxScore: 100.0, SubmissionId: dcd9c3a1-6027-490c-93b7-8a9077b7527f
+- Title: 'Opening Tasks', Score: 74.2, MaxScore: 100.0, SubmissionId: a896c64b-ad37-447b-adc7-331085578c98
+- Title: 'Closing Tasks', Score: 75.9, MaxScore: 100.0, SubmissionId: a896c64b-ad37-447b-adc7-331085578c98
+- Title: 'Daily Operations', Score: 76.1, MaxScore: 100.0, SubmissionId: a896c64b-ad37-447b-adc7-331085578c98
+- Title: 'Opening Tasks', Score: 81.3, MaxScore: 100.0, SubmissionId: a0091eed-8c9f-4b41-ba18-abf24dd62520
+- Title: 'Closing Tasks', Score: 74.9, MaxScore: 100.0, SubmissionId: a0091eed-8c9f-4b41-ba18-abf24dd62520
+- Title: 'Daily Operations', Score: 81.8, MaxScore: 100.0, SubmissionId: a0091eed-8c9f-4b41-ba18-abf24dd62520
+- Title: 'Opening Tasks', Score: 81.4, MaxScore: 100.0, SubmissionId: 369c4d04-2741-4b48-8174-605e28f180d0
+- Title: 'Closing Tasks', Score: 83.2, MaxScore: 100.0, SubmissionId: 369c4d04-2741-4b48-8174-605e28f180d0
+- Title: 'Daily Operations', Score: 76.9, MaxScore: 100.0, SubmissionId: 369c4d04-2741-4b48-8174-605e28f180d0
+- Title: 'Opening Tasks', Score: 75.3, MaxScore: 100.0, SubmissionId: a4122994-8946-4d08-9847-ec1a11adbb3a
+- Title: 'Closing Tasks', Score: 78.8, MaxScore: 100.0, SubmissionId: a4122994-8946-4d08-9847-ec1a11adbb3a
+- Title: 'Daily Operations', Score: 77.1, MaxScore: 100.0, SubmissionId: a4122994-8946-4d08-9847-ec1a11adbb3a
+- Title: 'Opening Tasks', Score: 93.1, MaxScore: 100.0, SubmissionId: de89057b-53dc-44aa-9ab9-44ac94b42f41
+- Title: 'Closing Tasks', Score: 89.8, MaxScore: 100.0, SubmissionId: de89057b-53dc-44aa-9ab9-44ac94b42f41
+- Title: 'Daily Operations', Score: 88.5, MaxScore: 100.0, SubmissionId: de89057b-53dc-44aa-9ab9-44ac94b42f41
+- Title: 'Opening Tasks', Score: 81.2, MaxScore: 100.0, SubmissionId: 27ba497b-e3eb-4663-a06a-2f77318f6f48
+- Title: 'Closing Tasks', Score: 85.7, MaxScore: 100.0, SubmissionId: 27ba497b-e3eb-4663-a06a-2f77318f6f48
+- Title: 'Daily Operations', Score: 88.6, MaxScore: 100.0, SubmissionId: 27ba497b-e3eb-4663-a06a-2f77318f6f48
+- Title: 'Opening Tasks', Score: 81.7, MaxScore: 100.0, SubmissionId: f027bf47-1898-4174-a1bf-bce640975774
+- Title: 'Closing Tasks', Score: 81.7, MaxScore: 100.0, SubmissionId: f027bf47-1898-4174-a1bf-bce640975774
+- Title: 'Daily Operations', Score: 88.1, MaxScore: 100.0, SubmissionId: f027bf47-1898-4174-a1bf-bce640975774
+- Title: 'Opening Tasks', Score: 91.7, MaxScore: 100.0, SubmissionId: f74ab72c-9023-452e-9aed-5dd62dd98dbf
+- Title: 'Closing Tasks', Score: 93.5, MaxScore: 100.0, SubmissionId: f74ab72c-9023-452e-9aed-5dd62dd98dbf
+- Title: 'Daily Operations', Score: 93.2, MaxScore: 100.0, SubmissionId: f74ab72c-9023-452e-9aed-5dd62dd98dbf
+- Title: 'Opening Tasks', Score: 94.1, MaxScore: 100.0, SubmissionId: 901422da-5318-4ab6-abae-ddfd3a0020ca
+- Title: 'Closing Tasks', Score: 92.6, MaxScore: 100.0, SubmissionId: 901422da-5318-4ab6-abae-ddfd3a0020ca
+- Title: 'Daily Operations', Score: 86.8, MaxScore: 100.0, SubmissionId: 901422da-5318-4ab6-abae-ddfd3a0020ca
+- Title: 'Opening Tasks', Score: 82.6, MaxScore: 100.0, SubmissionId: dfcf5d06-839d-4bea-9b2c-a81cf29c2c16
+- Title: 'Closing Tasks', Score: 85.8, MaxScore: 100.0, SubmissionId: dfcf5d06-839d-4bea-9b2c-a81cf29c2c16
+- Title: 'Daily Operations', Score: 83.2, MaxScore: 100.0, SubmissionId: dfcf5d06-839d-4bea-9b2c-a81cf29c2c16
+- Title: 'Opening Tasks', Score: 88.5, MaxScore: 100.0, SubmissionId: e6643d27-bb08-4fe3-a911-e6cc7946f140
+- Title: 'Closing Tasks', Score: 86.8, MaxScore: 100.0, SubmissionId: e6643d27-bb08-4fe3-a911-e6cc7946f140
+- Title: 'Daily Operations', Score: 86.1, MaxScore: 100.0, SubmissionId: e6643d27-bb08-4fe3-a911-e6cc7946f140
+- Title: 'Opening Tasks', Score: 89.2, MaxScore: 100.0, SubmissionId: 60349ef1-3ec8-4aa9-98b0-48dd503ee7c5
+- Title: 'Closing Tasks', Score: 90.0, MaxScore: 100.0, SubmissionId: 60349ef1-3ec8-4aa9-98b0-48dd503ee7c5
+- Title: 'Daily Operations', Score: 90.9, MaxScore: 100.0, SubmissionId: 60349ef1-3ec8-4aa9-98b0-48dd503ee7c5
+- Title: 'Opening Tasks', Score: 90.5, MaxScore: 100.0, SubmissionId: d96baef7-6238-4021-bdf9-f42ce4aa4299
+- Title: 'Closing Tasks', Score: 90.9, MaxScore: 100.0, SubmissionId: d96baef7-6238-4021-bdf9-f42ce4aa4299
+- Title: 'Daily Operations', Score: 93.6, MaxScore: 100.0, SubmissionId: d96baef7-6238-4021-bdf9-f42ce4aa4299
+- Title: 'Opening Tasks', Score: 81.1, MaxScore: 100.0, SubmissionId: 746c7277-81d5-43f8-a377-c72dfe7c0b2c
+- Title: 'Closing Tasks', Score: 80.7, MaxScore: 100.0, SubmissionId: 746c7277-81d5-43f8-a377-c72dfe7c0b2c
+- Title: 'Daily Operations', Score: 85.2, MaxScore: 100.0, SubmissionId: 746c7277-81d5-43f8-a377-c72dfe7c0b2c
+- Title: 'Opening Tasks', Score: 78.1, MaxScore: 100.0, SubmissionId: d9cfa2ea-f36e-4243-b95e-8c2d15c16d04
+- Title: 'Closing Tasks', Score: 78.0, MaxScore: 100.0, SubmissionId: d9cfa2ea-f36e-4243-b95e-8c2d15c16d04
+- Title: 'Daily Operations', Score: 77.6, MaxScore: 100.0, SubmissionId: d9cfa2ea-f36e-4243-b95e-8c2d15c16d04
+- Title: 'Opening Tasks', Score: 83.6, MaxScore: 100.0, SubmissionId: 355e533d-bd42-4c6d-aff6-30f9e2a5441d
+- Title: 'Closing Tasks', Score: 85.2, MaxScore: 100.0, SubmissionId: 355e533d-bd42-4c6d-aff6-30f9e2a5441d
+- Title: 'Daily Operations', Score: 89.6, MaxScore: 100.0, SubmissionId: 355e533d-bd42-4c6d-aff6-30f9e2a5441d
+- Title: 'Opening Tasks', Score: 82.7, MaxScore: 100.0, SubmissionId: d225b8d5-fbbb-4e46-9230-f43b98be8fbe
+- Title: 'Closing Tasks', Score: 78.5, MaxScore: 100.0, SubmissionId: d225b8d5-fbbb-4e46-9230-f43b98be8fbe
+- Title: 'Daily Operations', Score: 83.1, MaxScore: 100.0, SubmissionId: d225b8d5-fbbb-4e46-9230-f43b98be8fbe
+- Title: 'Opening Tasks', Score: 82.5, MaxScore: 100.0, SubmissionId: 72078641-626d-4f8f-8d1b-ea852860830a
+- Title: 'Closing Tasks', Score: 85.9, MaxScore: 100.0, SubmissionId: 72078641-626d-4f8f-8d1b-ea852860830a
+- Title: 'Daily Operations', Score: 82.9, MaxScore: 100.0, SubmissionId: 72078641-626d-4f8f-8d1b-ea852860830a
+- Title: 'Opening Tasks', Score: 91.4, MaxScore: 100.0, SubmissionId: ccec504b-03d6-402b-a3f3-d844d23430ef
+- Title: 'Closing Tasks', Score: 90.8, MaxScore: 100.0, SubmissionId: ccec504b-03d6-402b-a3f3-d844d23430ef
+- Title: 'Daily Operations', Score: 87.4, MaxScore: 100.0, SubmissionId: ccec504b-03d6-402b-a3f3-d844d23430ef
+- Title: 'Opening Tasks', Score: 87.1, MaxScore: 100.0, SubmissionId: f7afc524-32ac-4c23-be21-1e2f637a5cb2
+- Title: 'Closing Tasks', Score: 88.5, MaxScore: 100.0, SubmissionId: f7afc524-32ac-4c23-be21-1e2f637a5cb2
+- Title: 'Daily Operations', Score: 86.7, MaxScore: 100.0, SubmissionId: f7afc524-32ac-4c23-be21-1e2f637a5cb2
+- Title: 'Opening Tasks', Score: 87.2, MaxScore: 100.0, SubmissionId: db2f9adb-38ca-4da7-843a-3bb47fcf4ebc
+- Title: 'Closing Tasks', Score: 88.2, MaxScore: 100.0, SubmissionId: db2f9adb-38ca-4da7-843a-3bb47fcf4ebc
+- Title: 'Daily Operations', Score: 88.0, MaxScore: 100.0, SubmissionId: db2f9adb-38ca-4da7-843a-3bb47fcf4ebc
+- Title: 'Opening Tasks', Score: 78.9, MaxScore: 100.0, SubmissionId: 58751f27-81df-420c-a0bb-2859249e4e4b
+- Title: 'Closing Tasks', Score: 76.2, MaxScore: 100.0, SubmissionId: 58751f27-81df-420c-a0bb-2859249e4e4b
+- Title: 'Daily Operations', Score: 75.2, MaxScore: 100.0, SubmissionId: 58751f27-81df-420c-a0bb-2859249e4e4b
+- Title: 'Opening Tasks', Score: 79.1, MaxScore: 100.0, SubmissionId: 76026960-e879-471e-8809-b5a0d89f79d2
+- Title: 'Closing Tasks', Score: 77.0, MaxScore: 100.0, SubmissionId: 76026960-e879-471e-8809-b5a0d89f79d2
+- Title: 'Daily Operations', Score: 82.0, MaxScore: 100.0, SubmissionId: 76026960-e879-471e-8809-b5a0d89f79d2
+- Title: 'Opening Tasks', Score: 74.7, MaxScore: 100.0, SubmissionId: 0060a6fb-727b-444b-aaf8-8a1ca4ae0e8a
+- Title: 'Closing Tasks', Score: 76.7, MaxScore: 100.0, SubmissionId: 0060a6fb-727b-444b-aaf8-8a1ca4ae0e8a
+- Title: 'Daily Operations', Score: 75.1, MaxScore: 100.0, SubmissionId: 0060a6fb-727b-444b-aaf8-8a1ca4ae0e8a
+- Title: 'Opening Tasks', Score: 88.2, MaxScore: 100.0, SubmissionId: 4f6e7d7a-8750-48b5-a450-6c0d7026c860
+- Title: 'Closing Tasks', Score: 85.1, MaxScore: 100.0, SubmissionId: 4f6e7d7a-8750-48b5-a450-6c0d7026c860
+- Title: 'Daily Operations', Score: 87.7, MaxScore: 100.0, SubmissionId: 4f6e7d7a-8750-48b5-a450-6c0d7026c860
+- Title: 'Opening Tasks', Score: 98.7, MaxScore: 100.0, SubmissionId: d6bfea07-7fc5-475c-99ff-0ac4cab1ae9c
+- Title: 'Closing Tasks', Score: 99.9, MaxScore: 100.0, SubmissionId: d6bfea07-7fc5-475c-99ff-0ac4cab1ae9c
+- Title: 'Daily Operations', Score: 98.8, MaxScore: 100.0, SubmissionId: d6bfea07-7fc5-475c-99ff-0ac4cab1ae9c
+- Title: 'Opening Tasks', Score: 96.0, MaxScore: 100.0, SubmissionId: 29214909-4b1f-4b17-acc9-176c8a8e39a9
+- Title: 'Closing Tasks', Score: 89.5, MaxScore: 100.0, SubmissionId: 29214909-4b1f-4b17-acc9-176c8a8e39a9
+- Title: 'Daily Operations', Score: 93.4, MaxScore: 100.0, SubmissionId: 29214909-4b1f-4b17-acc9-176c8a8e39a9
+- Title: 'Opening Tasks', Score: 87.2, MaxScore: 100.0, SubmissionId: 7af8d08c-ea1e-40ed-b513-c93a0767188f
+- Title: 'Closing Tasks', Score: 93.6, MaxScore: 100.0, SubmissionId: 7af8d08c-ea1e-40ed-b513-c93a0767188f
+- Title: 'Daily Operations', Score: 87.9, MaxScore: 100.0, SubmissionId: 7af8d08c-ea1e-40ed-b513-c93a0767188f
+- Title: 'Opening Tasks', Score: 80.6, MaxScore: 100.0, SubmissionId: cb848aa5-a96a-4ef7-a14b-caf72e7ca223
+- Title: 'Closing Tasks', Score: 81.6, MaxScore: 100.0, SubmissionId: cb848aa5-a96a-4ef7-a14b-caf72e7ca223
+- Title: 'Daily Operations', Score: 76.3, MaxScore: 100.0, SubmissionId: cb848aa5-a96a-4ef7-a14b-caf72e7ca223
+- Title: 'Opening Tasks', Score: 81.2, MaxScore: 100.0, SubmissionId: 78e10b6a-62e2-444c-988b-7d5581a82658
+- Title: 'Closing Tasks', Score: 77.1, MaxScore: 100.0, SubmissionId: 78e10b6a-62e2-444c-988b-7d5581a82658
+- Title: 'Daily Operations', Score: 80.2, MaxScore: 100.0, SubmissionId: 78e10b6a-62e2-444c-988b-7d5581a82658
+- Title: 'Opening Tasks', Score: 86.3, MaxScore: 100.0, SubmissionId: 3a234cc7-6cfb-441c-888f-b7ed5c267c5e
+- Title: 'Closing Tasks', Score: 88.8, MaxScore: 100.0, SubmissionId: 3a234cc7-6cfb-441c-888f-b7ed5c267c5e
+- Title: 'Daily Operations', Score: 89.0, MaxScore: 100.0, SubmissionId: 3a234cc7-6cfb-441c-888f-b7ed5c267c5e
+- Title: 'Opening Tasks', Score: 76.5, MaxScore: 100.0, SubmissionId: 10648846-fa66-4b0d-aa2e-77550d019823
+- Title: 'Closing Tasks', Score: 78.2, MaxScore: 100.0, SubmissionId: 10648846-fa66-4b0d-aa2e-77550d019823
+- Title: 'Daily Operations', Score: 78.9, MaxScore: 100.0, SubmissionId: 10648846-fa66-4b0d-aa2e-77550d019823
+- Title: 'Opening Tasks', Score: 93.7, MaxScore: 100.0, SubmissionId: 7e48a66f-563f-4331-a836-51d97f86196e
+- Title: 'Closing Tasks', Score: 94.7, MaxScore: 100.0, SubmissionId: 7e48a66f-563f-4331-a836-51d97f86196e
+- Title: 'Daily Operations', Score: 98.1, MaxScore: 100.0, SubmissionId: 7e48a66f-563f-4331-a836-51d97f86196e
+- Title: 'Opening Tasks', Score: 82.0, MaxScore: 100.0, SubmissionId: f15b8a0c-7841-494c-827b-883343fbde37
+- Title: 'Closing Tasks', Score: 77.9, MaxScore: 100.0, SubmissionId: f15b8a0c-7841-494c-827b-883343fbde37
+- Title: 'Daily Operations', Score: 78.2, MaxScore: 100.0, SubmissionId: f15b8a0c-7841-494c-827b-883343fbde37
+- Title: 'Opening Tasks', Score: 93.1, MaxScore: 100.0, SubmissionId: e199031e-3466-4936-bda2-e416cbd8a014
+- Title: 'Closing Tasks', Score: 93.5, MaxScore: 100.0, SubmissionId: e199031e-3466-4936-bda2-e416cbd8a014
+- Title: 'Daily Operations', Score: 96.7, MaxScore: 100.0, SubmissionId: e199031e-3466-4936-bda2-e416cbd8a014
+- Title: 'Opening Tasks', Score: 83.0, MaxScore: 100.0, SubmissionId: e15c2b7e-d196-4c9a-8b90-6041f1e64c0b
+- Title: 'Closing Tasks', Score: 87.2, MaxScore: 100.0, SubmissionId: e15c2b7e-d196-4c9a-8b90-6041f1e64c0b
+- Title: 'Daily Operations', Score: 80.3, MaxScore: 100.0, SubmissionId: e15c2b7e-d196-4c9a-8b90-6041f1e64c0b
+- Title: 'Opening Tasks', Score: 89.3, MaxScore: 100.0, SubmissionId: 1060ab86-6109-4934-868e-4095d69b7c57
+- Title: 'Closing Tasks', Score: 86.5, MaxScore: 100.0, SubmissionId: 1060ab86-6109-4934-868e-4095d69b7c57
+- Title: 'Daily Operations', Score: 83.1, MaxScore: 100.0, SubmissionId: 1060ab86-6109-4934-868e-4095d69b7c57
+- Title: 'Opening Tasks', Score: 82.9, MaxScore: 100.0, SubmissionId: 4bf38914-1f72-4ab6-bf3d-e1b3f93bc925
+- Title: 'Closing Tasks', Score: 82.2, MaxScore: 100.0, SubmissionId: 4bf38914-1f72-4ab6-bf3d-e1b3f93bc925
+- Title: 'Daily Operations', Score: 83.2, MaxScore: 100.0, SubmissionId: 4bf38914-1f72-4ab6-bf3d-e1b3f93bc925
+- Title: 'Opening Tasks', Score: 85.2, MaxScore: 100.0, SubmissionId: 3a478a00-cc6e-46f0-a568-e401feaa1bad
+- Title: 'Closing Tasks', Score: 91.1, MaxScore: 100.0, SubmissionId: 3a478a00-cc6e-46f0-a568-e401feaa1bad
+- Title: 'Daily Operations', Score: 91.4, MaxScore: 100.0, SubmissionId: 3a478a00-cc6e-46f0-a568-e401feaa1bad
+- Title: 'Opening Tasks', Score: 97.6, MaxScore: 100.0, SubmissionId: 6a7a77a4-c159-4bfb-b8e2-abf339fb69b9
+- Title: 'Closing Tasks', Score: 97.1, MaxScore: 100.0, SubmissionId: 6a7a77a4-c159-4bfb-b8e2-abf339fb69b9
+- Title: 'Daily Operations', Score: 98.0, MaxScore: 100.0, SubmissionId: 6a7a77a4-c159-4bfb-b8e2-abf339fb69b9
+- Title: 'Opening Tasks', Score: 75.0, MaxScore: 100.0, SubmissionId: 2fe856b6-a9e3-428e-8b3b-f9d8c16caf40
+- Title: 'Closing Tasks', Score: 81.4, MaxScore: 100.0, SubmissionId: 2fe856b6-a9e3-428e-8b3b-f9d8c16caf40
+- Title: 'Daily Operations', Score: 80.3, MaxScore: 100.0, SubmissionId: 2fe856b6-a9e3-428e-8b3b-f9d8c16caf40
+- Title: 'Opening Tasks', Score: 92.4, MaxScore: 100.0, SubmissionId: 94f8942f-f2ae-46de-8950-21d098c9136a
+- Title: 'Closing Tasks', Score: 92.5, MaxScore: 100.0, SubmissionId: 94f8942f-f2ae-46de-8950-21d098c9136a
+- Title: 'Daily Operations', Score: 93.1, MaxScore: 100.0, SubmissionId: 94f8942f-f2ae-46de-8950-21d098c9136a
+- Title: 'Opening Tasks', Score: 90.9, MaxScore: 100.0, SubmissionId: ba38d536-7d50-4100-8119-26369cebdb77
+- Title: 'Closing Tasks', Score: 91.6, MaxScore: 100.0, SubmissionId: ba38d536-7d50-4100-8119-26369cebdb77
+- Title: 'Daily Operations', Score: 90.6, MaxScore: 100.0, SubmissionId: ba38d536-7d50-4100-8119-26369cebdb77
+- Title: 'Opening Tasks', Score: 80.9, MaxScore: 100.0, SubmissionId: 01a8c749-d1c9-4788-8059-2dc76a0524f8
+- Title: 'Closing Tasks', Score: 80.8, MaxScore: 100.0, SubmissionId: 01a8c749-d1c9-4788-8059-2dc76a0524f8
+- Title: 'Daily Operations', Score: 80.2, MaxScore: 100.0, SubmissionId: 01a8c749-d1c9-4788-8059-2dc76a0524f8
+- Title: 'Opening Tasks', Score: 83.3, MaxScore: 100.0, SubmissionId: 0717cea8-275a-41e6-b91b-bdf1f4bddf0c
+- Title: 'Closing Tasks', Score: 85.5, MaxScore: 100.0, SubmissionId: 0717cea8-275a-41e6-b91b-bdf1f4bddf0c
+- Title: 'Daily Operations', Score: 83.3, MaxScore: 100.0, SubmissionId: 0717cea8-275a-41e6-b91b-bdf1f4bddf0c
+- Title: 'Opening Tasks', Score: 78.0, MaxScore: 100.0, SubmissionId: c50324e7-70f6-4400-9fc2-3db100873f72
+- Title: 'Closing Tasks', Score: 71.3, MaxScore: 100.0, SubmissionId: c50324e7-70f6-4400-9fc2-3db100873f72
+- Title: 'Daily Operations', Score: 72.7, MaxScore: 100.0, SubmissionId: c50324e7-70f6-4400-9fc2-3db100873f72
+- Title: 'Opening Tasks', Score: 80.9, MaxScore: 100.0, SubmissionId: 166d154b-d362-4a14-924c-eb1463596e7f
+- Title: 'Closing Tasks', Score: 85.3, MaxScore: 100.0, SubmissionId: 166d154b-d362-4a14-924c-eb1463596e7f
+- Title: 'Daily Operations', Score: 84.0, MaxScore: 100.0, SubmissionId: 166d154b-d362-4a14-924c-eb1463596e7f
+- Title: 'Opening Tasks', Score: 92.5, MaxScore: 100.0, SubmissionId: 69ea6169-f67d-4ca9-9eca-d9e0878e1dbe
+- Title: 'Closing Tasks', Score: 92.4, MaxScore: 100.0, SubmissionId: 69ea6169-f67d-4ca9-9eca-d9e0878e1dbe
+- Title: 'Daily Operations', Score: 91.6, MaxScore: 100.0, SubmissionId: 69ea6169-f67d-4ca9-9eca-d9e0878e1dbe
+- Title: 'Opening Tasks', Score: 92.4, MaxScore: 100.0, SubmissionId: a7915863-3b9c-4c02-92af-07763a5cb12d
+- Title: 'Closing Tasks', Score: 99.1, MaxScore: 100.0, SubmissionId: a7915863-3b9c-4c02-92af-07763a5cb12d
+- Title: 'Daily Operations', Score: 93.0, MaxScore: 100.0, SubmissionId: a7915863-3b9c-4c02-92af-07763a5cb12d
+- Title: 'Opening Tasks', Score: 92.8, MaxScore: 100.0, SubmissionId: 8d01a5b0-64de-414b-b9a2-4533ed465a6b
+- Title: 'Closing Tasks', Score: 95.3, MaxScore: 100.0, SubmissionId: 8d01a5b0-64de-414b-b9a2-4533ed465a6b
+- Title: 'Daily Operations', Score: 88.6, MaxScore: 100.0, SubmissionId: 8d01a5b0-64de-414b-b9a2-4533ed465a6b
+- Title: 'Opening Tasks', Score: 82.1, MaxScore: 100.0, SubmissionId: d5e7e7c6-8ced-4254-ab39-42c1cbae6618
+- Title: 'Closing Tasks', Score: 77.0, MaxScore: 100.0, SubmissionId: d5e7e7c6-8ced-4254-ab39-42c1cbae6618
+- Title: 'Daily Operations', Score: 78.1, MaxScore: 100.0, SubmissionId: d5e7e7c6-8ced-4254-ab39-42c1cbae6618
+
+SUBMISSIONS (128):
+- Id: e2e2609f-be57-4d0a-baf4-09c3b4786ae6, Status: 'completed', Store: 'Checkly D1 - Nguyen Hue', Score: 78.9
+- Id: 5742cf65-22f4-4060-9cab-f4bfa0c06933, Status: 'completed', Store: 'Checkly D1 - Nguyen Hue', Score: 82.4
+- Id: c6fc1eb5-2d04-47ef-bf98-b7cfd4f63491, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 77.1
+- Id: 0901ef35-b931-498f-b021-213ad1968fdf, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 86.9
+- Id: b0ce7b13-b115-4cf1-9519-36395e812f4d, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 93.5
+- Id: 580eb9ac-a2ac-4c51-bae2-cef93e2ba57a, Status: 'completed', Store: 'Checkly D3 - Vo Van Tan', Score: 77.6
+- Id: 01f7e814-3c03-47cb-bc1a-c65b2962e141, Status: 'completed', Store: 'Checkly D2 - Thao Dien', Score: 97.0
+- Id: 928dfa28-1a33-408a-8a0d-4bdff22e97a3, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 78.4
+- Id: ae20c8e0-9418-4efd-817e-d70545353eeb, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 81.7
+- Id: d05ebc84-4139-4650-a024-88c26358ea8b, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 81.1
+- Id: a8b25921-851a-4b8d-b762-1582df1afa45, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 78.1
+- Id: e36834fc-d8a9-4445-8e0a-820f7750348e, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 94.0
+- Id: 7d127039-ccfe-43f7-a67a-e0e03c66b94a, Status: 'completed', Store: 'Checkly Tan Binh - Cong Hoa', Score: 75.0
+- Id: b228ac5c-f814-40e1-a8e2-3480d3a7bda4, Status: 'completed', Store: 'Checkly Tan Binh - Cong Hoa', Score: 95.5
+- Id: f377b7fb-056d-412f-be08-4ab9dcaadc57, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 90.2
+- Id: c23c4a11-83e6-4809-b551-05421c3a02ee, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 93.5
+- Id: 1c62d0d6-b133-41bb-9cd7-7b3fed614db1, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 88.2
+- Id: df4a78a3-3a69-4d40-bcb1-91a5a3114d7b, Status: 'completed', Store: 'Checkly D1 - Nguyen Hue', Score: 77.4
+- Id: 198662d7-dbf3-421c-b8c4-39343ff2e87d, Status: 'completed', Store: 'Checkly D1 - Nguyen Hue', Score: 82.3
+- Id: 5af4409e-75ba-4c9c-bced-9cee714fe604, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 97.5
+- Id: ed79914f-0e59-4bb4-823b-cc210b74ded8, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 81.5
+- Id: 7618b09e-3a63-4684-a14d-498e711060a7, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 95.1
+- Id: 70d6aa0e-b279-4b5d-8967-754d1d7c7c83, Status: 'completed', Store: 'Checkly D3 - Vo Van Tan', Score: 95.2
+- Id: 7fe6509c-d7df-4162-b507-9b33a0b51d20, Status: 'completed', Store: 'Checkly D3 - Vo Van Tan', Score: 81.5
+- Id: c76fe306-0448-48e9-a647-74f51bef287e, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 90.8
+- Id: 77978cb1-5f39-47ed-bc89-d0487e2f709b, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 81.6
+- Id: 36db3d48-f7ee-4dc8-a90b-85df32ead7b3, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 88.9
+- Id: 8ca7ad20-c82d-4539-bc38-72c34e0a382f, Status: 'completed', Store: 'Checkly D2 - Thao Dien', Score: 90.7
+- Id: 31a41b08-695a-4b5a-8dd2-ac4f76e65408, Status: 'completed', Store: 'Checkly D3 - Vo Van Tan', Score: 76.2
+- Id: 83e0c2a3-4b5d-41ea-be18-6e9746fa56a7, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 91.5
+- Id: 4b46b70e-bceb-471d-ba67-b242b53b7aa8, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 75.2
+- Id: 68b97da8-e796-4d59-9ffb-a048502edbd7, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 85.6
+- Id: 7c59a250-c4e9-4172-aace-5c3a2dcf6e2f, Status: 'completed', Store: 'Checkly D2 - Thao Dien', Score: 87.2
+- Id: 6bb32a7e-2865-44f3-8527-e67ee522551c, Status: 'completed', Store: 'Checkly Binh Thanh - Landmark 81', Score: 82.4
+- Id: 1d95446b-e8c8-4b64-8661-e5eccbb42096, Status: 'completed', Store: 'Checkly Binh Thanh - Landmark 81', Score: 96.3
+- Id: 9e521ac6-6e14-4ad6-aa67-382e4a2a05a3, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 79.2
+- Id: 3fa0cd02-855c-4945-88d6-caa308423bf4, Status: 'completed', Store: 'Checkly Tan Binh - Cong Hoa', Score: 95.5
+- Id: 56c1f3df-2ba8-4b9f-b048-b6923e316bf2, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 81.5
+- Id: 9088cc8f-afd4-4798-ba17-77a700b99208, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 80.3
+- Id: 65514410-610b-43f1-9d19-17103020fa76, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 96.7
+- Id: d00eb27c-fa5b-4bd8-bd2d-79e0b4d88d16, Status: 'completed', Store: 'Checkly D1 - Nguyen Hue', Score: 86.5
+- Id: 84c4a061-1001-4f45-8e45-98972a20839b, Status: 'completed', Store: 'Checkly D1 - Nguyen Hue', Score: 87.2
+- Id: 7b7cbc04-41f8-4b82-a35b-654814be2b80, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 81.8
+- Id: 7efc6f08-300e-4a6f-8b5f-02b634c39b1a, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 83.0
+- Id: 4a71371b-77a7-4a82-8f55-d3a3c60aad4d, Status: 'completed', Store: 'Checkly Tan Binh - Cong Hoa', Score: 79.2
+- Id: 91dc6913-dd24-4a91-9a51-2901b6b4e316, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 82.2
+- Id: e157ac17-18d2-482d-a3d7-f262753ca2bc, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 90.2
+- Id: 6ca539ac-2fe4-4fe2-bf08-9b86b63b7ae1, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 89.1
+- Id: becef460-d832-4195-a04e-50a4a7b32059, Status: 'completed', Store: 'Checkly D3 - Vo Van Tan', Score: 95.3
+- Id: d1c409fb-17c5-4e23-8e4f-f55b2e78f02a, Status: 'completed', Store: 'Checkly D3 - Vo Van Tan', Score: 90.6
+- Id: 8cabee41-abc6-4744-8f02-0248a20237d6, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 90.1
+- Id: 5eb16d18-53e9-42f3-b528-0bb690ba237f, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 89.8
+- Id: 8d477011-b7b4-4428-b07b-7e7754fa3894, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 97.5
+- Id: fefd8d0b-4527-4ffa-9d2a-eac9f9aaca64, Status: 'completed', Store: 'Checkly D2 - Thao Dien', Score: 77.5
+- Id: 702e2e48-471c-4906-b04b-567a0df90ff4, Status: 'completed', Store: 'Checkly D2 - Thao Dien', Score: 89.2
+- Id: a6cf3b1a-9d6d-4052-8ef1-78aaefcb0dd8, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 84.5
+- Id: 39b3c2d4-441f-4307-960c-d4758262e6ae, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 82.3
+- Id: 40e9256f-db95-4016-8237-56bc4f244994, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 84.7
+- Id: bba16a63-00da-49c7-8bfe-6eb13cd32c73, Status: 'completed', Store: 'Checkly Binh Thanh - Landmark 81', Score: 91.4
+- Id: d0c6f014-231b-4158-93ee-6bd745454893, Status: 'completed', Store: 'Checkly Binh Thanh - Landmark 81', Score: 86.5
+- Id: bdc27de2-f8cb-48a6-9823-79aeb24e6169, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 82.5
+- Id: dd1d01a7-fc64-435f-83ed-84edf6257f26, Status: 'completed', Store: 'Checkly D2 - Thao Dien', Score: 97.7
+- Id: 1f108754-3207-42a8-94d6-c28a61abe38b, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 81.3
+- Id: 6ef69875-41ce-4a5f-b73b-cd993afa20ee, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 83.4
+- Id: eafd188d-a522-4903-a01f-ff5b2bbbc40a, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 90.4
+- Id: ffb995e3-24f6-43e5-8d62-1bfda52ba6d3, Status: 'completed', Store: 'Checkly Binh Thanh - Landmark 81', Score: 77.9
+- Id: 6b8d6656-7afb-4343-ab99-882b7fe75879, Status: 'completed', Store: 'Checkly Binh Thanh - Landmark 81', Score: 89.9
+- Id: 4e728737-8f14-4797-992a-b1e272c9d5c3, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 83.2
+- Id: a4165384-cdc8-45b1-b380-a31a73a6563f, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 94.6
+- Id: 5890787b-f7e5-4c88-b0c4-5a6866967ea9, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 76.1
+- Id: 0e0ed938-a2de-4a0c-877b-68815869e00c, Status: 'completed', Store: 'Checkly Tan Binh - Cong Hoa', Score: 79.9
+- Id: 9180dd97-f4bb-46b1-8354-5e097837a5e1, Status: 'completed', Store: 'Checkly Tan Binh - Cong Hoa', Score: 84.6
+- Id: a73e4538-eaec-4896-ab97-a42a727fc2b5, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 90.9
+- Id: dcd9c3a1-6027-490c-93b7-8a9077b7527f, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 86.2
+- Id: a896c64b-ad37-447b-adc7-331085578c98, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 76.8
+- Id: a0091eed-8c9f-4b41-ba18-abf24dd62520, Status: 'completed', Store: 'Checkly D1 - Nguyen Hue', Score: 78.8
+- Id: 369c4d04-2741-4b48-8174-605e28f180d0, Status: 'completed', Store: 'Checkly D1 - Nguyen Hue', Score: 79.5
+- Id: a4122994-8946-4d08-9847-ec1a11adbb3a, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 75.2
+- Id: de89057b-53dc-44aa-9ab9-44ac94b42f41, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 89.5
+- Id: 27ba497b-e3eb-4663-a06a-2f77318f6f48, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 85.0
+- Id: f027bf47-1898-4174-a1bf-bce640975774, Status: 'completed', Store: 'Checkly D3 - Vo Van Tan', Score: 84.9
+- Id: f74ab72c-9023-452e-9aed-5dd62dd98dbf, Status: 'completed', Store: 'Checkly D3 - Vo Van Tan', Score: 93.8
+- Id: 901422da-5318-4ab6-abae-ddfd3a0020ca, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 90.4
+- Id: dfcf5d06-839d-4bea-9b2c-a81cf29c2c16, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 86.3
+- Id: e6643d27-bb08-4fe3-a911-e6cc7946f140, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 90.0
+- Id: 60349ef1-3ec8-4aa9-98b0-48dd503ee7c5, Status: 'completed', Store: 'Checkly D2 - Thao Dien', Score: 87.5
+- Id: d96baef7-6238-4021-bdf9-f42ce4aa4299, Status: 'completed', Store: 'Checkly D2 - Thao Dien', Score: 94.2
+- Id: 746c7277-81d5-43f8-a377-c72dfe7c0b2c, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 82.2
+- Id: d9cfa2ea-f36e-4243-b95e-8c2d15c16d04, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 75.9
+- Id: 355e533d-bd42-4c6d-aff6-30f9e2a5441d, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 86.7
+- Id: d225b8d5-fbbb-4e46-9230-f43b98be8fbe, Status: 'completed', Store: 'Checkly Binh Thanh - Landmark 81', Score: 81.3
+- Id: 72078641-626d-4f8f-8d1b-ea852860830a, Status: 'completed', Store: 'Checkly Binh Thanh - Landmark 81', Score: 83.1
+- Id: ccec504b-03d6-402b-a3f3-d844d23430ef, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 90.7
+- Id: f7afc524-32ac-4c23-be21-1e2f637a5cb2, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 87.1
+- Id: db2f9adb-38ca-4da7-843a-3bb47fcf4ebc, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 88.9
+- Id: 58751f27-81df-420c-a0bb-2859249e4e4b, Status: 'completed', Store: 'Checkly Tan Binh - Cong Hoa', Score: 76.1
+- Id: 76026960-e879-471e-8809-b5a0d89f79d2, Status: 'completed', Store: 'Checkly Tan Binh - Cong Hoa', Score: 80.3
+- Id: 0060a6fb-727b-444b-aaf8-8a1ca4ae0e8a, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 77.1
+- Id: 4f6e7d7a-8750-48b5-a450-6c0d7026c860, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 85.6
+- Id: d6bfea07-7fc5-475c-99ff-0ac4cab1ae9c, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 97.5
+- Id: 29214909-4b1f-4b17-acc9-176c8a8e39a9, Status: 'completed', Store: 'Checkly D1 - Nguyen Hue', Score: 92.6
+- Id: 7af8d08c-ea1e-40ed-b513-c93a0767188f, Status: 'completed', Store: 'Checkly D1 - Nguyen Hue', Score: 90.7
+- Id: cb848aa5-a96a-4ef7-a14b-caf72e7ca223, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 78.4
+- Id: 78e10b6a-62e2-444c-988b-7d5581a82658, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 78.3
+- Id: 3a234cc7-6cfb-441c-888f-b7ed5c267c5e, Status: 'completed', Store: 'Checkly D1 - Bui Vien', Score: 88.5
+- Id: 10648846-fa66-4b0d-aa2e-77550d019823, Status: 'completed', Store: 'Checkly D3 - Vo Van Tan', Score: 76.8
+- Id: 7e48a66f-563f-4331-a836-51d97f86196e, Status: 'completed', Store: 'Checkly D3 - Vo Van Tan', Score: 95.8
+- Id: f15b8a0c-7841-494c-827b-883343fbde37, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 81.3
+- Id: e199031e-3466-4936-bda2-e416cbd8a014, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 96.0
+- Id: e15c2b7e-d196-4c9a-8b90-6041f1e64c0b, Status: 'completed', Store: 'Checkly D10 - Su Van Hanh', Score: 84.1
+- Id: 1060ab86-6109-4934-868e-4095d69b7c57, Status: 'completed', Store: 'Checkly D2 - Thao Dien', Score: 86.6
+- Id: 4bf38914-1f72-4ab6-bf3d-e1b3f93bc925, Status: 'completed', Store: 'Checkly D2 - Thao Dien', Score: 83.5
+- Id: 3a478a00-cc6e-46f0-a568-e401feaa1bad, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 88.0
+- Id: 6a7a77a4-c159-4bfb-b8e2-abf339fb69b9, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 95.7
+- Id: 2fe856b6-a9e3-428e-8b3b-f9d8c16caf40, Status: 'completed', Store: 'Checkly D7 - Phu My Hung', Score: 77.8
+- Id: 94f8942f-f2ae-46de-8950-21d098c9136a, Status: 'completed', Store: 'Checkly Binh Thanh - Landmark 81', Score: 92.6
+- Id: ba38d536-7d50-4100-8119-26369cebdb77, Status: 'completed', Store: 'Checkly Binh Thanh - Landmark 81', Score: 88.4
+- Id: 01a8c749-d1c9-4788-8059-2dc76a0524f8, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 81.7
+- Id: 0717cea8-275a-41e6-b91b-bdf1f4bddf0c, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 82.1
+- Id: c50324e7-70f6-4400-9fc2-3db100873f72, Status: 'completed', Store: 'Checkly Phu Nhuan - Phan Xich Long', Score: 75.0
+- Id: 166d154b-d362-4a14-924c-eb1463596e7f, Status: 'completed', Store: 'Checkly Tan Binh - Cong Hoa', Score: 83.9
+- Id: 69ea6169-f67d-4ca9-9eca-d9e0878e1dbe, Status: 'completed', Store: 'Checkly Tan Binh - Cong Hoa', Score: 89.4
+- Id: a7915863-3b9c-4c02-92af-07763a5cb12d, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 95.8
+- Id: 8d01a5b0-64de-414b-b9a2-4533ed465a6b, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 91.9
+- Id: d5e7e7c6-8ced-4254-ab39-42c1cbae6618, Status: 'completed', Store: 'Checkly Go Vap - Quang Trung', Score: 79.4
+- Id: db19ef7e-a8bc-4b5e-9fdb-219988f146b6, Status: 'scheduled', Store: 'Checkly D1 - Bui Vien', Score: 
+- Id: 913d5477-5d6c-4343-92be-c9e0d2204ba3, Status: 'completed', Store: 'Checkly Binh Thanh - Landmark 81', Score: 99.0
+- Id: e174256f-f2f5-429c-b171-c6ecfcdc3252, Status: 'scheduled', Store: 'Checkly Binh Thanh - Landmark 81', Score: 
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Analytics.BodAnalyticsSlice1Tests.DumpRealDatabaseContent() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Analytics\BodAnalyticsSlice1Tests.cs:line 391
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     6, Passed:   647, Skipped:     7, Total:   660, Duration: 2 m 47 s - Checkly.Api.Tests.dll (net10.0)

@@ -2,5 +2,6 @@
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.project.sourcePaths": [
         "docs/reference"
-    ]
+    ],
+    "java.import.gradle.java.home": "C:\\Program Files\\Android\\Android Studio1\\jbr"
 }

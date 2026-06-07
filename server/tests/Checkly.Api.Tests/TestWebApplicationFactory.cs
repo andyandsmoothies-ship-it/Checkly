@@ -184,6 +184,13 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                 """);
 
             pbacCache.InitializeAsync(scopeCache.ServiceProvider).GetAwaiter().GetResult();
+
+            // Clear memory cache to prevent cross-test pollution
+            var memoryCache = scopeCache.ServiceProvider.GetService<Microsoft.Extensions.Caching.Memory.IMemoryCache>();
+            if (memoryCache is Microsoft.Extensions.Caching.Memory.MemoryCache cache)
+            {
+                cache.Compact(1.0);
+            }
         }
     }
 

@@ -1,4 +1,7 @@
 using Checkly.Api.Common.Persistence.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Checkly.Api.Common.Scoring;
 
@@ -10,9 +13,9 @@ namespace Checkly.Api.Common.Scoring;
 ///   "up"  + any         → Accumulation
 ///   "down" + weighted   → Penalty (group-weighted)
 ///   "down" + unweighted → Checklist (flat)
-/// Tolerance: |client - server| must be &lt;= 0.01.
+/// Tolerance: |client - server| must be <= 0.01.
 ///
-/// SC-5: Math helpers extracted to ScoringHelpers.cs. Mode implementations in ScoringCalculators.cs.
+/// Refactored to delegate to IScoringStrategy resolved via ScoringEngineFactory.
 /// </summary>
 public sealed class ScoringVerifier
 {
@@ -69,21 +72,22 @@ public sealed class ScoringVerifier
             return new VerificationResult(true, null, "Mixed audit — purity gate suppressed score", []);
         }
 
-        // 2-D dispatch: direction first, then weight flag.
-        return scoreDirection switch
+        if (string.Equals(scoreDirection, "none", StringComparison.OrdinalIgnoreCase))
         {
-            "none" => new VerificationResult(true, null, "Survey mode — no scoring", []),
-            "up" => ScoringCalculators.VerifyAccumulation(clientScore, answers, groups, criteria, isWeighted, Tolerance),
-            "down" when isWeighted
-                   => ScoringCalculators.VerifyPenalty(clientScore, answers, groups, criteria, progressiveRepeatPenalty, Tolerance),
-            "down" =>
-                   ScoringCalculators.VerifyChecklist(clientScore, answers, criteria, progressiveRepeatPenalty, Tolerance)
-                       with
-                   { IsWeighted = false },
-            _ =>
-                   ScoringCalculators.VerifyChecklist(clientScore, answers, criteria, progressiveRepeatPenalty, Tolerance)
-                       with
-                   { IsWeighted = false },
-        };
+            return new VerificationResult(true, null, "Survey mode — no scoring", []);
+        }
+
+        var context = new ScoringContext(
+            clientScore,
+            answers,
+            criteria,
+            groups,
+            progressiveRepeatPenalty,
+            isWeighted,
+            Tolerance
+        );
+
+        var strategy = ScoringEngineFactory.GetStrategy(scoreDirection, isWeighted);
+        return strategy.Verify(context);
     }
 }
