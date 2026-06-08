@@ -3,74 +3,109 @@
 > **Out of Scope**: Language/framework-specific standards (use subfolder rules) and design specs.
 
 ## 1. Documentation Map
-- **General Architecture & Design**: `docs/`
+- **Technical Architecture & ADRs**: `docs/architecture/`
 - **Agile Epics & Slices**: `docs/epics/` (refer to `_epic_ledger.md` for progress tracking)
 - **Feature Specifications**: `docs/features/`
+- **Project Setup & Database Schema**: `docs/project/`
+- **Platform Reference & Guides**: `docs/reference/`
+- **Product Options & Design Synthesis**: `docs/product/`
 - **Audit & Diagnostics Reports**: `docs/reports/`
 - **AI Agent Skills**: `.agents/skills/`
 - **AI Workflows**: `.agents/workflows/`
 
 ## 2. Governance & Architecture Rules
-- **Structure**: Architecture is law. Inner rings MUST NOT import outer rings. Separate Technical Language (DB) from Business Language (UI).
-- **Tightly Controlled Dependencies**: Prove you are using the project's existing tools before building your own. Search `server/Common/` or `lib/_shared/` first. Do not install unauthorized packages without whitelist approval.
+- **Structure**: Architecture is law. Inner rings MUST NOT import outer rings.
+  - **Do**: Separate Technical Language (DB) from Business Language (UI) at the ring level.
+  - **Don't**: Import outer rings into inner rings, or mix business terminology into DB/data layer classes.
+- **Dependencies**: Tightly controlled dependencies.
+  - **Do**: Search `server/Common/` or `lib/_shared/` first to reuse existing tools.
+  - **Don't**: Install unauthorized external packages without whitelist approval.
 
-## 3. Global Gotchas
+## 3. Global Gotchas (with Do/Don't Actions)
+
 - **Gotcha: Terminology Map (Audit vs Submission)**
-  - **Fix:** In the UI (Business Language), users talk about "Audits" (e.g., Schedule Audit, Assign Task). In the codebase and database (Technical Language), the entity is named "Submission" (e.g., `submissions:create`, `SubmissionApiService`). DO NOT rename these files. Understand that `Audit` in the UI = `Submission` in the DB.
+  - **Do**: Use "Submission" for backend entities, endpoints, databases, and network DTOs. Use "Audit" only for user-facing UI labels.
+  - **Don't**: Rename files, tables, or database fields from "Submission" to "Audit".
+
 - **Gotcha: The 7 Sync Steps (for PBAC & Data Sync)**
-  - **Fix:** Update in order: (1) Entity, (2) DbContext, (3) Server DTO, (4) Endpoint projections, (5) Sync endpoint, (6) Flutter DTO, **(7) If adding a capability, seed it in `Program.cs` and `TestWebApplicationFactory.cs`**.
+  - **Do**: Execute sync updates strictly in this order: (1) Entity, (2) DbContext, (3) Server DTO, (4) Endpoint projections, (5) Sync endpoint, (6) Flutter DTO, (7) Seed capabilities in `Program.cs` and `TestWebApplicationFactory.cs`.
+  - **Don't**: Skip steps or change the order of implementation during synchronization changes.
+
 - **Gotcha: Programs Module Sync Steps**
-  - **Fix:** The Sync Steps also apply to Programs: (1) `ProgramAssignment` entity, (2) `AppDbContext`, (3) Server DTOs, (4) Endpoint projections, (5) SM Sync endpoint, (6) Flutter `CachedProgramAssignments` Drift table.
+  - **Do**: Apply the sync steps to the Programs module in this order: (1) `ProgramAssignment` entity, (2) `AppDbContext`, (3) Server DTOs, (4) Endpoint projections, (5) SM Sync endpoint, (6) Flutter `CachedProgramAssignments` Drift table.
+
 - **Gotcha: Orphaned ATDD Stubs (`fail(...)`)**
-  - **Fix:** If a QA agent leaves an ATDD stub like `fail('Implement...')`, the Builder MUST implement the test logic and fulfill the UI/Backend contract in the current slice. Do not leave `fail()` stubs behind for future slices unless explicitly documented.
+  - **Do**: Always fully implement the test logic and fulfill the UI/Backend contract in the current slice if a QA agent leaves an ATDD stub like `fail('Implement...')`.
+  - **Don't**: Leave `fail()` stubs behind for future slices unless explicitly documented.
+
 - **Gotcha: Hybrid Entity-Driven UI (HATEOAS) for Actions**
-  - **Fix:** Never hardcode UI button visibility or tap gestures based on the user's role on the frontend. The backend MUST compute an `allowedActions` string array (e.g., `["edit", "view_details", "void"]`) on its DTOs. This array is built by combining PBAC capabilities (from JWT) with the entity's current status. The Flutter frontend must wrap actionable widgets in an `ActionGuard` that checks this array to enable/disable interactions.
+  - **Do**: Compute an `allowedActions` string array (e.g., `["edit", "view_details", "void"]`) on the backend DTOs by combining PBAC capabilities with the entity's current status. Wrap actionable Flutter widgets in an `ActionGuard` checking this array.
+  - **Don't**: Hardcode UI button visibility or tap gestures based on the user's role on the frontend.
+
 - **Gotcha: Silent DTO Contract Drift**
-  - **Fix:** When building tests for client-side API mapping, DO NOT invent mock JSON based solely on local models. You MUST strictly reflect the actual backend DTO structure (e.g., matching exact property names). Use contract integration tests to verify JSON mapping and prevent silent failures where the frontend models drift from backend DTOs.
+  - **Do**: Strictly reflect the actual backend DTO structure (matching exact property names) on the frontend. Use contract integration tests to verify JSON mapping.
+  - **Don't**: Invent mock JSON based solely on local frontend models.
+
 - **Gotcha: Live Area Boardroom Analytics (No Caching/Polling)**
-  - **Fix:** Area Boardroom Analytics are calculated dynamically from live database queries on `Submissions` and return `IsLiveData = true` immediately. The `bod_report_snapshots` table was dropped in migration `DropBodReportSnapshotTable`. Polling is no longer implemented or required for the frontend.
+  - **Do**: Calculate analytics dynamically from live database queries on `Submissions` and return `IsLiveData = true` immediately.
+  - **Don't**: Implement polling on the frontend or attempt to read from the deleted `bod_report_snapshots` table.
+
 - **Gotcha: BOD Section Scores Key Mismatch**
-  - **Fix:** Do not assume `SubmissionSectionScores` JSON uses raw names or simple keys. The Flutter frontend `_buildSectionScoresJson()` serializes group details under distinct keys (the group UUIDs) with nested `title`, `score`, and `maxScore`/`maxPoints` properties. The backend `SectionScoreExploder.cs` extracts the human-readable section title from this nested `"title"` property to match UI category queries, falling back to the property name key for older or simpler payloads.
+  - **Do**: Serialize group details using the group UUID as the key, nesting the `title`, `score`, and `maxScore`/`maxPoints` properties (e.g., in `_buildSectionScoresJson()`).
+  - **Don't**: Use raw names or simple keys for the root dictionary, which prevents `SectionScoreExploder.cs` from matching UI categories.
+
 - **Gotcha: Linter Rule Drift & HTTP 422 Mapping**
-  - **Fix:** The frontend linter and backend linter might drift. When mapping HTTP 422 response bodies to the frontend, ensure that `LintResult` parsing is resilient to missing fields and can display server-side linter errors gracefully in the linter panel.
+  - **Do**: Make `LintResult` parsing on the frontend resilient to missing fields so that server-side linter errors display gracefully.
+  - **Don't**: Assume the frontend linter and backend linter have identical rules.
+
 - **Gotcha: Nesting Depth Constraints**
-  - **Fix:** Scoring calculation engines (`VerifyPenalty` in C# and `ScoringInputMapper` in Dart) only support up to 2 levels of group hierarchy (Sections and Subsections). Nesting beyond this depth results in incorrect calculations because intermediate groups are bypassed or ignored.
+  - **Do**: Enforce a flat or maximum 2-level hierarchy (Sections and Subsections) when configuring scoring templates.
+  - **Don't**: Nest beyond 2 levels, since the scoring calculation engines (`VerifyPenalty` in C# and `ScoringInputMapper` in Dart) bypass intermediate groups.
+
 - **Gotcha: Progressive Repeat Decimal Overflow Safeguards**
-  - **Fix:** Always cast progressive repeat fault counts to `decimal` *before* multiplication (`(decimal)repeatedFaults * (decimal)repeatedFaults`) to prevent 32-bit integer overflow exceptions on high fault counts (above 46,340 faults).
+  - **Do**: Always cast progressive repeat fault counts to `decimal` *before* multiplication to prevent 32-bit integer overflow exceptions:
+    ```csharp
+    (decimal)repeatedFaults * (decimal)repeatedFaults
+    ```
+  - **Don't**: Multiply raw 32-bit integers when calculating progressive repeat faults.
+
 - **Gotcha: TemplateDto and TemplateTreeDto optional params**
-  - **Fix:** When extending DTO parameters, make new parameters optional in default constructors with safe fallbacks rather than strictly `required` to prevent breaking existing test cases, seeder models, and mock builders.
+  - **Do**: Make new parameters optional in default constructors with safe fallbacks.
+  - **Don't**: Make new parameters strictly `required`, as it breaks existing test cases, seeders, and mocks.
+
 - **Gotcha: Clearing Area Manager Store Assignments (Explicit Empty Array)**
-  - **Fix:** To clear all store assignments for an Area Manager, the frontend must explicitly transmit the `assignedStoreIds` field as an empty list (`[]`) instead of mapping it to `null` or omitting it. If mapped to `null` or omitted, the backend's presence checks (`TryGetProperty`) will treat the field as omitted and preserve the existing assignments.
+  - **Do**: Explicitly transmit `assignedStoreIds` as an empty list (`[]`) from the frontend when clearing assignments.
+  - **Don't**: Map the field to `null` or omit it, as the backend presence check (`TryGetProperty`) will preserve the old assignments.
 
-## 4. Environment Rules
-- **Folders:** Never run commands from the project root. Use `server/` or `lib/`.
-- **No Interactive CLI:** Do not run `dotnet run`, `dotnet watch`, or `flutter run`.
-- **Zero Bloat:** Do not install packages without permission.
-- **RTK Wrapper:** Always prepend `rtk` to terminal commands (e.g., `rtk dotnet build`). *Exception:* For running test suites (e.g., `dotnet test`) where detailed failure traces or assertion outputs are required to debug, always use the `rtk proxy` prefix (e.g., `rtk proxy dotnet test ...`) to bypass RTK output filtering/compression.
-- **Historical Tracking (Logs & Scratchpads):** NEVER leave test logs (`.log`), scratch queries (`.sql`), or text outputs in the project root, `server/`, or `lib/`. For historical tracking: Route all test outputs/logs to `.agents/logs/`. Route all scratch database scripts to `dbquery/`. Compiler dumps (`.xml`) must be deleted, not saved.
+## 4. Development Operations & Tooling Decisions
 
-## 5. Development Speed & Tooling Mitigations
-- **Mitigation: API Executable File Locks (Windows)**
-  - **Action:** Terminate any running backend API executable before compiling to prevent file locks:
-    ```cmd
-    taskkill /f /im Checkly.Api.exe 2>nul
-    ```
-- **Mitigation: Central Solution File**
-  - **Action:** A central solution file is located at `server/Checkly.slnx`. Build and test at the solution level:
-    ```cmd
-    rtk dotnet build Checkly.slnx
-    rtk proxy dotnet test Checkly.slnx
-    ```
-- **Mitigation: Rapid Drift Code Generation**
-  - **Action:** Run the generator in watch mode to automatically rebuild on save, or filter by file to speed up regeneration:
-    ```cmd
-    dart run build_runner watch --delete-conflicting-outputs
-    # OR build only the database schema file:
-    dart run build_runner build --build-filter="lib/core/database/app_database.dart"
-    ```
-- **Mitigation: Targeted Flutter Test Execution**
-  - **Action:** Run targeted test folders or files during development instead of running all 878 tests:
-    ```cmd
-    flutter test test/features/audit/widgets/header_card_test.dart
-    ```
+| Intent | Command / Action | Context |
+| :--- | :--- | :--- |
+| Build backend solution | `rtk dotnet build server/Checkly.slnx` | Run at solution level. Terminate API process first to prevent locks. |
+| Run backend tests | `rtk proxy dotnet test server/Checkly.slnx` | Bypass RTK filtering via `proxy` to view error details. |
+| Kill locked API process | `taskkill /f /im Checkly.Api.exe 2>nul` | Prevents Windows file locks during compilation. |
+| Watch & generate Drift files | `dart run build_runner watch --delete-conflicting-outputs` | Auto-rebuild on save. |
+| Generate DB schema only | `dart run build_runner build --build-filter="lib/core/database/app_database.dart"` | Faster target regeneration. |
+| Run targeted Flutter tests | `flutter test test/features/audit/widgets/header_card_test.dart` | Avoid running all 878 tests. |
+| Apply database migrations | `rtk dotnet ef database update` | Run from `server/` folder to update PostgreSQL schema. |
+| Add database migration | `rtk dotnet ef migrations add <MigrationName>` | Run from `server/` folder to generate a new EF migration. |
+
+- **No Interactive CLI**: Do not run `dotnet run`, `dotnet watch`, or `flutter run`.
+- **Zero Bloat**: Do not install packages without permission.
+- **Historical Tracking**:
+  - **Do**: Route all test outputs/logs to `.agents/logs/` and scratch database scripts to `dbquery/`. Delete compiler dumps (`.xml`).
+  - **Don't**: Leave random log, query, or text files in the project root, `server/`, or `lib/`.
+
+## 5. Definition of Done (DoD)
+A task is complete only when ALL of the following commands execute with exit code 0:
+1. **Compilation**: `rtk dotnet build server/Checkly.slnx` runs with zero errors.
+2. **Backend Tests**: `rtk proxy dotnet test server/Checkly.slnx` (or the targeted tests for the modified slice) passes with zero failures.
+3. **Flutter Tests**: `flutter test` targeted to modified files passes.
+4. **Drift Schemas**: Drift build runner compiles successfully if local database models were modified.
+
+## 6. Escalation Rules & Bans ("When Blocked" and "Never")
+- **If Compilation Fails**: Check if a locked process exists and run `taskkill /f /im Checkly.Api.exe 2>nul`, then rebuild.
+- **If Tests Fail**: Never mute or bypass assertions. Stop and run `rtk proxy dotnet test server/Checkly.slnx` targeted to the failing class, inspect the output, and fix the production code.
+- **Git Operations**: NEVER run any `git` commands (e.g. `git add`, `git commit`, `git push`, `git checkout`). The user controls source control.
+- **Destructive Actions**: NEVER delete or clear workspace lock files, source code files, or test assets to bypass compiler/lint errors.
 
