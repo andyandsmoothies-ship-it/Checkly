@@ -1,297 +1,75 @@
 ---
 name: vertical-slice
 description: >
-  Vertical Slice Architecture (VSA) for .NET applications — one of several
-  supported architectures in dotnet-claude-kit. Covers feature folders, endpoint
-  grouping, and handler patterns for Mediator, Wolverine, and raw handler classes.
-  Load this skill when the architecture-advisor recommends VSA, when working in
-  an existing VSA codebase, when adding features to a feature-folder project,
-  or when discussing vertical slice patterns, feature folders, or handler patterns.
+  Vertical Slice Architecture (VSA) for .NET applications. Enforces separation of concerns per feature without using giant static classes. Mandates Raw Handler Classes (no MediatR) and Result<T> for business logic. Load this skill when adding features to a feature-folder project or discussing vertical slice patterns.
 ---
 
-# Vertical Slice Architecture (VSA)
+# Vertical Slice Architecture (VSA) - AI Optimized
 
 ## Core Principles
 
-1. **Organize by feature, not by layer** — Each feature is a self-contained vertical slice containing its endpoint, handler, request/response types, and validation. No more jumping between Controllers/, Services/, Repositories/ folders.
-2. **Minimize cross-feature coupling** — Features should not reference each other directly. Shared concerns go in a `Common/` or `Shared/` directory.
-3. **One file per feature is fine** — A simple CRUD endpoint doesn't need 5 files spread across layers. Start with everything in one file, extract only when complexity demands it.
-4. **The handler is the unit of work** — Each handler does one thing. No god-services with 20 methods.
+1. **One File Per Concern, No Giant Files** — Do not put Endpoint, Handler, and Validator inside one giant static class. Split them into tiny files (e.g., `Endpoint.cs`, `Handler.cs`, `Validator.cs`) to keep AI context clean.
+2. **Raw Classes Only (No MediatR)** — Do not use MediatR, Wolverine, or hidden event buses for core logic. Use direct class instantiation (e.g., `await handler.Execute(...)`) so the call stack is visible and traceable.
+3. **Errors as Data (`Result<T>`)** — Never throw Exceptions for business validation (like "Item out of stock"). Return a `Result<T>` object. Exceptions are only for system crashes.
+4. **No Shared Business Logic** — The `Shared/` folder is ONLY for infrastructure (like JSON parsers or Base Classes). Never put business logic or cross-slice coupling in `Shared/`.
 
-## Patterns
+## Pattern: Raw Handlers (Recommended Default)
 
-### Feature Folder Structure
+Every feature gets its own folder containing specific files for each concern.
 
-```
-src/
-  MyApp.Api/
-    Features/
-      Orders/
-        CreateOrder.cs          # Request, Handler, Response, Endpoint — all in one file
-        GetOrder.cs
-        ListOrders.cs
-        CancelOrder.cs
-        Shared/
-          OrderMapper.cs        # Shared within the Orders feature only
-      Products/
-        CreateProduct.cs
-        GetProduct.cs
-    Common/
-      Behaviors/
-        ValidationBehavior.cs   # Cross-cutting Mediator pipeline behavior
-      Persistence/
-        AppDbContext.cs
-      Extensions/
-        ServiceCollectionExtensions.cs
-    Program.cs
+### Folder Structure
+```text
+src/MyApp.Api/Features/Orders/CreateOrder/
+  CreateOrderEndpoint.cs
+  CreateOrderHandler.cs
+  CreateOrderValidator.cs
+  CreateOrderRequest.cs
 ```
 
-### Pattern A: Mediator Handlers (Recommended Default)
-
-Source-generated mediator — MIT licensed, no reflection, Native AOT compatible. Uses `IRequest<T>` / `IRequestHandler<TRequest, TResponse>` with pipeline behaviors. Near-identical API to MediatR but faster and free. Package: `Mediator.Abstractions` + `Mediator.SourceGenerator`.
+### 1. The Endpoint File (`CreateOrderEndpoint.cs`)
+Parses the HTTP request, calls the handler, and translates the `Result<T>` to HTTP status codes. No business logic here.
 
 ```csharp
-// Features/Orders/CreateOrder.cs
-
-public static class CreateOrder
-{
-    public record Command(string CustomerId, List<OrderItemDto> Items) : IRequest<Result<OrderResponse>>;
-
-    public record OrderItemDto(string ProductId, int Quantity);
-
-    public record OrderResponse(Guid Id, decimal Total, DateTime CreatedAt);
-
-    public class Validator : AbstractValidator<Command>
-    {
-        public Validator()
-        {
-            RuleFor(x => x.CustomerId).NotEmpty();
-            RuleFor(x => x.Items).NotEmpty();
-            RuleForEach(x => x.Items).ChildRules(item =>
-            {
-                item.RuleFor(x => x.ProductId).NotEmpty();
-                item.RuleFor(x => x.Quantity).GreaterThan(0);
-            });
-        }
-    }
-
-    internal sealed class Handler(AppDbContext db, TimeProvider clock) : IRequestHandler<Command, Result<OrderResponse>>
-    {
-        public async ValueTask<Result<OrderResponse>> Handle(Command request, CancellationToken ct)
-        {
-            var order = Order.Create(request.CustomerId, request.Items, clock.GetUtcNow());
-            db.Orders.Add(order);
-            await db.SaveChangesAsync(ct);
-
-            return Result.Success(new OrderResponse(order.Id, order.Total, order.CreatedAt));
-        }
-    }
-}
-
-// Registration in Program.cs or module DI
-builder.Services.AddMediator();
-
-// Features/Orders/OrderEndpoints.cs — auto-discovered via IEndpointGroup
-public sealed class OrderEndpoints : IEndpointGroup
+public sealed class CreateOrderEndpoint : IEndpointGroup
 {
     public void Map(IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/orders").WithTags("Orders");
-
-        group.MapPost("/", async (CreateOrder.Command command, ISender sender, CancellationToken ct) =>
+        app.MapPost("/api/orders", async (CreateOrderRequest request, CreateOrderHandler handler, CancellationToken ct) =>
         {
-            var result = await sender.Send(command, ct);
+            var result = await handler.ExecuteAsync(request, ct);
             return result.IsSuccess
                 ? TypedResults.Created($"/api/orders/{result.Value.Id}", result.Value)
                 : result.ToProblemDetails();
-        })
-        .WithName("CreateOrder").Produces<CreateOrder.OrderResponse>(201)
-        .ProducesValidationProblem()
-        .AddEndpointFilter<ValidationFilter<CreateOrder.Command>>();
+        });
     }
 }
 ```
 
-### Pattern B: Wolverine Handlers
-
-Convention-based — no interfaces to implement. Wolverine discovers handlers by method signature.
+### 2. The Handler File (`CreateOrderHandler.cs`)
+Contains the core logic. Uses standard dependency injection. Returns `Result<T>`.
 
 ```csharp
-// Features/Orders/CreateOrder.cs
-
-public static class CreateOrder
+public class CreateOrderHandler(AppDbContext db, TimeProvider clock)
 {
-    public record Command(string CustomerId, List<OrderItemDto> Items);
-
-    public record OrderItemDto(string ProductId, int Quantity);
-
-    public record OrderResponse(Guid Id, decimal Total, DateTime CreatedAt);
-
-    // Wolverine discovers this by convention (static Handle method)
-    public static async Task<Result<OrderResponse>> Handle(
-        Command command,
-        AppDbContext db,
-        TimeProvider clock,
-        CancellationToken ct)
+    public async Task<Result<OrderResponse>> ExecuteAsync(CreateOrderRequest request, CancellationToken ct)
     {
-        var order = Order.Create(command.CustomerId, command.Items, clock.GetUtcNow());
+        var order = Order.Create(request.CustomerId, request.Items, clock.GetUtcNow());
+        
         db.Orders.Add(order);
         await db.SaveChangesAsync(ct);
-        return Result.Success(new OrderResponse(order.Id, order.Total, order.CreatedAt));
+
+        return Result.Success(new OrderResponse(order.Id));
     }
 }
 ```
 
-### Pattern C: Raw Handler Classes (No Library)
+## Anti-Patterns
 
-Direct handler classes with no external dependency. Good for small projects or teams that want full control.
+### ❌ Anti-Pattern 1: The Giant Static Class
+Do not group all records and handlers into one massive `public static class CreateOrder`. This creates 500+ line files that break AI context limits. Split by concern instead.
 
-```csharp
-// Features/Orders/CreateOrder.cs
+### ❌ Anti-Pattern 2: MediatR Magic
+Do not use `_mediator.Send(request)`. It breaks the causal link. Use direct Dependency Injection for handlers.
 
-public static class CreateOrder
-{
-    public record Command(string CustomerId, List<OrderItemDto> Items);
-
-    public record OrderItemDto(string ProductId, int Quantity);
-
-    public record OrderResponse(Guid Id, decimal Total, DateTime CreatedAt);
-
-    internal class Handler(AppDbContext db, TimeProvider clock)
-    {
-        public async Task<Result<OrderResponse>> ExecuteAsync(Command command, CancellationToken ct)
-        {
-            var order = Order.Create(command.CustomerId, command.Items, clock.GetUtcNow());
-            db.Orders.Add(order);
-            await db.SaveChangesAsync(ct);
-
-            return Result.Success(new OrderResponse(order.Id, order.Total, order.CreatedAt));
-        }
-    }
-}
-
-// Endpoint wiring — Result maps to HTTP response
-group.MapPost("/", async (CreateOrder.Command command, CreateOrder.Handler handler, CancellationToken ct) =>
-{
-    var result = await handler.ExecuteAsync(command, ct);
-    return result.IsSuccess
-        ? TypedResults.Created($"/api/orders/{result.Value.Id}", result.Value)
-        : result.ToProblemDetails();
-});
-```
-
-### Adding Module Boundaries (Optional)
-
-For larger applications that grow beyond a single project, introduce module boundaries. Each module is a separate class library with its own features and DbContext.
-
-```
-src/
-  MyApp.Api/                      # Host — wires modules together
-    Program.cs
-    Modules/
-      ModuleExtensions.cs         # app.MapOrderModule(), app.MapCatalogModule()
-  MyApp.Orders/                   # Module — own features, own DbContext
-    Features/
-      CreateOrder.cs
-    Persistence/
-      OrdersDbContext.cs
-    OrdersModule.cs               # IServiceCollection + IEndpointRouteBuilder extensions
-  MyApp.Catalog/                  # Module
-    Features/
-      CreateProduct.cs
-    Persistence/
-      CatalogDbContext.cs
-    CatalogModule.cs
-```
-
-Modules communicate via:
-- **Integration events** (preferred) — async, decoupled via Wolverine or MassTransit
-- **Shared contracts** — a `MyApp.Contracts` project with DTOs/interfaces (use sparingly)
-
-### Shared Concerns
-
-Cross-cutting concerns live outside feature folders:
-
-```csharp
-// Common/Behaviors/ValidationBehavior.cs (Mediator pipeline)
-public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
-    : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IMessage
-{
-    public async ValueTask<TResponse> Handle(
-        TRequest request,
-        MessageHandlerDelegate<TRequest, TResponse> next,
-        CancellationToken ct)
-    {
-        var context = new ValidationContext<TRequest>(request);
-        var failures = validators
-            .Select(v => v.Validate(context))
-            .SelectMany(r => r.Errors)
-            .Where(f => f is not null)
-            .ToList();
-
-        if (failures.Count > 0)
-            throw new ValidationException(failures);
-
-        return await next(request, ct);
-    }
-}
-```
-
-## Anti-patterns
-
-### Don't Create Layered Abstractions Within a Slice
-
-```csharp
-// BAD — a feature folder with its own service layer and repository
-Features/
-  Orders/
-    CreateOrder.cs
-    IOrderService.cs         # unnecessary abstraction
-    OrderService.cs          # unnecessary abstraction
-    IOrderRepository.cs      # unnecessary abstraction
-    OrderRepository.cs       # unnecessary abstraction
-
-// GOOD — handler talks directly to DbContext
-Features/
-  Orders/
-    CreateOrder.cs           # handler uses AppDbContext directly
-```
-
-### Don't Cross-reference Features Directly
-
-```csharp
-// BAD — CreateOrder directly calls GetProduct handler
-var product = await _getProductHandler.Handle(new GetProduct.Query(productId));
-
-// GOOD — query the database directly or use a shared read model
-var product = await db.Products.FindAsync(productId, ct);
-```
-
-### Don't Put Everything in One God Feature File
-
-```csharp
-// BAD — 500-line file with CRUD + business logic + mapping
-public static class Orders
-{
-    // Create, Read, Update, Delete, Cancel, Refund, Export...
-}
-
-// GOOD — one file per operation
-Features/Orders/CreateOrder.cs
-Features/Orders/GetOrder.cs
-Features/Orders/CancelOrder.cs
-```
-
-## Decision Guide
-
-| Scenario | Recommendation |
-|----------|---------------|
-| New project (default) | Pattern A — Mediator (source-generated, MIT, fast) |
-| Need mediator + messaging in one lib | Pattern B — Wolverine (also handles events/queues) |
-| Want full control, no dependencies | Pattern C — Raw handler classes |
-| Existing MediatR codebase with license | Keep MediatR if licensed; otherwise migrate to Mediator (near-identical API) |
-| Monolith growing complex | Add module boundaries, keep VSA within each module |
-| Simple CRUD feature | Single file: request + handler + endpoint |
-| Complex feature (saga, events) | Multiple files in feature folder, still colocated |
-| Sharing logic between features | Extract to `Common/` — not to another feature |
+### ❌ Anti-Pattern 3: Cross-Feature Coupling
+Do not call a handler from another feature (e.g., do not call `GetProductHandler` inside `CreateOrderHandler`). If a feature needs data, query the database directly. Features must remain fully isolated.
