@@ -81,6 +81,8 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 - **Yield & Handoff**: Yield to the user with the exact Next Command explicitly referencing `{Absolute_Path_to_verification_artifact.md}`.
 
+> **@@SCAN**: Execute the `/sync-kb` workflow to ensure the final accepted state is recorded in the Knowledge Base.
+
 > [!IMPORTANT]
 
 <output_schema>

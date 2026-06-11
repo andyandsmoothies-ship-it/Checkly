@@ -151,6 +151,8 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 
 ## 🚦 User Handoff & Next Steps
 
+> **@@SCAN**: Execute the `/sync-kb` workflow to ensure documentation matches the newly written code.
+
 <output_schema>
 
 - **Outputs Created**: Implemented code (GREEN) + `walkthrough_[...].md` (or `handoff_[...].md` if more slices remain).
