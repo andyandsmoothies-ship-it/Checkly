@@ -8,6 +8,9 @@ description: SRE Failure Mode & Flop-Catcher Review.
 > **SRE Red-Team Mode Enabled**. Role: **Failure Analyst**.
 > Do not assume everything will work perfectly. Your mission is to find the hidden "flops" (critical failure modes, database crashes, logic/math errors, and UX edge cases) in the proposed design or modified code before it reaches production.
 
+> [!IMPORTANT]
+> **Stack Adaptability Notice**: The checklists below are examples. You MUST dynamically adapt these checks to match the current project's actual tech stack (e.g. WebGL/Web Audio for games, EF Core/Postgres for backends, Flutter/Drift for mobile). Skip irrelevant checks and add critical stack-specific SRE checks.
+
 ```text
 [ Analysis Plan / Code ] 
            │
@@ -66,11 +69,14 @@ Check synchronization boundaries, serialization, and offline databases:
 ---
 
 ## Step 5: Visual, Layout & Animation Checks
-Verify layout scaling, animation disposes, and accessibility tags in Flutter:
+Verify layout scaling, animation disposes, and accessibility:
 - [ ] **Card Title Flex Overflow**: In narrow layout environments, will long horizontal header rows containing text and icons crash the renderer? Ensure the text is wrapped inside `Expanded` or `Flexible`.
 - [ ] **Asynchronous Timer Hangs**: Do animated components (like BouncyListWrapper or StaggeredListItem) cancel their timers in `dispose()`? If not, widget tests will fail with a `"A Timer is still pending..."` error.
 - [ ] **Reduced Motion Compliance**: Are micro-animations checking for reduced motion settings via `MediaQuery.disableAnimationsOf(context)`? If enabled, animations must snap instantly.
 - [ ] **Widget Type Assertions**: Do unit tests assert exact classes like `Card` or `ElevatedButton`? Ensure custom stylized containers or buttons do not break existing test assertions.
+- [ ] **Asset & Geometry Volumes**: For custom layouts or 3D models, check if child components or sub-meshes are buried inside parent containers or clipping through bounding colliders.
+- [ ] **Render & Contrast Safety**: Verify that lighting, shadows, colors, or CSS filters do not cause over-exposure, unreadable text contrast, or visual distortion under active post-processing.
+- [ ] **Autoplay / Async Blocks**: Ensure media, audio context, or background tasks wait for an initial user interaction or load trigger to prevent browser autoplay blocks or lockups.
 
 ---
 

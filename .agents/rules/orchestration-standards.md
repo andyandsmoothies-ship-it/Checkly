@@ -28,7 +28,6 @@ description: AI Orchestration, Workflow, and Handoff Standards.
 - **No Existence-Only Tests**: PROHIBITED: Tests asserting only imports/compilation (e.g. `expect(MyClass, isNotNull)`). Every test must verify at least one behavioral output (UI rendering, mock API responses, or state changes).
 ## 4. Workflow Execution & Handoff
 - **Pre-Flight**: Load `.agents/skills/`. Run `list_dir` to read local `GEMINI.md` files before starting design.
-- **Micro-Slicing**: If modifying >2 files or crossing boundaries, execute one slice/file and verify. Bulk execution without verification is prohibited.
 - **Context Pruning**: Use JIT loading (`grep_search`/`view_file`). Never dump massive source files into chat prompts.
 - **Bypass Protocol**: If skipping a workflow step, document: `> [!NOTE] AI Decision: Skipped [Step] - [Reason]`.
 - **Heavy Math Exception**: Complex calculations bypass ATDD directly to `[/tdd]` for isolated unit tests.
@@ -39,6 +38,8 @@ description: AI Orchestration, Workflow, and Handoff Standards.
 - **Visual Verification**: Quote paths `""`. Always verify file operations visually via `list_dir` instead of trusting success exit codes.
 - **No Orphaned Assumptions**: If analysis finds a dependency (e.g. DB migration, config change), translate it to explicit file instructions. Do not leave assumptions to the Builder.
 - **No Dead Ends**: Interactive elements must be fully wired. PROHIBITED: empty interaction stubs (e.g. `onPressed: () {}`, `href="#"`).
+- **Blast Radius Map**: During planning/analysis, you MUST trace imports of proposed changes to list all dependent files and test suites. For Flutter/Dart, you can run the change mapping script `powershell .agents/scripts/test_changed.ps1` to find and run affected tests.
+- **Regression Verification**: If a modified file has dependents in the codebase, you MUST execute the corresponding test suites before declaring work done, preventing silent regressions. Verify database and DTO contracts alignment by running the contract checker `python .agents/scripts/verify_sync_contracts.py`.
 - **Analysis Trace Recording**: If requested or when performing complex analysis, research, diagnostics, or audits, record the step-by-step trace to `docs/reports/diagnostics/traces/trace_analysis_[YYYYMMDD_HHMMSS].md`. The trace must exactly record all analyzing activities step-by-step from start to end, listing prompts, tools used, folders/files accessed with rationale, and decisions made, keeping it short and concise.
 ## 6. Quality Principles (Global)
 - **Structure**: Enforce clean boundaries. Fail builds on illegal cross-ring imports.

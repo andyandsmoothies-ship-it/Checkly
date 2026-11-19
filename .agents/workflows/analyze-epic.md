@@ -52,6 +52,8 @@ Workflow: /analyze-epic | Track: C
 
 - **Check the Goal**: Ensure the technical plan directly solves the user's original problem. If too complex, stop and simplify.
 
+- **Charter Guardrail**: Verify that proposed technical designs or risk-mitigations do not violate core requirements or constraints in `project_charter.md`, `README.md`, or global rules. If a conflict exists, request user approval first.
+
 - **Label the Pattern**: Explicitly label the System Design Pattern (e.g. Ledger, State Machine, Pub/Sub, News Feed) before designing to sharpen tradeoffs.
 
 - **Check Ideas**: Verify if the proposed idea aligns with current code and clean architecture. Reject impossible or dangerous ideas.
